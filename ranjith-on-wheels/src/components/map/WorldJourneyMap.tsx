@@ -30,6 +30,13 @@ import styles from "./WorldJourneyMap.module.css";
 type ChapterId = keyof typeof CHAPTER_PROGRESS;
 const CHAPTER_ORDER = Object.keys(CHAPTER_PROGRESS) as ChapterId[];
 
+// The land (back layer) and the route/markers (front layer) drift at
+// different rates as the map scrubs, so the two read as separate depth
+// planes instead of one flat image — the "3D" feel comes from the gap
+// between these two numbers, not from any perspective transform.
+const BACK_LAYER_DRIFT_PX = 24;
+const FRONT_LAYER_DRIFT_PX = 64;
+
 type CameraTarget = { scale: number; originXPercent: number; originYPercent: number };
 
 function computeCameraTargets(
@@ -117,6 +124,8 @@ export function WorldJourneyMap() {
 
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const backLayerRef = useRef<HTMLDivElement>(null);
+  const frontLayerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const matchMediaRef = useRef<gsap.MatchMedia | null>(null);
   const travelMarkerRef = useRef<SVGCircleElement>(null);
@@ -201,6 +210,11 @@ export function WorldJourneyMap() {
           transformOrigin: `${camera.originXPercent}% ${camera.originYPercent}%`,
         });
 
+        if (!reducedMotion) {
+          gsap.set(backLayerRef.current, { y: -progress * BACK_LAYER_DRIFT_PX });
+          gsap.set(frontLayerRef.current, { y: -progress * FRONT_LAYER_DRIFT_PX });
+        }
+
         const chapter = chapterAtProgress(progress);
         if (announce) {
           setActiveChapter((previous) => (previous === chapter ? previous : chapter));
@@ -270,51 +284,62 @@ export function WorldJourneyMap() {
       {world ? (
         <div className={styles.mapBackground}>
           <div className={styles.stage} ref={stageRef}>
-            <svg
-              className={styles.svg}
-              viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-              preserveAspectRatio="xMidYMid slice"
-              role="img"
-              aria-label="World map showing Ranjith's cycling route across 23 countries"
-            >
-              <g>
-                {world.features.map((featureItem, index) => (
-                  <path key={index} d={pathGenerator(featureItem) ?? undefined} className={styles.land} />
-                ))}
-              </g>
-              <path
-                ref={pathRef}
-                d={route.d}
-                className={styles.routePath}
-                style={{ opacity: mode === "route" ? 1 : 0.28 }}
-              />
-              <circle ref={travelMarkerRef} cx="0" cy="0" r="5" className={styles.travelMarker} />
-            </svg>
-            <div className={styles.markerOverlay}>
-              {journeyCountries.map((country) => {
-                const point = markerPositions[country.slug];
-                if (!point) return null;
-                const [x, y] = toContainerPercent(point, coverTransform);
-                const completed = (checkpointFraction[country.slug] ?? 0) <= CHAPTER_PROGRESS[activeChapter];
-                const showRing = mode === "kindness" && kindnessCountrySlugs.includes(country.slug);
-                const showDiamond = mode === "challenge" && challengeCountrySlugs.includes(country.slug);
-                return (
-                  <CountryMarker
-                    key={country.slug}
-                    name={country.name}
-                    x={x}
-                    y={y}
-                    mode={mode}
-                    completed={completed}
-                    selected={selectedSlug === country.slug}
-                    showRing={showRing}
-                    showDiamond={showDiamond}
-                    onSelect={() =>
-                      setSelectedSlug((current) => (current === country.slug ? null : country.slug))
-                    }
-                  />
-                );
-              })}
+            <div className={styles.layerBack} ref={backLayerRef}>
+              <svg
+                className={styles.svg}
+                viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+                preserveAspectRatio="xMidYMid slice"
+                role="img"
+                aria-label="World map showing Ranjith's cycling route across 23 countries"
+              >
+                <g>
+                  {world.features.map((featureItem, index) => (
+                    <path key={index} d={pathGenerator(featureItem) ?? undefined} className={styles.land} />
+                  ))}
+                </g>
+              </svg>
+            </div>
+            <div className={styles.layerFront} ref={frontLayerRef}>
+              <svg
+                className={styles.svg}
+                viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+                preserveAspectRatio="xMidYMid slice"
+                aria-hidden="true"
+              >
+                <path
+                  ref={pathRef}
+                  d={route.d}
+                  className={styles.routePath}
+                  style={{ opacity: mode === "route" ? 1 : 0.28 }}
+                />
+                <circle ref={travelMarkerRef} cx="0" cy="0" r="5" className={styles.travelMarker} />
+              </svg>
+              <div className={styles.markerOverlay}>
+                {journeyCountries.map((country) => {
+                  const point = markerPositions[country.slug];
+                  if (!point) return null;
+                  const [x, y] = toContainerPercent(point, coverTransform);
+                  const completed = (checkpointFraction[country.slug] ?? 0) <= CHAPTER_PROGRESS[activeChapter];
+                  const showRing = mode === "kindness" && kindnessCountrySlugs.includes(country.slug);
+                  const showDiamond = mode === "challenge" && challengeCountrySlugs.includes(country.slug);
+                  return (
+                    <CountryMarker
+                      key={country.slug}
+                      name={country.name}
+                      x={x}
+                      y={y}
+                      mode={mode}
+                      completed={completed}
+                      selected={selectedSlug === country.slug}
+                      showRing={showRing}
+                      showDiamond={showDiamond}
+                      onSelect={() =>
+                        setSelectedSlug((current) => (current === country.slug ? null : country.slug))
+                      }
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
           <div className={styles.gradient} aria-hidden="true" />

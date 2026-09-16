@@ -17,6 +17,13 @@
   will-change: transform;
 }
 
+.layerBack,
+.layerFront {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
 .svg {
   position: absolute;
   inset: 0;
