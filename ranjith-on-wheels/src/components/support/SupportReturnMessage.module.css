@@ -1,0 +1,26 @@
+.section {
+  min-height: 70svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 96px var(--page-gutter);
+  background: var(--color-night);
+}
+
+.headline {
+  font-size: clamp(2rem, 4vw, 3rem);
+  max-width: 20ch;
+}
+
+.body {
+  max-width: 56ch;
+  color: var(--color-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+}

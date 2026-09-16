@@ -1,0 +1,16 @@
+.track {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 70;
+  background: transparent;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: var(--color-route);
+  transform-origin: left;
+}

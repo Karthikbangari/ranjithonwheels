@@ -1,0 +1,57 @@
+.hero {
+  padding: 140px var(--page-gutter) 64px;
+  background: var(--color-night);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+
+.portraitWrap {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.headline {
+  font-size: clamp(2rem, 4.4vw, 3.2rem);
+  max-width: 16ch;
+}
+
+.body {
+  color: var(--color-muted);
+  max-width: 52ch;
+}
+
+.section {
+  padding: 64px var(--page-gutter);
+  background: var(--color-forest);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 72ch;
+}
+
+.sectionAlt {
+  background: var(--color-night);
+}
+
+.sectionLabel {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-route);
+}
+
+@media (max-width: 1023px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}

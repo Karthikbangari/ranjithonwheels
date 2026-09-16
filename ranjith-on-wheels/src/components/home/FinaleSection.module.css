@@ -1,0 +1,119 @@
+.section {
+  position: relative;
+  min-height: 90svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  overflow: hidden;
+  padding: 96px var(--page-gutter) 64px;
+  color: var(--color-ivory);
+}
+
+.imageWrap {
+  position: absolute;
+  inset: -10% 0;
+  z-index: 0;
+}
+
+.image {
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+
+.gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 7, 6, 0.75) 0%,
+    rgba(5, 7, 6, 0.55) 40%,
+    rgba(5, 7, 6, 0.92) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.headline {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  max-width: 18ch;
+}
+
+.headline em {
+  display: block;
+  font-style: italic;
+  color: var(--color-route);
+}
+
+.socialActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.socialLink {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.socialLink:hover,
+.socialLink:focus-visible {
+  border-bottom-color: var(--color-route);
+}
+
+.socialLabel {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.socialDescription {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.roadWrap {
+  position: relative;
+  z-index: 2;
+  height: 60px;
+  margin-top: 24px;
+}
+
+.roadSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.dottedLine {
+  stroke: var(--color-muted);
+  stroke-width: 2;
+  stroke-dasharray: 2 8;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.wheel {
+  fill: none;
+  stroke: var(--color-ivory);
+  stroke-width: 2;
+}
+
+.nextCountry {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}

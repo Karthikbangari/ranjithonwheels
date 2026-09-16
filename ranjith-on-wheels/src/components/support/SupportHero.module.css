@@ -1,0 +1,74 @@
+.hero {
+  position: relative;
+  min-height: 80svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  color: var(--color-ivory);
+}
+
+.imageWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.image {
+  object-fit: cover;
+  object-position: 60% 45%;
+}
+
+.gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 7, 6, 0.55) 0%,
+    rgba(5, 7, 6, 0.1) 35%,
+    rgba(5, 7, 6, 0.9) 100%
+  );
+}
+
+.routeSvg {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+}
+
+.routePath {
+  fill: none;
+  stroke: var(--color-route);
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(255, 122, 54, 0.5));
+}
+
+.content {
+  position: relative;
+  z-index: 3;
+  padding: 0 var(--page-gutter) 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.headline {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  max-width: 18ch;
+}
+
+.lede {
+  max-width: 52ch;
+  color: var(--color-muted);
+  font-size: 1.05rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}

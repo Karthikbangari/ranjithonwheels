@@ -1,0 +1,29 @@
+.section {
+  padding: 96px var(--page-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.headline {
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  line-height: 1.02;
+  max-width: 16ch;
+}
+
+.lede {
+  max-width: 52ch;
+  color: var(--color-muted);
+  font-size: 1.1rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.supportInvite {
+  background: var(--color-night);
+  text-align: left;
+}

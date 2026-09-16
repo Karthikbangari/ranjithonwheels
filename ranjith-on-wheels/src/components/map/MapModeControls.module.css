@@ -1,0 +1,32 @@
+.controls {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(244, 240, 229, 0.06);
+  border: 1px solid var(--color-line);
+}
+
+.button {
+  padding: 8px 18px;
+  min-height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.button:hover {
+  color: var(--color-ivory);
+}
+
+.active {
+  background: var(--color-ivory);
+  color: var(--color-night);
+}
+
+.active:hover {
+  color: var(--color-night);
+}

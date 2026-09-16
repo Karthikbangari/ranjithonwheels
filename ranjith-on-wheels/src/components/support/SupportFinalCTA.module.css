@@ -1,0 +1,19 @@
+.section {
+  padding: 96px var(--page-gutter);
+  background: var(--color-forest);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.headline {
+  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+  max-width: 20ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}

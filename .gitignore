@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+
+# Local Claude Code session tooling state (not project content)
+.claude/
+
+# Source materials (large raw assets, not part of the deployable site)
+*.pdf
+WhatsApp Image*.jpeg
+
+# Next.js
+ranjith-on-wheels/node_modules/
+ranjith-on-wheels/.next/
+ranjith-on-wheels/out/
+ranjith-on-wheels/build/
+ranjith-on-wheels/.env*.local
+ranjith-on-wheels/next-env.d.ts
+ranjith-on-wheels/*.tsbuildinfo
+
+# Playwright
+ranjith-on-wheels/test-results/
+ranjith-on-wheels/playwright-report/
