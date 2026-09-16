@@ -13,6 +13,55 @@ export function createProjection(): GeoProjection {
     .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2 + 10]);
 }
 
+export type CoverTransform = {
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+  visibleWidth: number;
+  visibleHeight: number;
+};
+
+// The map now renders full-bleed behind the page content, the same way a
+// CSS `background-size: cover` image would: it fills the container without
+// distorting the projection, cropping whichever axis overflows. The SVG's
+// own `preserveAspectRatio="xMidYMid slice"` handles that crop for the land
+// shapes and route line automatically, but the HTML button overlay (used
+// for real, accessible <button> markers) positions itself with plain CSS
+// percentages of its own box — so it needs this same crop math applied by
+// hand, or markers drift away from the geography they're supposed to sit on.
+export function computeCoverTransform(
+  containerWidth: number,
+  containerHeight: number,
+  contentWidth: number = MAP_WIDTH,
+  contentHeight: number = MAP_HEIGHT,
+): CoverTransform {
+  if (!containerWidth || !containerHeight) {
+    return { scale: 1, offsetX: 0, offsetY: 0, visibleWidth: contentWidth, visibleHeight: contentHeight };
+  }
+  const containerAspect = containerWidth / containerHeight;
+  const contentAspect = contentWidth / contentHeight;
+  const scale = containerAspect > contentAspect ? containerWidth / contentWidth : containerHeight / contentHeight;
+  const visibleWidth = containerWidth / scale;
+  const visibleHeight = containerHeight / scale;
+  return {
+    scale,
+    offsetX: (contentWidth - visibleWidth) / 2,
+    offsetY: (contentHeight - visibleHeight) / 2,
+    visibleWidth,
+    visibleHeight,
+  };
+}
+
+export function toContainerPercent(
+  point: [number, number],
+  transform: CoverTransform,
+): [number, number] {
+  return [
+    ((point[0] - transform.offsetX) / transform.visibleWidth) * 100,
+    ((point[1] - transform.offsetY) / transform.visibleHeight) * 100,
+  ];
+}
+
 export async function loadWorldFeatures(): Promise<FeatureCollection> {
   const response = await fetch("/data/countries-110m.json");
   const topology = (await response.json()) as Topology;

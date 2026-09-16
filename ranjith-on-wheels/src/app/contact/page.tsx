@@ -20,12 +20,12 @@ export default function ContactPage() {
       </section>
       <div className={styles.grid}>
         <a className={styles.card} href={`mailto:${siteContent.collaborationEmail}`}>
-          <span className={styles.cardLabel}>Email</span>
+          <h2 className={styles.cardLabel}>Email</h2>
           <span className={styles.cardValue}>{siteContent.collaborationEmail}</span>
         </a>
         {socialLinks.map((social) => (
           <a key={social.id} className={styles.card} href={social.url} rel="me noreferrer">
-            <span className={styles.cardLabel}>{social.description}</span>
+            <h2 className={styles.cardLabel}>{social.description}</h2>
             <span className={styles.cardValue}>{social.label}</span>
           </a>
         ))}

@@ -33,17 +33,17 @@ export default function AboutPage() {
       </section>
 
       <section className={styles.section}>
-        <span className={styles.sectionLabel}>The origin</span>
+        <h2 className={styles.sectionLabel}>The origin</h2>
         <p className={styles.body}>TODO_OWNER_APPROVAL</p>
       </section>
 
       <section className={`${styles.section} ${styles.sectionAlt}`}>
-        <span className={styles.sectionLabel}>Why cycle</span>
+        <h2 className={styles.sectionLabel}>Why cycle</h2>
         <p className={styles.body}>TODO_OWNER_APPROVAL</p>
       </section>
 
       <section className={styles.section}>
-        <span className={styles.sectionLabel}>What comes next</span>
+        <h2 className={styles.sectionLabel}>What comes next</h2>
         <p className={styles.body}>
           The map currently ends in Slovakia — country twenty-three. The next country is still
           being written, and the journey continues for as long as the road allows it to.

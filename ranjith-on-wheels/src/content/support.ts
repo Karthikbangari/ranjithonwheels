@@ -18,6 +18,16 @@ export const supportConfig = {
   options: [] satisfies SupportOption[],
 } as const;
 
+// A direct UPI transfer, confirmed by the owner. This is a personal India
+// instant-payment transfer, not a card/provider-hosted checkout: no card or
+// bank details ever pass through this site, and the amount is chosen freely
+// by the supporter in their own UPI app.
+export const upiConfig = {
+  recipientDisplayName: "Dagara Ranjith Kumar",
+  upiId: "7020346416@axl",
+  qrImage: "/media/support/upi-qr.jpg",
+} as const;
+
 export function isSupportConfigured(): boolean {
   const config = supportConfig as {
     recipientDisplayName: string;
@@ -82,12 +92,13 @@ export const supportFaq: SupportFaqItem[] = [
   },
   {
     question: "Which currencies are accepted?",
-    answer: "TODO_OWNER_APPROVAL — pending the approved payment provider and recipient account.",
+    answer:
+      "The UPI option accepts Indian Rupees (INR) directly through any UPI app. Other currencies are pending an approved international payment provider.",
   },
   {
     question: "Can I support monthly?",
     answer:
-      "Not yet. Recurring support will only be enabled if the approved payment provider and recipient account support it.",
+      "Not yet. UPI here is one-time only. Recurring support will only be enabled if an approved payment provider and recipient account support it.",
   },
   {
     question: "How is support used?",
@@ -96,7 +107,8 @@ export const supportFaq: SupportFaqItem[] = [
   },
   {
     question: "Who processes the payment?",
-    answer: "TODO_OWNER_APPROVAL — pending the approved payment provider.",
+    answer:
+      "For UPI, India's National Payments Corporation network and your own UPI app process the transfer directly — this site never sees or stores payment details. Other payment methods are pending an approved provider.",
   },
   {
     question: "How do I request payment help or a refund?",

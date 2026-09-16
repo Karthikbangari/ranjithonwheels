@@ -48,7 +48,7 @@ export function CountryChapter({
       <article className={styles.body}>
         {blocks.map((block) => (
           <div key={block.label + block.text} className={styles.block}>
-            <span className={styles.blockLabel}>{block.label}</span>
+            <h2 className={styles.blockLabel}>{block.label}</h2>
             <p className={styles.blockText}>{block.text}</p>
           </div>
         ))}

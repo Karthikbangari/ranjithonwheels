@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { suggestedSupportLabels } from "@/content/support";
 import styles from "./SupportOptions.module.css";
@@ -7,11 +8,11 @@ export function SupportOptions() {
     <section className={styles.section} id="support-options">
       <div>
         <Eyebrow>Choose your support</Eyebrow>
-        <h2 className={styles.headline}>Support options are coming soon.</h2>
+        <h2 className={styles.headline}>Card and other checkout options are coming soon.</h2>
       </div>
       <span className={styles.banner}>
         <span className={styles.dot} aria-hidden="true" />
-        Payment setup is still pending owner approval
+        In the meantime, <Link href="#upi">support directly via UPI</Link>
       </span>
       <div className={styles.grid}>
         {suggestedSupportLabels.map((option) => (

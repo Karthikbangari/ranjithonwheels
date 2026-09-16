@@ -6,6 +6,7 @@ import { SupportUseBreakdown } from "@/components/support/SupportUseBreakdown";
 import { SupportTransparency } from "@/components/support/SupportTransparency";
 import { PaymentDisclosure } from "@/components/support/PaymentDisclosure";
 import { SupportFAQ } from "@/components/support/SupportFAQ";
+import { SupportUPI } from "@/components/support/SupportUPI";
 import { SupportFinalCTA } from "@/components/support/SupportFinalCTA";
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function SupportPage() {
       <SupportTransparency />
       <PaymentDisclosure />
       <SupportFAQ />
+      <SupportUPI />
       <SupportFinalCTA />
     </>
   );

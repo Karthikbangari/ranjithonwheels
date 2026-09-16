@@ -107,9 +107,9 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
         <span className={styles.chapterLabel}>
           Country {country.order} — {country.name}
         </span>
-        <h3 className={styles.headline} ref={headlineRef}>
+        <h2 className={styles.headline} ref={headlineRef}>
           <LineReveal lines={[country.summary]} />
-        </h3>
+        </h2>
         <div className={styles.beats} ref={beatsRef}>
           {beats.map((beat) => (
             <div key={beat.label} className={styles.beat} data-beat>

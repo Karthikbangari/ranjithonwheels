@@ -57,6 +57,8 @@
 }
 
 .blockLabel {
+  font-family: var(--font-body);
+  font-weight: 600;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

@@ -34,8 +34,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "india",
     featured: false,
     coverImage: "/media/journey/india/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "Ranjith sitting on a rock at the base of Nohkalikai Falls in Meghalaya, India",
+    summary:
+      "The first leg covered 15,000 kilometres across Tamil Nadu, Karnataka and beyond — an oil massage and waterfall bath near the Hogenakkal Falls, the tragic legend behind Meghalaya's Nohkalikai Falls, then north through Ladakh and Pangong Tso before the first border.",
     kindnessStory: "TODO_OWNER_APPROVAL",
     gallery: [],
   },
@@ -64,8 +65,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "southeast-asia",
     featured: false,
     coverImage: "/media/journey/vietnam/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "Aerial view of terraced rice paddies cultivated on standing water in Vietnam",
+    summary:
+      "Vietnam brought Ranjith's first real culture shock of the journey — different gods, greetings, currency and cuisine — but also an unmistakable warmth from strangers who offered food and stories with no expectations. Two days at Tam Coc, where farmers cultivate rice on standing water, and a crawl through the Cu Chi Tunnels near Ho Chi Minh City closed out the chapter.",
     kindnessStory: "TODO_OWNER_APPROVAL",
     gallery: [],
   },
@@ -79,7 +81,8 @@ export const journeyCountries: JourneyCountry[] = [
     featured: false,
     coverImage: "/media/journey/cambodia/cover.jpg",
     coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    summary:
+      "Buddhism shaped daily life at every turn — temple chants echoing through small villages, children sent to monasteries to learn discipline and meditation. Angkor Wat, a Hindu temple to Vishnu that later became Buddhist with a hidden shrine to Shiva inside, was the chapter's centrepiece.",
     gallery: [],
   },
   {
@@ -107,8 +110,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "southeast-asia",
     featured: false,
     coverImage: "/media/journey/malaysia/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "Ranjith riding a loaded touring bicycle with arms outstretched down a farm track in Malaysia",
+    summary:
+      "1,500 kilometres through tiger and elephant reserve zones, tasting durian, mangosteen and snake fruit along the way. The hospitality of both ethnic Malaysians and Malaysian Tamilians left a lasting impression, and the air quality made for some of the most refreshing riding of the whole journey.",
     kindnessStory: "TODO_OWNER_APPROVAL",
     gallery: [],
   },
@@ -122,7 +126,8 @@ export const journeyCountries: JourneyCountry[] = [
     featured: false,
     coverImage: "/media/journey/singapore/cover.jpg",
     coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    summary:
+      "A 200-kilometre ride through a country that blends cutting-edge technology with deep respect for people and environment — a metro system engineered through artificial waterfalls, and a waste-management culture that left Ranjith genuinely impressed.",
     gallery: [],
   },
   {
@@ -134,8 +139,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "southeast-asia",
     featured: false,
     coverImage: "/media/journey/indonesia/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "Aerial view of a cliff and turquoise cove on Nusa Penida island, Indonesia",
+    summary:
+      "2,100 kilometres that began with a 32-hour, signal-free ferry from Singapore — a rare, reflective break from the digital world. Roads named after Lord Rama and Ganesha shrines across Bali revealed an unexpected thread of Hindu mythology, alongside terraced rice fields and the volcanic risk of the Pacific Ring of Fire.",
     challengeStory: "TODO_OWNER_APPROVAL",
     gallery: [],
   },
@@ -149,7 +155,8 @@ export const journeyCountries: JourneyCountry[] = [
     featured: false,
     coverImage: "/media/journey/china/cover.jpg",
     coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    summary:
+      "2,000 kilometres beginning in Shanghai, China's most advanced metropolis. What struck Ranjith most wasn't the hyper-modern skyline or the precision mapping technology, but the local hospitality — strangers repeatedly offering food to travellers as a simple gesture of kindness.",
     gallery: [],
   },
   {
@@ -161,8 +168,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "east-asia",
     featured: false,
     coverImage: "/media/journey/japan/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "Ranjith standing with his loaded touring bicycle on a snow-lined road in Japan",
+    summary:
+      "1,200 kilometres through a land of discipline and innovation, starting in Tokyo. Ranjith was moved by the humility of the Japanese people, the punctuality of the Shinkansen bullet trains, and a cherry blossom season that draws whole parks together for hanami.",
     gallery: [],
   },
   {
@@ -175,7 +183,8 @@ export const journeyCountries: JourneyCountry[] = [
     featured: false,
     coverImage: "/media/journey/south-korea/cover.jpg",
     coverAlt: "Ranjith standing with his loaded bicycle beneath cherry blossom trees in South Korea",
-    summary: "TODO_OWNER_APPROVAL",
+    summary:
+      "2,000 kilometres made easy by a traveller-friendly camping culture — clean washrooms and camping zones available almost anywhere — and by locals who repeatedly offered food and conversation on the road.",
     kindnessStory: "TODO_OWNER_APPROVAL",
     gallery: [],
   },
@@ -188,8 +197,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "east-asia",
     featured: false,
     coverImage: "/media/journey/taiwan/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "Shifen Waterfall in Taiwan, viewed from above with the surrounding forest",
+    summary:
+      "1,000 kilometres across one of the world's most earthquake-prone countries, engineered to withstand it. Semiconductor factories, tropical humidity, and the fireworks that erupt from Taipei 101 every New Year's Eve marked the chapter.",
     gallery: [],
   },
   {
@@ -201,8 +211,9 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "east-asia",
     featured: false,
     coverImage: "/media/journey/mongolia/cover.jpg",
-    coverAlt: "TODO_OWNER_APPROVAL",
-    summary: "TODO_OWNER_APPROVAL",
+    coverAlt: "The view from Ranjith's bicycle along an unpaved steppe road in Mongolia",
+    summary:
+      "Over 2,000 kilometres of vast steppe and unpaved road — paradise for anyone drawn to true wilderness. Traditional dishes like buuz and khuushur, and the fermented mare's milk airag, tied every meal back to Mongolia's nomadic traditions.",
     challengeStory: "TODO_OWNER_APPROVAL",
     gallery: [],
   },

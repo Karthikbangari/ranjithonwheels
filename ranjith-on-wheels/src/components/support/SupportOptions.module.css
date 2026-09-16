@@ -23,6 +23,12 @@
   width: fit-content;
 }
 
+.banner a {
+  color: var(--color-route);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .dot {
   width: 8px;
   height: 8px;

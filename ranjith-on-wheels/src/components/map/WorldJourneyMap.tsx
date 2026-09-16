@@ -11,9 +11,12 @@ import {
   MAP_WIDTH,
   MAP_HEIGHT,
   buildRouteGeometry,
+  computeCoverTransform,
   createProjection,
   declutterPoints,
   loadWorldFeatures,
+  toContainerPercent,
+  type CoverTransform,
 } from "@/lib/map";
 import { journeyCountries, type JourneyChapter } from "@/content/journey";
 import { atlasChapters, kindnessCountrySlugs, challengeCountrySlugs, type MapMode } from "@/content/atlas";
@@ -29,7 +32,10 @@ const CHAPTER_ORDER = Object.keys(CHAPTER_PROGRESS) as ChapterId[];
 
 type CameraTarget = { scale: number; originXPercent: number; originYPercent: number };
 
-function computeCameraTargets(countryPixel: Record<string, [number, number]>) {
+function computeCameraTargets(
+  countryPixel: Record<string, [number, number]>,
+  coverTransform: CoverTransform,
+) {
   const byChapter = new Map<JourneyChapter, [number, number][]>();
   journeyCountries.forEach((country) => {
     const point = countryPixel[country.slug];
@@ -58,11 +64,11 @@ function computeCameraTargets(countryPixel: Record<string, [number, number]>) {
     const spanX = Math.max(maxX - minX, 90);
     const spanY = Math.max(maxY - minY, 90);
     const scale = Math.min(1.2, Math.max(1.0, Math.min(MAP_WIDTH / (spanX * 3), MAP_HEIGHT / (spanY * 3))));
-    targets[chapter as ChapterId] = {
-      scale,
-      originXPercent: ((minX + maxX) / 2 / MAP_WIDTH) * 100,
-      originYPercent: ((minY + maxY) / 2 / MAP_HEIGHT) * 100,
-    };
+    const [originXPercent, originYPercent] = toContainerPercent(
+      [(minX + maxX) / 2, (minY + maxY) / 2],
+      coverTransform,
+    );
+    targets[chapter as ChapterId] = { scale, originXPercent, originYPercent };
   });
 
   return targets;
@@ -117,6 +123,8 @@ export function WorldJourneyMap() {
   const liveRegionRef = useRef<HTMLParagraphElement>(null);
   const progressRef = useRef(0);
 
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
   useEffect(() => {
     let cancelled = false;
     loadWorldFeatures().then((features) => {
@@ -127,9 +135,26 @@ export function WorldJourneyMap() {
     };
   }, []);
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      setContainerSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const projection = useMemo(() => createProjection(), []);
   const pathGenerator = useMemo(() => geoPath(projection), [projection]);
   const route = useMemo(() => buildRouteGeometry(projection), [projection]);
+
+  const coverTransform = useMemo(
+    () => computeCoverTransform(containerSize.width, containerSize.height),
+    [containerSize],
+  );
 
   const countryPixel = useMemo(() => {
     const positions: Record<string, [number, number]> = {};
@@ -147,7 +172,10 @@ export function WorldJourneyMap() {
     return fractions;
   }, [route]);
 
-  const cameraTargets = useMemo(() => computeCameraTargets(countryPixel), [countryPixel]);
+  const cameraTargets = useMemo(
+    () => computeCameraTargets(countryPixel, coverTransform),
+    [countryPixel, coverTransform],
+  );
   const markerPositions = useMemo(() => declutterPoints(countryPixel, 40, 8), [countryPixel]);
 
   const applyProgress = useRef<(progress: number) => void>(() => {});
@@ -239,115 +267,111 @@ export function WorldJourneyMap() {
 
   return (
     <section className={styles.pinSection} id="journey-atlas" ref={sectionRef}>
-      <div className={styles.header}>
-        <div>
-          <Eyebrow>The world became the road</Eyebrow>
-          <h2 className={styles.headline}>Five chapters, twenty-three countries.</h2>
-        </div>
-        <MapModeControls mode={mode} onChange={setMode} />
-      </div>
-
       {world ? (
-        <div className={styles.layout}>
-          <div className={styles.stageWrap}>
-            <div className={styles.stage} ref={stageRef}>
-              <svg
-                className={styles.svg}
-                viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-                preserveAspectRatio="xMidYMid meet"
-                role="img"
-                aria-label="World map showing Ranjith's cycling route across 23 countries"
-              >
-                <g>
-                  {world.features.map((featureItem, index) => (
-                    <path
-                      key={index}
-                      d={pathGenerator(featureItem) ?? undefined}
-                      className={styles.land}
-                    />
-                  ))}
-                </g>
-                <path
-                  ref={pathRef}
-                  d={route.d}
-                  className={styles.routePath}
-                  style={{ opacity: mode === "route" ? 1 : 0.28 }}
-                />
-                <circle ref={travelMarkerRef} cx="0" cy="0" r="5" className={styles.travelMarker} />
-              </svg>
-              <div className={styles.markerOverlay}>
-                {journeyCountries.map((country) => {
-                  const point = markerPositions[country.slug];
-                  if (!point) return null;
-                  const completed = (checkpointFraction[country.slug] ?? 0) <= CHAPTER_PROGRESS[activeChapter];
-                  const showRing = mode === "kindness" && kindnessCountrySlugs.includes(country.slug);
-                  const showDiamond = mode === "challenge" && challengeCountrySlugs.includes(country.slug);
-                  return (
-                    <CountryMarker
-                      key={country.slug}
-                      name={country.name}
-                      x={(point[0] / MAP_WIDTH) * 100}
-                      y={(point[1] / MAP_HEIGHT) * 100}
-                      mode={mode}
-                      completed={completed}
-                      selected={selectedSlug === country.slug}
-                      showRing={showRing}
-                      showDiamond={showDiamond}
-                      onSelect={() =>
-                        setSelectedSlug((current) => (current === country.slug ? null : country.slug))
-                      }
-                    />
-                  );
-                })}
-              </div>
+        <div className={styles.mapBackground}>
+          <div className={styles.stage} ref={stageRef}>
+            <svg
+              className={styles.svg}
+              viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+              preserveAspectRatio="xMidYMid slice"
+              role="img"
+              aria-label="World map showing Ranjith's cycling route across 23 countries"
+            >
+              <g>
+                {world.features.map((featureItem, index) => (
+                  <path key={index} d={pathGenerator(featureItem) ?? undefined} className={styles.land} />
+                ))}
+              </g>
+              <path
+                ref={pathRef}
+                d={route.d}
+                className={styles.routePath}
+                style={{ opacity: mode === "route" ? 1 : 0.28 }}
+              />
+              <circle ref={travelMarkerRef} cx="0" cy="0" r="5" className={styles.travelMarker} />
+            </svg>
+            <div className={styles.markerOverlay}>
+              {journeyCountries.map((country) => {
+                const point = markerPositions[country.slug];
+                if (!point) return null;
+                const [x, y] = toContainerPercent(point, coverTransform);
+                const completed = (checkpointFraction[country.slug] ?? 0) <= CHAPTER_PROGRESS[activeChapter];
+                const showRing = mode === "kindness" && kindnessCountrySlugs.includes(country.slug);
+                const showDiamond = mode === "challenge" && challengeCountrySlugs.includes(country.slug);
+                return (
+                  <CountryMarker
+                    key={country.slug}
+                    name={country.name}
+                    x={x}
+                    y={y}
+                    mode={mode}
+                    completed={completed}
+                    selected={selectedSlug === country.slug}
+                    showRing={showRing}
+                    showDiamond={showDiamond}
+                    onSelect={() =>
+                      setSelectedSlug((current) => (current === country.slug ? null : country.slug))
+                    }
+                  />
+                );
+              })}
             </div>
           </div>
-
-          <div className={styles.sidebar}>
-            <div>
-              <span className={styles.chapterLabel}>
-                {activeChapter === "complete"
-                  ? "Journey complete"
-                  : `Chapter — ${activeChapterMeta?.label}`}
-              </span>
-              {activeChapterMeta ? (
-                <p className={styles.chapterMeaning}>{activeChapterMeta.meaning}</p>
-              ) : null}
-            </div>
-
-            {selectedCountry ? <JourneyChapterPanel country={selectedCountry} /> : null}
-
-            <div className={styles.mobileChapters}>
-              {atlasChapters.map((chapter) => (
-                <button
-                  key={chapter.id}
-                  type="button"
-                  className={`${styles.chapterButton} ${
-                    activeChapter === chapter.id ? styles.chapterButtonActive : ""
-                  }`}
-                  onClick={() => goToChapter(chapter.id)}
-                >
-                  {chapter.label}
-                </button>
-              ))}
-            </div>
-
-            <p aria-live="polite" ref={liveRegionRef} className="sr-only">
-              {activeChapterMeta
-                ? `Now viewing ${activeChapterMeta.label}: ${activeChapterMeta.meaning}`
-                : "Journey complete"}
-            </p>
-
-            <ol className="sr-only">
-              {journeyCountries.map((country) => (
-                <li key={country.slug}>{country.name}</li>
-              ))}
-            </ol>
-          </div>
+          <div className={styles.gradient} aria-hidden="true" />
         </div>
       ) : (
         <div className={styles.placeholder}>Loading the journey map…</div>
       )}
+
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <div>
+            <Eyebrow>The world became the road</Eyebrow>
+            <h2 className={styles.headline}>Five chapters, twenty-three countries.</h2>
+          </div>
+          <MapModeControls mode={mode} onChange={setMode} />
+        </div>
+
+        <div className={styles.sidebar}>
+          <div>
+            <span className={styles.chapterLabel}>
+              {activeChapter === "complete" ? "Journey complete" : `Chapter — ${activeChapterMeta?.label}`}
+            </span>
+            {activeChapterMeta ? <p className={styles.chapterMeaning}>{activeChapterMeta.meaning}</p> : null}
+          </div>
+
+          <div aria-live="polite">
+            {selectedCountry ? <JourneyChapterPanel country={selectedCountry} /> : null}
+          </div>
+
+          <div className={styles.mobileChapters}>
+            {atlasChapters.map((chapter) => (
+              <button
+                key={chapter.id}
+                type="button"
+                className={`${styles.chapterButton} ${
+                  activeChapter === chapter.id ? styles.chapterButtonActive : ""
+                }`}
+                onClick={() => goToChapter(chapter.id)}
+              >
+                {chapter.label}
+              </button>
+            ))}
+          </div>
+
+          <p aria-live="polite" ref={liveRegionRef} className="sr-only">
+            {activeChapterMeta
+              ? `Now viewing ${activeChapterMeta.label}: ${activeChapterMeta.meaning}`
+              : "Journey complete"}
+          </p>
+
+          <ol className="sr-only">
+            {journeyCountries.map((country) => (
+              <li key={country.slug}>{country.name}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </section>
   );
 }

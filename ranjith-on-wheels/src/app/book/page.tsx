@@ -34,7 +34,7 @@ export default function BookPage() {
         </div>
       </section>
       <section className={styles.sample} id="sample">
-        <span className={styles.sectionLabel}>Sample</span>
+        <h2 className={styles.sectionLabel}>Sample</h2>
         <p className={styles.body}>TODO_OWNER_APPROVAL</p>
       </section>
     </>
