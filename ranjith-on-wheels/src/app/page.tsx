@@ -27,6 +27,12 @@ export default function Home() {
         ))}
       </div>
 
+      <section className={`${styles.section} ${styles.storiesInvite}`}>
+        <ButtonLink href="/stories" variant="secondary">
+          Read the ten fully documented stories
+        </ButtonLink>
+      </section>
+
       <HumanGallery />
 
       <BookFeature />

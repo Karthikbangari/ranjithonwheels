@@ -23,6 +23,66 @@ import { useMapTier } from "@/lib/mapTier";
 const COLOR_ROUTE = "#f15b3a";
 const COLOR_ROUTE_GLOW = "#ffbe63";
 
+// CLAUDE.md §4.1: "minimal labels at 60% opacity, no POIs, no road labels
+// below zoom 6." The OpenFreeMap Liberty basemap ships with every one of
+// these switched on at full density (bilingual place names, road shields,
+// shop/transit icons), which is what produced the cluttered, illegible map
+// this function corrects. Layer ids are specific to Liberty's schema —
+// every lookup is guarded so a future basemap swap (e.g. MapTiler Outdoor)
+// degrades to "basemap keeps its own defaults" instead of throwing.
+const POI_LAYER_IDS = ["poi_r20", "poi_r7", "poi_r1", "poi_transit", "airport"];
+const ROAD_LABEL_LAYER_IDS = [
+  "highway-name-path",
+  "highway-name-minor",
+  "highway-name-major",
+  "highway-shield-non-us",
+  "highway-shield-us-interstate",
+  "road_shield_us",
+];
+// Raised well past their default minzoom so only city/state/country names
+// (which orient the reader at the flight zooms this map actually uses)
+// survive; the low-level administrative noise (villages, hamlets, water
+// inlets) that swamped the previous default is pushed to "zoomed in a lot".
+const PLACE_LABEL_MINZOOM_OVERRIDES: Record<string, number> = {
+  label_other: 10,
+  label_village: 10,
+  label_town: 8,
+};
+const ENGLISH_PLACE_LABEL_IDS = [
+  "label_other",
+  "label_village",
+  "label_town",
+  "label_state",
+  "label_city",
+  "label_city_capital",
+  "label_country_3",
+  "label_country_2",
+  "label_country_1",
+  "water_name_point_label",
+  "water_name_line_label",
+  "waterway_line_label",
+];
+
+function declutterBasemapLabels(map: MapLibreMap) {
+  for (const id of POI_LAYER_IDS) {
+    if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
+  }
+  for (const id of ROAD_LABEL_LAYER_IDS) {
+    if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
+  }
+  for (const [id, minzoom] of Object.entries(PLACE_LABEL_MINZOOM_OVERRIDES)) {
+    if (map.getLayer(id)) map.setLayerZoomRange(id, minzoom, 24);
+  }
+  for (const id of ENGLISH_PLACE_LABEL_IDS) {
+    if (!map.getLayer(id)) continue;
+    // Liberty's default text-field interleaves the local script and the
+    // English name on two lines (e.g. "Kyrgyzstan\nКыргызстан") — this
+    // keeps just the English name so the map reads as one language.
+    map.setLayoutProperty(id, "text-field", ["coalesce", ["get", "name:en"], ["get", "name"]]);
+    map.setPaintProperty(id, "text-opacity", 0.6);
+  }
+}
+
 function addRouteLayers(map: MapLibreMap) {
   if (map.getSource("route-main")) return; // already added — the map outlives any one page
 
@@ -161,6 +221,7 @@ export function MapProvider({ children }: { children: ReactNode }) {
         // setProjection throws until the style has finished loading, so
         // this can't happen right after construction.
         if (tier === 1) map.setProjection({ type: "globe" });
+        declutterBasemapLabels(map);
         addRouteLayers(map);
         setReady(true);
       });

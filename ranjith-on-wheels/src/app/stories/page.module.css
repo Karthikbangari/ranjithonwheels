@@ -1,0 +1,17 @@
+.hero {
+  padding: 140px var(--page-gutter) 48px;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headline {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  max-width: 20ch;
+}
+
+.lede {
+  max-width: 56ch;
+  color: var(--ink-soft);
+}

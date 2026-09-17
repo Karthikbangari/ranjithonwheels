@@ -27,3 +27,8 @@
   background: var(--white);
   text-align: left;
 }
+
+.storiesInvite {
+  padding: 0 var(--page-gutter) 64px;
+  align-items: center;
+}
