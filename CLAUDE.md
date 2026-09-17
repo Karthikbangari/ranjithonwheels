@@ -24,6 +24,7 @@ Read this first. If the owner disagrees with any decision, change it here before
 | 9 | **Journey archive deferred out of V1.** | V1 scope was too large to finish well. Ship: home film, 23 country pages, support, about, book, contact. Archive comes later. |
 | 10 | **QR/VPA mismatch flagged for owner verification.** | The QR resolves to `7020346416@axl` and the typed ID is `7020346416@ybl`. Both may be legitimate handles on the same number, but an unexplained mismatch reads as fraud to a careful donor. See §9.2 — this needs an owner-approved explanatory line before launch. |
 | 11 | **MapLibre GL / globe / terrain (decision #3, §4.1) is superseded by a minimal illustrated SVG map.** | After seeing the live MapLibre map (real basemap tiles, bilingual place labels, POI icons), the owner asked for something cleaner instead: flat landmasses, no real place names, a coral route that draws itself in and connects country dots as the visitor scrolls. Built as one `JourneyMap` component (`src/components/map/JourneyMap.tsx`) using d3-geo + topojson, animated via GSAP/ScrollTrigger driving SVG `stroke-dashoffset` — no WebGL, no live tiles, no Mapbox-style degradation tiers, since this same lightweight render works identically for every visitor (reduced motion / narrow viewports just skip straight to the complete state). This replaces §4's MapProvider/tier-1-2-3 architecture and §4.1's technology table wherever they conflict. |
+| 12 | **QR/VPA mismatch (decision #10) confirmed a non-issue by the owner.** | `7020346416@axl` (from the QR) is correct; `7020346416@ybl` never matched anything in the codebase and needed no explanatory copy. `/support` continues to show only the QR and `@axl` — see §9.3. |
 
 ---
 
@@ -381,11 +382,9 @@ These prevent a QR that scans wrong or not at all:
 - The QR never animates. The card around it may fade in; the QR may not.
 - Explicit `width`/`height` attributes to prevent layout shift.
 
-### 9.3 Owner verification required before launch
+### 9.3 QR/VPA pair — resolved
 
-The QR resolves to `7020346416@axl`; the typed identifier is `7020346416@ybl`. Both may be valid handles on the same number, but the difference is visible to anyone who checks, and unexplained it reads as a red flag.
-
-**Blocker:** obtain owner confirmation of both identifiers and an approved one-line explanation, and label each method distinctly (`Scan with any UPI app` / `Or pay to this UPI ID`). Until confirmed, render the section with a `// OWNER: confirm VPA pair` comment and ship only the QR.
+The QR resolves to `7020346416@axl`; the typed identifier `7020346416@ybl` referenced elsewhere in this spec never matched anything in the codebase. **Owner confirmed this is a non-issue** (see §0 decision #12): `@axl` is correct and the only identifier the site shows. No second, unverified ID has been added.
 
 ### 9.4 Prohibited
 

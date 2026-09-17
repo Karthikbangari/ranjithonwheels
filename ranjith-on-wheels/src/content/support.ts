@@ -23,13 +23,11 @@ export const supportConfig = {
 // bank details ever pass through this site, and the amount is chosen freely
 // by the supporter in their own UPI app.
 //
-// OWNER: confirm VPA pair. CLAUDE.md §9.3 flags that the QR (decoded directly
-// from the supplied WhatsApp screenshot) resolves to 7020346416@axl, while a
-// separate typed identifier of 7020346416@ybl is referenced in that spec.
-// This codebase has never contained an @ybl value anywhere — only @axl below,
-// sourced from the QR itself. Until you confirm whether @ybl is a second real
-// handle on the same number (and approve one-line copy explaining why both
-// exist) we show the QR only; do not add a second, unverified typed UPI ID.
+// The QR/VPA discrepancy CLAUDE.md §9.3 flagged (QR decodes to
+// 7020346416@axl; the spec separately referenced 7020346416@ybl, which
+// never appeared anywhere else in this codebase) has been confirmed by the
+// owner as a non-issue — @axl is correct and the only identifier this site
+// shows. See CLAUDE.md §0 decision #12.
 export const upiConfig = {
   recipientDisplayName: "Dagara Ranjith Kumar",
   upiId: "7020346416@axl",
