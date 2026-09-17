@@ -1,6 +1,6 @@
 .section {
   padding: 96px var(--page-gutter);
-  background: var(--color-night);
+  background: var(--paper);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -13,6 +13,6 @@
 
 .body {
   max-width: 60ch;
-  color: var(--color-muted);
+  color: var(--ink-soft);
   font-size: 1.05rem;
 }

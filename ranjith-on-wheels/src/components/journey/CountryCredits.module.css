@@ -1,0 +1,28 @@
+.details {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.body {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.body a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

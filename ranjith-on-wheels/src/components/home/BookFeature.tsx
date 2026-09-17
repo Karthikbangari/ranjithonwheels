@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap, registerGsap } from "@/lib/gsap";
-import { siteContent } from "@/content/site";
+import { site } from "@/content/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
@@ -73,25 +73,27 @@ export function BookFeature() {
       <div className={styles.stage}>
         <div className={styles.cover} ref={coverRef}>
           <Image
-            src={siteContent.bookCoverImage}
-            alt={siteContent.bookCoverAlt}
+            src={site.bookCoverImage}
+            alt={site.bookCoverAlt}
             fill
             sizes="280px"
             className={styles.coverImage}
           />
           <div className={styles.coverGradient} aria-hidden="true" />
-          <span className={styles.coverTitle}>{siteContent.bookTitle}</span>
+          <span className={styles.coverTitle}>{site.book}</span>
         </div>
       </div>
       <div className={styles.copy}>
         <Eyebrow>The book</Eyebrow>
         <h2 className={styles.headline}>The complete journey lives between these pages.</h2>
-        <p className={styles.description}>{siteContent.bookDescription}</p>
+        {site.bookDescription ? <p className={styles.description}>{site.bookDescription}</p> : null}
         <div className={styles.actions}>
           <ButtonLink href="/book">Read a sample</ButtonLink>
-          <ButtonLink href={siteContent.bookUrl} variant="secondary">
-            Buy or enquire
-          </ButtonLink>
+          {site.bookUrl ? (
+            <ButtonLink href={site.bookUrl} variant="secondary">
+              Buy or enquire
+            </ButtonLink>
+          ) : null}
         </div>
       </div>
     </section>

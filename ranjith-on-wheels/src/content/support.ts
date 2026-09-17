@@ -22,6 +22,14 @@ export const supportConfig = {
 // instant-payment transfer, not a card/provider-hosted checkout: no card or
 // bank details ever pass through this site, and the amount is chosen freely
 // by the supporter in their own UPI app.
+//
+// OWNER: confirm VPA pair. CLAUDE.md §9.3 flags that the QR (decoded directly
+// from the supplied WhatsApp screenshot) resolves to 7020346416@axl, while a
+// separate typed identifier of 7020346416@ybl is referenced in that spec.
+// This codebase has never contained an @ybl value anywhere — only @axl below,
+// sourced from the QR itself. Until you confirm whether @ybl is a second real
+// handle on the same number (and approve one-line copy explaining why both
+// exist) we show the QR only; do not add a second, unverified typed UPI ID.
 export const upiConfig = {
   recipientDisplayName: "Dagara Ranjith Kumar",
   upiId: "7020346416@axl",
@@ -112,6 +120,7 @@ export const supportFaq: SupportFaqItem[] = [
   },
   {
     question: "How do I request payment help or a refund?",
-    answer: "TODO_OWNER_APPROVAL — pending a confirmed support/refund contact.",
+    // OWNER: no confirmed support/refund contact yet.
+    answer: "A confirmed support and refund contact will be published here once one is set up.",
   },
 ];

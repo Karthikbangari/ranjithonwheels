@@ -1,14 +1,16 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import { gsap, registerGsap, ScrollTrigger } from "@/lib/gsap";
-import { motion as motionConfig } from "@/lib/motion";
+import { ease, dur, stagger } from "@/lib/motion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
+import { useMapController } from "@/components/map/MapProvider";
+import { useMapTier } from "@/lib/mapTier";
 import styles from "./OriginStory.module.css";
 
 const beats = [
@@ -25,6 +27,29 @@ export function OriginStory() {
   const linkRef = useRef<HTMLAnchorElement>(null);
   const chapterNumberRef = useRef<HTMLSpanElement>(null);
   const reducedMotion = useReducedMotion();
+  const { requestMount } = useMapController();
+  const tier = useMapTier();
+
+  // CLAUDE.md §11: MapLibre stays out of the initial bundle and only starts
+  // loading once the visitor is about one viewport away from this section —
+  // early enough that it's ready by the time Act 3 needs it, never blocking
+  // the hero's LCP. Tier 3 visitors (§4.4) never get the live map at all,
+  // so there's nothing to preload for them.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || tier === 3) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          requestMount();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "100% 0px" },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [requestMount, tier]);
 
   useGSAP(
     () => {
@@ -56,7 +81,7 @@ export function OriginStory() {
       }
 
       const tl = gsap.timeline({
-        defaults: { ease: motionConfig.ease.reveal },
+        defaults: { ease: ease.reveal },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 65%",
@@ -67,22 +92,22 @@ export function OriginStory() {
       tl.fromTo(
         portraitRef.current,
         { clipPath: "inset(0 100% 0 0)" },
-        { clipPath: "inset(0 0% 0 0)", duration: motionConfig.duration.scene, ease: motionConfig.ease.travel },
+        { clipPath: "inset(0 0% 0 0)", duration: dur.settle, ease: ease.travel },
         0,
       )
         .fromTo(
           lines ?? [],
           { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: motionConfig.stagger.text },
+          { yPercent: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           0.15,
         )
         .fromTo(
           beatItems ?? [],
           { y: 16, opacity: 0 },
-          { y: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: 0.18 },
+          { y: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           0.36,
         )
-        .fromTo(linkRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, "-=0.1");
+        .fromTo(linkRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: dur.ui }, "-=0.1");
 
       const parallax = ScrollTrigger.create({
         trigger: sectionRef.current,

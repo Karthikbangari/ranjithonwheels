@@ -1,6 +1,6 @@
 .hero {
   padding: 140px var(--page-gutter) 64px;
-  background: var(--color-night);
+  background: var(--paper);
   display: grid;
   grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
   gap: 48px;
@@ -12,9 +12,9 @@
   width: 100%;
   max-width: 260px;
   aspect-ratio: 2 / 3;
-  border-radius: 4px;
+  border-radius: var(--radius-media);
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
 .copy {
@@ -29,7 +29,7 @@
 }
 
 .body {
-  color: var(--color-muted);
+  color: var(--ink-soft);
   max-width: 52ch;
 }
 
@@ -41,7 +41,7 @@
 
 .sample {
   padding: 64px var(--page-gutter);
-  background: var(--color-forest);
+  background: var(--white);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -54,7 +54,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-route);
+  color: var(--route);
 }
 
 @media (max-width: 1023px) {

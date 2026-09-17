@@ -13,7 +13,7 @@
 
 .lede {
   max-width: 52ch;
-  color: var(--color-muted);
+  color: var(--ink-soft);
   font-size: 1.1rem;
 }
 
@@ -24,6 +24,6 @@
 }
 
 .supportInvite {
-  background: var(--color-night);
+  background: var(--white);
   text-align: left;
 }

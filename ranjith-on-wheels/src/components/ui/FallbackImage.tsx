@@ -1,20 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Image, { type ImageProps } from "next/image";
 import styles from "./FallbackImage.module.css";
 
 type FallbackImageProps = Omit<ImageProps, "onError" | "fill"> & {
   pendingLabel?: string;
+  renderFallback?: () => ReactNode;
 };
 
-export function FallbackImage({ pendingLabel = "Photograph pending", alt, ...imageProps }: FallbackImageProps) {
+export function FallbackImage({
+  pendingLabel = "Photograph pending",
+  renderFallback,
+  alt,
+  ...imageProps
+}: FallbackImageProps) {
   const [failed, setFailed] = useState(false);
 
   return (
     <div className={styles.frame}>
       {failed ? (
-        <span className={styles.pending}>{pendingLabel}</span>
+        renderFallback ? (
+          <>
+            {renderFallback()}
+            <span className="sr-only">{alt}</span>
+          </>
+        ) : (
+          <span className={styles.pending}>{pendingLabel}</span>
+        )
       ) : (
         <Image
           {...imageProps}

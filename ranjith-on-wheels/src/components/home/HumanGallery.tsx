@@ -6,9 +6,12 @@ import { FallbackImage } from "@/components/ui/FallbackImage";
 import styles from "./HumanGallery.module.css";
 
 export function HumanGallery() {
+  // Only countries with a real kindnessStory qualify — never show an empty
+  // caption. See the OWNER notes beside journeyCountries in journey.ts for
+  // which of these slugs currently lack sourced content.
   const kindnessCountries = kindnessCountrySlugs
     .map((slug) => journeyCountries.find((country) => country.slug === slug))
-    .filter((country): country is NonNullable<typeof country> => Boolean(country));
+    .filter((country): country is NonNullable<typeof country> => Boolean(country?.kindnessStory));
 
   return (
     <section className={styles.section}>

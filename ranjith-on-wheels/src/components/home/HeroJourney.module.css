@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  color: var(--color-ivory);
+  color: var(--ink-inverse);
 }
 
 .imageWrap {
@@ -25,10 +25,10 @@
   z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(5, 7, 6, 0.55) 0%,
-    rgba(5, 7, 6, 0.05) 30%,
-    rgba(5, 7, 6, 0.15) 55%,
-    rgba(5, 7, 6, 0.92) 100%
+    rgba(11, 26, 38, 0.55) 0%,
+    rgba(11, 26, 38, 0.05) 30%,
+    rgba(11, 26, 38, 0.15) 55%,
+    rgba(11, 26, 38, 0.92) 100%
   );
 }
 
@@ -42,15 +42,15 @@
 
 .routePath {
   fill: none;
-  stroke: var(--color-route);
+  stroke: var(--route);
   stroke-width: 4;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 6px rgba(255, 122, 54, 0.6));
+  filter: drop-shadow(0 0 6px rgba(241, 91, 58, 0.6));
 }
 
 .routeMarker {
-  fill: var(--color-ivory);
-  stroke: var(--color-route);
+  fill: var(--ink-inverse);
+  stroke: var(--route);
   stroke-width: 3;
 }
 
@@ -72,12 +72,12 @@
 
 .wheelRing {
   fill: none;
-  stroke: var(--color-ivory);
+  stroke: var(--ink-inverse);
   stroke-width: 2;
 }
 
 .wheelSpoke {
-  stroke: var(--color-ivory);
+  stroke: var(--ink-inverse);
   stroke-width: 1.5;
 }
 
@@ -98,7 +98,7 @@
 
 .lede {
   max-width: 52ch;
-  color: var(--color-muted);
+  color: rgba(244, 241, 234, 0.7);
   font-size: 1.1rem;
 }
 
@@ -127,7 +127,7 @@
 
 .statLabel {
   font-size: 0.8rem;
-  color: var(--color-muted);
+  color: rgba(244, 241, 234, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -140,7 +140,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: rgba(244, 241, 234, 0.7);
   writing-mode: vertical-rl;
 }
 

@@ -1,5 +1,6 @@
 .footer {
-  background: var(--color-forest);
+  background: var(--navy);
+  color: var(--ink-inverse);
   padding: 64px var(--page-gutter) 32px;
   display: flex;
   flex-direction: column;
@@ -31,7 +32,7 @@
   justify-content: space-between;
   gap: 12px;
   font-size: 0.8rem;
-  color: var(--color-muted);
-  border-top: 1px solid var(--color-line);
+  color: rgba(244, 241, 234, 0.65);
+  border-top: 1px solid var(--line-inverse);
   padding-top: 20px;
 }

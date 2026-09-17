@@ -1,4 +1,4 @@
-import { siteContent } from "@/content/site";
+import { site } from "@/content/site";
 import { socialLinks } from "@/content/socials";
 import { SocialLink } from "@/components/ui/SocialLink";
 import styles from "./SiteFooter.module.css";
@@ -9,7 +9,7 @@ export function SiteFooter() {
   return (
     <footer className={styles.footer}>
       <div className={styles.top}>
-        <p className={styles.message}>{siteContent.message}</p>
+        <p className={styles.message}>{site.message}</p>
         <div className={styles.socials}>
           {socialLinks.map((social) => (
             <SocialLink key={social.id} social={social} />
@@ -18,11 +18,11 @@ export function SiteFooter() {
       </div>
       <div className={styles.meta}>
         <span>
-          &copy; {year} {siteContent.name}
+          &copy; {year} {site.name}
         </span>
-        <a href={`mailto:${siteContent.collaborationEmail}`}>
-          Collaborations &amp; partnerships
-        </a>
+        {site.collaborationEmail ? (
+          <a href={`mailto:${site.collaborationEmail}`}>Collaborations &amp; partnerships</a>
+        ) : null}
       </div>
     </footer>
   );

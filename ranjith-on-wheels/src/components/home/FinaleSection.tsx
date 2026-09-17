@@ -4,8 +4,8 @@ import { useRef } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap, registerGsap, ScrollTrigger } from "@/lib/gsap";
-import { motion as motionConfig } from "@/lib/motion";
-import { siteContent } from "@/content/site";
+import { ease, dur, stagger } from "@/lib/motion";
+import { site } from "@/content/site";
 import { socialLinks } from "@/content/socials";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { LineReveal } from "@/components/motion/LineReveal";
@@ -46,7 +46,7 @@ export function FinaleSection() {
       }
 
       const tl = gsap.timeline({
-        defaults: { ease: motionConfig.ease.reveal },
+        defaults: { ease: ease.reveal },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 70%",
@@ -54,23 +54,18 @@ export function FinaleSection() {
         },
       });
 
-      tl.fromTo(
-        lines ?? [],
-        { yPercent: 100, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: motionConfig.duration.reveal },
-        0,
-      )
-        .fromTo(emphasisRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.18)
+      tl.fromTo(lines ?? [], { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: dur.reveal }, 0)
+        .fromTo(emphasisRef.current, { opacity: 0 }, { opacity: 1, duration: dur.ui }, 0.18)
         .fromTo(
           socialItems ?? [],
           { y: 16, opacity: 0 },
-          { y: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: 0.1 },
+          { y: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           0.5,
         )
         .fromTo(
           wheelRef.current,
           { x: 0, rotate: 0 },
-          { x: WHEEL_REST_X, rotate: 360, duration: 1.6, ease: motionConfig.ease.travel },
+          { x: WHEEL_REST_X, rotate: 360, duration: 1.6, ease: ease.travel },
           0.4,
         );
 
@@ -113,7 +108,7 @@ export function FinaleSection() {
       <div className={styles.gradient} aria-hidden="true" />
       <div className={styles.content}>
         <Eyebrow>
-          {siteContent.currentCountry.toUpperCase()} — Country {siteContent.countryCount} — Not
+          {site.latestCountry.toUpperCase()} — Country {site.countryCount} — Not
           the finish
         </Eyebrow>
         <h2 className={styles.headline} ref={headlineRef}>

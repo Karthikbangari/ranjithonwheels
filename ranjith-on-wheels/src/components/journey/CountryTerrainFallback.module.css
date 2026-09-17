@@ -1,0 +1,30 @@
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--sky);
+}
+
+.sea {
+  fill: var(--sky);
+}
+
+.land {
+  fill: var(--land);
+  stroke: rgba(16, 33, 47, 0.12);
+  stroke-width: 0.6;
+}
+
+.target {
+  fill: var(--land);
+  stroke: var(--route);
+  stroke-width: 2.5;
+}
+
+.marker {
+  fill: var(--white);
+  stroke: var(--route);
+  stroke-width: 2;
+}

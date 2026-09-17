@@ -1,22 +1,55 @@
 :root {
-  --color-night: #050706;
-  --color-forest: #0c1711;
-  --color-ivory: #f4f0e5;
-  --color-muted: #b9bcb4;
-  --color-line: rgba(244, 240, 229, 0.24);
-  --color-route: #ff7a36;
-  --color-green: #1b6b4b;
-  --color-green-light: #5ec18f;
-  --header-height: 72px;
-  --page-gutter: clamp(20px, 5vw, 80px);
+  /* surfaces */
+  --paper: #f7f5f0;
+  --white: #ffffff;
+  --navy: #0b1a26; /* finale + footer ONLY */
 
-  --font-display: var(--font-cormorant), "Cormorant Garamond", serif;
-  --font-body: var(--font-inter), Inter, sans-serif;
+  /* type */
+  --ink: #10212f;
+  --ink-soft: #41515d;
+  --ink-inverse: #f4f1ea;
+
+  /* map */
+  --sky: #d8eef7;
+  --sea: #5eb6d6;
+  --land: #c9dbc7;
+
+  /* accents */
+  --route: #f15b3a; /* the route line, and nothing else structural */
+  --route-glow: #ffbe63; /* route edge, active marker halo */
+  --support: #0f8c78; /* follow + support actions only */
+
+  /* structure */
+  --line: rgba(16, 33, 47, 0.14);
+  --line-inverse: rgba(244, 241, 234, 0.22);
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-stroke: rgba(255, 255, 255, 0.55);
+  --shadow-soft: 0 12px 40px rgba(16, 33, 47, 0.1);
+
+  --header-height: 72px;
+  --page-gutter: clamp(20px, 5vw, 88px);
+  --gutter: var(--page-gutter);
+  --radius-media: 20px;
+  --radius-control: 16px;
+
+  --font-display: var(--font-fraunces), "Fraunces", serif;
+  --font-body: var(--font-manrope), "Manrope", sans-serif;
+  --font-data: var(--font-geist-mono), "Geist Mono", monospace;
+
+  /* type scale, §3.2 */
+  --text-display-xl: clamp(46px, 8.5vw, 132px);
+  --text-display-l: clamp(34px, 5vw, 76px);
+  --text-h2: clamp(26px, 3.4vw, 46px);
+  --text-h3: 21px;
+  --text-lede: clamp(17px, 1.9vw, 22px);
+  --text-body: 17px;
+  --text-caption: 14px;
+  --text-data: 11.5px;
 }
 
 html {
   height: 100%;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /*
@@ -35,8 +68,8 @@ body {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  color: var(--color-ivory);
-  background: var(--color-night);
+  color: var(--ink);
+  background: var(--paper);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -58,8 +91,14 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-optical-sizing: auto;
+  font-weight: 420;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+}
+
+em {
+  font-style: italic;
 }
 
 .sr-only {
@@ -79,8 +118,8 @@ h4 {
   top: -48px;
   left: var(--page-gutter);
   z-index: 100;
-  background: var(--color-ivory);
-  color: var(--color-night);
+  background: var(--ink);
+  color: var(--ink-inverse);
   padding: 12px 20px;
   border: none;
   border-radius: 4px;
@@ -95,7 +134,7 @@ h4 {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-route);
+  outline: 2px solid var(--route);
   outline-offset: 3px;
 }
 

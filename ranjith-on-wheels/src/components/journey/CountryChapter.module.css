@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  color: var(--color-ivory);
+  color: var(--ink-inverse);
   overflow: hidden;
 }
 
@@ -18,7 +18,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(5, 7, 6, 0.35) 0%, rgba(5, 7, 6, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(11, 26, 38, 0.35) 0%, rgba(11, 26, 38, 0.92) 100%);
 }
 
 .heroContent {
@@ -34,7 +34,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: rgba(244, 241, 234, 0.7);
 }
 
 .headline {
@@ -43,7 +43,7 @@
 
 .body {
   padding: 64px var(--page-gutter);
-  background: var(--color-night);
+  background: var(--white);
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -62,11 +62,11 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-route);
+  color: var(--route);
 }
 
 .blockText {
-  color: var(--color-muted);
+  color: var(--ink-soft);
   font-size: 1.05rem;
 }
 
@@ -75,7 +75,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 0 var(--page-gutter) 96px;
-  background: var(--color-night);
+  background: var(--white);
 }
 
 .navLink {
@@ -94,7 +94,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .navName {
@@ -105,5 +105,5 @@
 
 .navLink:hover .navName,
 .navLink:focus-visible .navName {
-  color: var(--color-route);
+  color: var(--route);
 }

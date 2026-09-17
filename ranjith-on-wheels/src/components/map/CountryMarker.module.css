@@ -16,8 +16,8 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--color-muted);
-  border: 1.5px solid var(--color-night);
+  background: var(--ink-soft);
+  border: 1.5px solid var(--white);
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -27,18 +27,18 @@
 }
 
 .completed .dot {
-  background: var(--color-route);
+  background: var(--route);
 }
 
 .selected .dot {
-  background: var(--color-ivory);
+  background: var(--ink);
   transform: scale(1.4);
 }
 
 .diamond .dot {
   border-radius: 2px;
   transform: rotate(45deg);
-  background: var(--color-route);
+  background: var(--route);
 }
 
 .diamond:hover .dot,
@@ -50,7 +50,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1.5px solid var(--color-green-light);
+  border: 1.5px solid var(--support);
   animation: ring-expand 2.4s ease-out infinite;
 }
 
@@ -72,8 +72,8 @@
   transform: translate(-50%, 4px);
   font-size: 0.7rem;
   white-space: nowrap;
-  color: var(--color-ivory);
-  background: rgba(5, 7, 6, 0.72);
+  color: var(--ink-inverse);
+  background: rgba(11, 26, 38, 0.85);
   padding: 2px 6px;
   border-radius: 3px;
   pointer-events: none;

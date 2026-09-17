@@ -5,17 +5,9 @@ export type SocialLink = {
   url: string;
 };
 
-export const socialLinks: SocialLink[] = [
-  {
-    id: "youtube",
-    label: "YouTube",
-    description: "Journey films",
-    url: "TODO_OWNER_APPROVAL",
-  },
-  {
-    id: "instagram",
-    label: "Instagram",
-    description: "Daily road stories",
-    url: "TODO_OWNER_APPROVAL",
-  },
-];
+// OWNER: no confirmed YouTube/Instagram URLs yet. CLAUDE.md's never-invent
+// rule (§1) means these render nowhere — every consumer (SiteFooter,
+// MobileMenu, FinaleSection, /contact) maps over this array, so leaving it
+// empty is enough to keep a fake/broken link off every page — until the
+// owner supplies the real handles.
+export const socialLinks: SocialLink[] = [];

@@ -1,6 +1,6 @@
 .hero {
   padding: 140px var(--page-gutter) 48px;
-  background: var(--color-night);
+  background: var(--paper);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -13,12 +13,12 @@
 
 .lede {
   max-width: 56ch;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .controls {
   padding: 0 var(--page-gutter) 32px;
-  background: var(--color-night);
+  background: var(--paper);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -29,14 +29,14 @@
   flex: 1 1 260px;
   padding: 12px 18px;
   border-radius: 999px;
-  border: 1px solid var(--color-line);
-  background: rgba(244, 240, 229, 0.05);
-  color: var(--color-ivory);
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink);
   font-size: 0.95rem;
 }
 
 .searchInput::placeholder {
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .chapterFilter {
@@ -49,22 +49,22 @@
   padding: 8px 16px;
   min-height: 40px;
   border-radius: 999px;
-  border: 1px solid var(--color-line);
-  background: none;
-  color: var(--color-muted);
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink-soft);
   font-size: 0.82rem;
   cursor: pointer;
 }
 
 .chapterButtonActive {
-  background: var(--color-ivory);
-  color: var(--color-night);
-  border-color: var(--color-ivory);
+  background: var(--ink);
+  color: var(--ink-inverse);
+  border-color: var(--ink);
 }
 
 .grid {
   padding: 0 var(--page-gutter) 96px;
-  background: var(--color-night);
+  background: var(--paper);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 20px;
@@ -79,7 +79,7 @@
 .cardMedia {
   position: relative;
   aspect-ratio: 4 / 3;
-  border-radius: 6px;
+  border-radius: var(--radius-media);
   overflow: hidden;
 }
 
@@ -96,7 +96,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .cardName {
@@ -107,11 +107,11 @@
 
 .card:hover .cardName,
 .card:focus-visible .cardName {
-  color: var(--color-route);
+  color: var(--route);
 }
 
 .empty {
   padding: 48px 0;
-  color: var(--color-muted);
+  color: var(--ink-soft);
   grid-column: 1 / -1;
 }

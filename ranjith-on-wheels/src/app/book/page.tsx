@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { siteContent } from "@/content/site";
+import { site } from "@/content/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "The Book",
-  description: siteContent.bookTitle,
+  description: site.book,
 };
 
 export default function BookPage() {
@@ -15,28 +15,28 @@ export default function BookPage() {
       <section className={styles.hero}>
         <div className={styles.coverWrap}>
           <Image
-            src={siteContent.bookCoverImage}
-            alt={siteContent.bookCoverAlt}
+            src={site.bookCoverImage}
+            alt={site.bookCoverAlt}
             fill
             sizes="260px"
             style={{ objectFit: "cover" }}
           />
         </div>
         <div className={styles.copy}>
-          <h1 className={styles.headline}>{siteContent.bookTitle}</h1>
-          <p className={styles.body}>{siteContent.bookDescription}</p>
-          <div className={styles.actions}>
-            <ButtonLink href="#sample">Read a sample</ButtonLink>
-            <ButtonLink href={siteContent.bookUrl} variant="secondary">
-              Buy or enquire
-            </ButtonLink>
-          </div>
+          <h1 className={styles.headline}>{site.book}</h1>
+          {site.bookDescription ? <p className={styles.body}>{site.bookDescription}</p> : null}
+          {site.bookUrl ? (
+            <div className={styles.actions}>
+              <ButtonLink href={site.bookUrl} variant="secondary">
+                Buy or enquire
+              </ButtonLink>
+            </div>
+          ) : null}
         </div>
       </section>
-      <section className={styles.sample} id="sample">
-        <h2 className={styles.sectionLabel}>Sample</h2>
-        <p className={styles.body}>TODO_OWNER_APPROVAL</p>
-      </section>
+      {/* OWNER: no approved sample excerpt yet — CLAUDE.md's never-invent
+          rule (§1) means this section stays out until real sample text is
+          supplied, rather than shipping a placeholder paragraph. */}
     </>
   );
 }

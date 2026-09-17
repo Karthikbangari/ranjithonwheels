@@ -4,5 +4,5 @@
   letter-spacing: 0.18em;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-muted);
+  color: color-mix(in srgb, currentColor 70%, transparent);
 }

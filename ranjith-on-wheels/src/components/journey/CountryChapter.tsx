@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { JourneyCountry } from "@/content/journey";
 import { atlasChapters } from "@/content/atlas";
-import { FallbackImage } from "@/components/ui/FallbackImage";
+import { CountryCoverImage } from "./CountryCoverImage";
+import { CountryCredits } from "./CountryCredits";
 import { ReadingProgress } from "./ReadingProgress";
 import styles from "./CountryChapter.module.css";
 
@@ -29,12 +30,13 @@ export function CountryChapter({
       <ReadingProgress />
       <section className={styles.hero}>
         <div className={styles.heroMedia}>
-          <FallbackImage
+          <CountryCoverImage
+            slug={country.slug}
+            anchor={country.displayAnchor}
             src={country.coverImage}
             alt={country.coverAlt}
             priority
             sizes="100vw"
-            pendingLabel={`${country.name} photograph pending`}
           />
         </div>
         <div className={styles.gradient} aria-hidden="true" />
@@ -52,6 +54,7 @@ export function CountryChapter({
             <p className={styles.blockText}>{block.text}</p>
           </div>
         ))}
+        <CountryCredits source={country.source} />
       </article>
       <nav className={styles.nav} aria-label="Country navigation">
         {previous ? (

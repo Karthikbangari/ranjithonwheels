@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { siteContent } from "@/content/site";
+import { site } from "@/content/site";
 import { FallbackImage } from "@/components/ui/FallbackImage";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `The story behind ${siteContent.personName} and the ${siteContent.message} journey.`,
+  description: `The story behind ${site.traveller} and the ${site.message} journey.`,
 };
 
 export default function AboutPage() {
@@ -25,22 +25,18 @@ export default function AboutPage() {
           </h1>
           <p className={styles.body}>
             Loss changed the direction of his life. A bicycle gave that direction a road. The
-            road became a promise to keep moving — {siteContent.distanceKm.toLocaleString()}
-            {siteContent.distanceSuffix} kilometres across {siteContent.countryCount} countries so
-            far, carried by the message: {siteContent.message}.
+            road became a promise to keep moving — {site.distanceKm.toLocaleString()}
+            + kilometres across {site.countryCount} countries so far, carried by the message:{" "}
+            {site.message}.
           </p>
         </div>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionLabel}>The origin</h2>
-        <p className={styles.body}>TODO_OWNER_APPROVAL</p>
-      </section>
-
-      <section className={`${styles.section} ${styles.sectionAlt}`}>
-        <h2 className={styles.sectionLabel}>Why cycle</h2>
-        <p className={styles.body}>TODO_OWNER_APPROVAL</p>
-      </section>
+      {/* OWNER: "The origin" and "Why cycle" sections are pending sourced
+          detail beyond the hero beat above — CLAUDE.md's never-invent rule
+          (§1) means they stay out until real manuscript text or
+          owner-supplied copy is available, rather than shipping placeholder
+          paragraphs. */}
 
       <section className={styles.section}>
         <h2 className={styles.sectionLabel}>What comes next</h2>

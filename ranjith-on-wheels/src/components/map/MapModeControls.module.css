@@ -3,8 +3,8 @@
   gap: 4px;
   padding: 4px;
   border-radius: 999px;
-  background: rgba(244, 240, 229, 0.06);
-  border: 1px solid var(--color-line);
+  background: var(--white);
+  border: 1px solid var(--line);
 }
 
 .button {
@@ -13,20 +13,20 @@
   border-radius: 999px;
   border: none;
   background: none;
-  color: var(--color-muted);
+  color: var(--ink-soft);
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .button:hover {
-  color: var(--color-ivory);
+  color: var(--ink);
 }
 
 .active {
-  background: var(--color-ivory);
-  color: var(--color-night);
+  background: var(--ink);
+  color: var(--ink-inverse);
 }
 
 .active:hover {
-  color: var(--color-night);
+  color: var(--ink-inverse);
 }

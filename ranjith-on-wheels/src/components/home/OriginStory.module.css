@@ -1,6 +1,6 @@
 .section {
   position: relative;
-  background: var(--color-night);
+  background: var(--paper);
   padding: 120px var(--page-gutter);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -15,7 +15,7 @@
   left: var(--page-gutter);
   font-family: var(--font-display);
   font-size: clamp(6rem, 14vw, 12rem);
-  color: rgba(244, 240, 229, 0.4);
+  color: rgba(16, 33, 47, 0.08);
   line-height: 1;
   pointer-events: none;
 }
@@ -39,7 +39,7 @@
   flex-direction: column;
   gap: 14px;
   max-width: 42ch;
-  color: var(--color-muted);
+  color: var(--ink-soft);
   font-size: 1.05rem;
   list-style: none;
 }
@@ -56,7 +56,7 @@
   aspect-ratio: 4 / 5;
   clip-path: inset(0 0 0 0);
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: var(--radius-media);
 }
 
 .portrait {

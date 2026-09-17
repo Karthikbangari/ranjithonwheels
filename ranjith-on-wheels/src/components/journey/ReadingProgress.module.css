@@ -11,6 +11,6 @@
 .bar {
   height: 100%;
   width: 0%;
-  background: var(--color-route);
+  background: var(--route);
   transform-origin: left;
 }

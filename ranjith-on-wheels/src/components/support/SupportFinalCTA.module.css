@@ -1,6 +1,6 @@
 .section {
   padding: 96px var(--page-gutter);
-  background: var(--color-forest);
+  background: var(--paper);
   display: flex;
   flex-direction: column;
   gap: 20px;

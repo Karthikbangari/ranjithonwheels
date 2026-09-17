@@ -1,6 +1,6 @@
 .hero {
   padding: 140px var(--page-gutter) 64px;
-  background: var(--color-night);
+  background: var(--paper);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -13,21 +13,22 @@
 
 .body {
   max-width: 52ch;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .grid {
   padding: 0 var(--page-gutter) 96px;
-  background: var(--color-night);
+  background: var(--paper);
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .card {
-  border: 1px solid var(--color-line);
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
   padding: 24px;
+  background: var(--white);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -36,7 +37,7 @@
 
 .card:hover,
 .card:focus-visible {
-  border-color: var(--color-route);
+  border-color: var(--route);
   transform: translateY(-2px);
 }
 
@@ -44,7 +45,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .cardValue {

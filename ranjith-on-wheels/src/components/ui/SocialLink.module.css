@@ -8,7 +8,7 @@
 
 .link:hover,
 .link:focus-visible {
-  border-bottom-color: var(--color-route);
+  border-bottom-color: var(--route);
 }
 
 .label {
@@ -18,5 +18,5 @@
 
 .description {
   font-size: 0.85rem;
-  color: var(--color-muted);
+  color: color-mix(in srgb, currentColor 65%, transparent);
 }

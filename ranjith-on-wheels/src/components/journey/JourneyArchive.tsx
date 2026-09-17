@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { journeyCountries, type JourneyChapter } from "@/content/journey";
 import { atlasChapters } from "@/content/atlas";
-import { FallbackImage } from "@/components/ui/FallbackImage";
+import { CountryCoverImage } from "./CountryCoverImage";
 import styles from "./JourneyArchive.module.css";
 
 export function JourneyArchive() {
@@ -61,11 +61,12 @@ export function JourneyArchive() {
           results.map((country) => (
             <Link key={country.slug} href={`/journey/${country.slug}`} className={styles.card}>
               <div className={styles.cardMedia}>
-                <FallbackImage
+                <CountryCoverImage
+                  slug={country.slug}
+                  anchor={country.displayAnchor}
                   src={country.coverImage}
                   alt={country.coverAlt}
                   sizes="(max-width: 767px) 50vw, 25vw"
-                  pendingLabel={`${country.name} photograph pending`}
                 />
               </div>
               <span className={styles.cardOrder}>Country {country.order}</span>

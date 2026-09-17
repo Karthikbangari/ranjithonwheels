@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { upiConfig } from "@/content/support";
 import styles from "./SupportUPI.module.css";
@@ -23,11 +22,15 @@ export function SupportUPI() {
   return (
     <section className={styles.section} id="upi">
       <div className={styles.qrWrap}>
-        <Image
+        {/* Plain <img>, not next/image: the QR must reach the browser at
+            native resolution with no resize/format/quality pass — anything
+            reprocessed here risks becoming unscannable. See CLAUDE.md §9.2. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={upiConfig.qrImage}
           alt={`UPI QR code for ${upiConfig.recipientDisplayName}`}
-          fill
-          sizes="260px"
+          width={930}
+          height={1600}
           className={styles.qrImage}
         />
       </div>

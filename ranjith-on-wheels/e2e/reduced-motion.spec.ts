@@ -27,13 +27,19 @@ test.describe("prefers-reduced-motion", () => {
     }
   });
 
-  test("journey map shows the completed route immediately without scrolling through it", async ({
+  test("journey map shows the complete static route immediately, with no live map or scrolling", async ({
     page,
   }) => {
     await page.goto("/");
-    await page.evaluate(() => document.getElementById("journey-atlas")?.scrollIntoView());
+    const map = page.locator('svg[aria-label*="complete cycling route"]');
+    await map.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
-    await expect(page.getByText("Journey complete").first()).toBeVisible();
+    // CLAUDE.md §4.4 Tier 3 / §5.5: reduced motion gets a static SVG map
+    // with every marker and the whole route already drawn — never the live
+    // WebGL map, which is skipped entirely for this tier.
+    await expect(map).toBeVisible();
+    await expect(page.locator("[data-map-canvas-host] canvas")).toHaveCount(0);
+    await expect(page.locator('button[aria-label="Slovakia"]')).toBeVisible();
   });
 
   test("finale wheel rests before the next-country marker, not mid-animation", async ({ page }) => {

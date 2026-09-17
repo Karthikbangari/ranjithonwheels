@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import { motion } from "@/lib/motion";
+import { ease, dur } from "@/lib/motion";
 import { useReducedMotion } from "./ReducedMotionProvider";
 
 type CountUpProps = {
@@ -37,9 +37,9 @@ export function CountUp({ value, suffix = "", formatter, delay = 0 }: CountUpPro
       const counter = { value: 0 };
       tweenRef.current = gsap.to(counter, {
         value,
-        duration: motion.duration.scene,
+        duration: dur.settle,
         delay,
-        ease: motion.ease.settle,
+        ease: ease.ui,
         onUpdate: () => {
           el.textContent = `${format(counter.value)}${suffix}`;
         },

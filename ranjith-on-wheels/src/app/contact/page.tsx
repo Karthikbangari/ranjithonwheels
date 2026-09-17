@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { siteContent } from "@/content/site";
+import { site } from "@/content/site";
 import { socialLinks } from "@/content/socials";
 import styles from "./page.module.css";
 
@@ -19,10 +19,12 @@ export default function ContactPage() {
         </p>
       </section>
       <div className={styles.grid}>
-        <a className={styles.card} href={`mailto:${siteContent.collaborationEmail}`}>
-          <h2 className={styles.cardLabel}>Email</h2>
-          <span className={styles.cardValue}>{siteContent.collaborationEmail}</span>
-        </a>
+        {site.collaborationEmail ? (
+          <a className={styles.card} href={`mailto:${site.collaborationEmail}`}>
+            <h2 className={styles.cardLabel}>Email</h2>
+            <span className={styles.cardValue}>{site.collaborationEmail}</span>
+          </a>
+        ) : null}
         {socialLinks.map((social) => (
           <a key={social.id} className={styles.card} href={social.url} rel="me noreferrer">
             <h2 className={styles.cardLabel}>{social.description}</h2>

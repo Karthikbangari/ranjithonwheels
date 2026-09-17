@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { siteContent } from "@/content/site";
+import { site } from "@/content/site";
 import { primaryNavLinks, followCta } from "@/content/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { MobileMenu } from "./MobileMenu";
@@ -24,7 +24,7 @@ export function SiteHeader() {
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
       <Link href="/" className={styles.brand}>
         <span className={styles.wheelMark} aria-hidden="true" />
-        {siteContent.name}
+        {site.name}
       </Link>
       <nav className={styles.nav} aria-label="Primary">
         {primaryNavLinks.map((link) => (

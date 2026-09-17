@@ -1,6 +1,6 @@
 .hero {
   padding: 140px var(--page-gutter) 64px;
-  background: var(--color-night);
+  background: var(--paper);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 48px;
@@ -10,7 +10,7 @@
 .portraitWrap {
   position: relative;
   aspect-ratio: 4 / 5;
-  border-radius: 6px;
+  border-radius: var(--radius-media);
   overflow: hidden;
 }
 
@@ -26,13 +26,13 @@
 }
 
 .body {
-  color: var(--color-muted);
+  color: var(--ink-soft);
   max-width: 52ch;
 }
 
 .section {
   padding: 64px var(--page-gutter);
-  background: var(--color-forest);
+  background: var(--white);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -40,7 +40,7 @@
 }
 
 .sectionAlt {
-  background: var(--color-night);
+  background: var(--paper);
 }
 
 .sectionLabel {
@@ -49,7 +49,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-route);
+  color: var(--route);
 }
 
 @media (max-width: 1023px) {

@@ -1,1113 +1,557 @@
-# Ranjith on Wheels - Claude Code Master Plan
+# Ranjith on Wheels — Master Build Specification (V5)
 
-> Use this document as the project specification. Copy it to the repository root as `CLAUDE.md` before starting implementation. Complete the work phase by phase and keep the site runnable after every phase.
+**Supersedes:** `ranjith-on-wheels-CLAUDE.md` (V1) and `Ranjith_on_Wheels_Premium_Site_Revision_V4.md`.
+Where those documents disagree with this one, this one wins. Place at repository root as `CLAUDE.md`.
 
-## 1. Project goal
+**Companion file (keep alongside, do not merge):** `Ranjith_on_Wheels_Country_Content_and_Image_Register.md` — the authority for all 23 country introductions, image choices and sources.
 
-Build a premium, cinematic, story-led portfolio for **Ranjith on Wheels**, an Indian bicycle traveller and creator.
+---
 
-This must not feel like a conventional portfolio, blog template, dashboard, or collection of static cards. It should feel like one continuous travel film controlled by scrolling. The visual language can take high-level inspiration from premium adventure websites: full-bleed photography, oversized editorial typography, restrained navigation, cinematic map movement and dark storytelling sections. Do not copy any reference site's layout, branding, code, copy or distinctive composition.
+## 0. Decision log — what changed from V1/V4 and why
 
-The central experience is:
+Read this first. If the owner disagrees with any decision, change it here before building.
 
-> One bicycle wheel becomes a route. The route becomes a world map. The world map becomes a collection of human stories. The route then continues beyond the final country into the social follow call-to-action.
+| # | Decision | Reasoning |
+|---|---|---|
+| 1 | **Dark forest palette is removed entirely.** Daylight only. | V4 called this. V1's `--color-night` system is fully retired — no leftover dark sections except the finale and footer. |
+| 2 | **One deep-navy anchor is reinstated for the finale and footer only.** | A site that is bright everywhere has no value structure, so nothing lands. The Follow ending is the primary conversion — it needs to be the darkest screen on the site to carry weight. This is the single exception to the daylight rule. |
+| 3 | **D3-geo + topojson replaced by MapLibre GL JS.** | V4 requires a living terrain/vector map with camera flight. D3 draws a flat projected SVG and cannot do this. MapLibre is open-source, supports globe projection, 3D terrain and `flyTo`, and needs no Mapbox billing account. |
+| 4 | **23 countries are grouped into 5 legs.** | 23 scroll-triggered camera flights is unwatchable and unscrollable. Five legs give the map five flights, give the story five chapters, and keep all 23 countries individually reachable. This is the single biggest structural improvement. |
+| 5 | **The unfinished route becomes the narrative spine.** | The journey is not over. The last segment leaving Bratislava is drawn dashed and runs off the edge of the map. That makes "Follow" the ending the story earns, rather than a CTA bolted on. |
+| 6 | **Display typeface changed to Fraunces.** | DM Serif Display is heavily used and has no italic or weight range. Fraunces is variable (optical size, weight, soft axis), has a genuine italic for the emphasis lines the story needs, and reads as editorial rather than default. Instrument Serif is the approved alternate if the owner prefers something lighter. |
+| 7 | **The map is one persistent instance, mounted once.** | V4 wants the map present across home, journey and country pages. Remounting a WebGL map per route destroys performance and kills the continuity that is the whole point. |
+| 8 | **Scroll position maps to kilometres ridden.** | A thin coral progress line and a counter that climbs toward 48,000 km. The reader's scroll *is* the ride. Cheap to build, and it ties navigation to story. |
+| 9 | **Journey archive deferred out of V1.** | V1 scope was too large to finish well. Ship: home film, 23 country pages, support, about, book, contact. Archive comes later. |
+| 10 | **QR/VPA mismatch flagged for owner verification.** | The QR resolves to `7020346416@axl` and the typed ID is `7020346416@ybl`. Both may be legitimate handles on the same number, but an unexplained mismatch reads as fraud to a careful donor. See §9.2 — this needs an owner-approved explanatory line before launch. |
 
-Primary visitor action: **Follow Ranjith on YouTube and Instagram.**
+---
 
-Secondary visitor actions:
+## 1. Project truth
 
-- Explore the journey and its 23 countries.
-- Read the most powerful travel stories.
-- Discover the book.
-- Support the next stage of the journey through a transparent donation page.
-- Contact Ranjith for collaborations, speaking and partnerships.
+Single editable source at `src/content/site.ts`. Never hard-code any of this in a component.
 
-## 2. Current content baseline
+```ts
+export const site = {
+  name: "Ranjith on Wheels",
+  traveller: "Ranjith Kumar Dagara",
+  message: "Solution to Pollution",
+  distanceKm: 48000,          // "48,000+"
+  countryCount: 23,
+  latestCountry: "Slovakia",
+  latestCity: "Bratislava",
+  years: 4,                   // "4+"
+  book: "The Indian Cyclist — A Journey for Generations",
+} as const;
+```
 
-All changing figures must live in one editable content file. Do not hard-code them throughout components.
+### Never-invent rules
 
-- Display name: Ranjith on Wheels
-- Traveller: Ranjith Kumar Dagara
-- Message: Solution to Pollution
-- Journey distance: 48,000+ km
-- Countries: 23
-- Latest confirmed country: Slovakia
-- Journey duration: 4+ years
-- Book: The Indian Cyclist - A Journey for Generations
+These are hard constraints, not style preferences.
 
-Country order:
+- No invented dates, kilometre splits, elevation figures, road names, weather events or environmental-impact numbers.
+- No invented names of people who helped, and no identifiable person named without written permission.
+- Country coordinates are **display anchors**, not the cycling track. The route line must be explicitly described as indicative until GPX arrives.
+- No sentence, chapter title, subtitle or quote copied from the book, vlogs, captions or articles. Sources are research only. All website copy is newly written.
+- No social API. Follower counts and latest location are manually edited in `site.ts`.
+- No charity, tax-deductibility, funding-target or progress claims.
+- Where a fact is missing, write `// OWNER: <question>` in source and render the section without it. Never fill the gap with invention.
 
-1. India
-2. Sri Lanka
-3. Vietnam
-4. Cambodia
-5. Thailand
-6. Malaysia
-7. Singapore
-8. Indonesia
-9. China
-10. Japan
-11. South Korea
-12. Taiwan
-13. Mongolia
-14. Australia
-15. France
-16. Switzerland
-17. Germany
-18. Austria
-19. Italy
-20. Slovenia
-21. Croatia
-22. Hungary
-23. Slovakia
+---
 
-Do not invent exact routes, dates, kilometre splits, names of helpers or environmental-impact numbers. Country coordinates may be used as display anchors, but must not be described as the exact cycling track. Replace the display anchors with GPX/KML route data if the owner provides it.
+## 2. Narrative spine
 
-Do not connect to YouTube or Instagram APIs. Social numbers and the latest location are manually maintained.
+One sentence the whole site must serve:
 
-## 3. Brand idea and visual system
+> A promise made at home became a ride; the ride crossed twenty-three borders on the strength of strangers; it has not finished, and where it goes next depends on who is watching.
 
-### Theme name
+### 2.1 The five legs
 
-**The Road Still Moves**
+| Leg | Name | Countries | Map camera |
+|---|---|---|---|
+| I | The first roads | India, Sri Lanka | Starts over India, low zoom, tilted |
+| II | Across Southeast Asia | Vietnam, Cambodia, Thailand, Malaysia, Singapore, Indonesia | Sweeps south-east, ferry crossing to Indonesia |
+| III | The eastern arc | China, Japan, South Korea, Taiwan, Mongolia | Climbs north, widest camera move of the site |
+| IV | The far horizon | Australia | Long single flight south — the emptiest screen, deliberately |
+| V | Europe, border by border | France, Switzerland, Germany, Austria, Italy, Slovenia, Croatia, Hungary, Slovakia | Tight zoom, borders crossing quickly, ends at Bratislava |
 
-Use one visual system across the entire experience:
+Leg IV is one country and gets a full screen anyway. Australia was the original goal and took two visa refusals to reach — giving it the same weight as six countries is the point.
 
-- One glowing route line connects every section.
-- One wheel symbol acts as logo, loading indicator, route marker and next-country device.
-- Photography is immersive and documentary, not decorative.
-- Motion is smooth, deliberate and directional. Everything moves forward.
-- Avoid bouncy, playful, glitch, neon, gaming or unrelated animation styles.
+After Leg V the route does not stop cleanly. It leaves Bratislava as a **dashed line running off the edge of the frame**, unlabelled. That dashed segment is the transition into the Follow finale.
 
-### Colour palette
+### 2.2 Six-beat rhythm (retained from V1)
 
-Define these as CSS custom properties in `app/globals.css`:
+Every featured story and every leg panel follows: **Place → Desire → Tension → Human turn → Meaning → Forward motion.** Cut any section that only restates a statistic.
+
+### 2.3 Copy rules
+
+- Third person by default. First person only on lines the owner has explicitly approved, held in `src/content/approved-voice.ts`.
+- 45–60 characters per line. Two to four sentences per panel. The map and photograph carry the rest.
+- Figures establish scale; specific moments create connection. Prefer the specific.
+- Every country panel ends with a link to the original video or post, labelled with what it is (`VLOG-68 · Bratislava`), not "read more".
+
+---
+
+## 3. Visual system
+
+### 3.1 Tokens
 
 ```css
 :root {
-  --color-night: #050706;
-  --color-forest: #0c1711;
-  --color-ivory: #f4f0e5;
-  --color-muted: #b9bcb4;
-  --color-line: rgba(244, 240, 229, 0.24);
-  --color-route: #ff7a36;
-  --color-green: #1b6b4b;
-  --color-green-light: #5ec18f;
+  /* surfaces */
+  --paper:        #F7F5F0;
+  --white:        #FFFFFF;
+  --navy:         #0B1A26;   /* finale + footer ONLY */
+
+  /* type */
+  --ink:          #10212F;
+  --ink-soft:     #41515D;
+  --ink-inverse:  #F4F1EA;
+
+  /* map */
+  --sky:          #D8EEF7;
+  --sea:          #5EB6D6;
+  --land:         #C9DBC7;
+
+  /* accents */
+  --route:        #F15B3A;   /* the route line, and nothing else structural */
+  --route-glow:   #FFBE63;   /* route edge, active marker halo */
+  --support:      #0F8C78;   /* follow + support actions only */
+
+  /* structure */
+  --line:         rgba(16, 33, 47, 0.14);
+  --glass:        rgba(255, 255, 255, 0.80);
+  --glass-stroke: rgba(255, 255, 255, 0.55);
+  --shadow-soft:  0 12px 40px rgba(16, 33, 47, 0.10);
+
   --header-height: 72px;
-  --page-gutter: clamp(20px, 5vw, 80px);
+  --gutter: clamp(20px, 5vw, 88px);
+  --radius-media: 20px;
+  --radius-control: 16px;
 }
 ```
 
-Use ivory over photography, black/forest backgrounds for editorial sections, orange only for the moving route and key highlights, and green for primary follow/explore actions.
+**Value-structure rule.** Every screen must contain all three of: a near-white surface, a photographic mid-tone, and one ink-dark element (type, a marker, or the navy finale). A screen made only of pastels reads as washed out no matter how good the photography is. Check every section against this.
 
-### Typography
+**Accent discipline.** Coral is the route and active state. Teal is follow and support. Gold is a map highlight at small sizes only. Three accents is the ceiling — do not introduce a fourth for "variety".
 
-- Display: Cormorant Garamond or another elegant editorial serif loaded with `next/font`.
-- Interface/body: Inter loaded with `next/font`.
-- Use very large, tightly spaced display headlines.
-- Combine upright serif with one italic line for emotional emphasis.
-- Uppercase labels use wide tracking.
-- Keep paragraphs short and readable; aim for 45-60 characters per line.
+### 3.2 Typography
 
-### Image direction
+| Role | Face | Setting |
+|---|---|---|
+| Display | **Fraunces** variable (`opsz`, `wght`, `SOFT`) | `opsz 96`, `wght 420`, `-0.02em`, line-height `0.98` |
+| Emphasis line | Fraunces *italic* | One line per section maximum |
+| UI / body | **Manrope** variable | `wght 400/500/600`, line-height `1.65` |
+| Data | **Geist Mono** | 11–12px, `0.14em` tracking — distances, coordinates, vlog numbers, dates only |
 
-- Hero: wide landscape image with a visible road and cyclist.
-- Story images: candid people, difficult roads, weather, camps, bicycle details and local encounters.
-- Prefer photographs with space for typography.
-- Apply subtle dark gradients for readable text; do not heavily recolour every image.
-- Use `next/image`, responsive `sizes`, meaningful `alt`, fixed aspect ratios and blur placeholders.
-- Never stretch or crop faces awkwardly.
+Alternate display if the owner prefers lighter: Instrument Serif. Do not use both.
 
-### Narrative spine
-
-The website must follow one emotional sentence:
-
-> A personal loss created a promise; the promise began a ride; the ride crossed borders; strangers helped carry it; challenges tested it; the journey continues because people choose to follow and support it.
-
-Every section must advance that sentence. Remove any section that only repeats statistics or fills space.
-
-Use this six-beat rhythm for every major story:
-
-1. **Place** - Where are we?
-2. **Desire** - What was Ranjith trying to reach or complete?
-3. **Tension** - What made the moment difficult?
-4. **Human turn** - Who, what or which decision changed the situation?
-5. **Meaning** - What did the road teach him?
-6. **Forward motion** - How did this moment carry the journey into the next chapter?
-
-Present facts visually and emotion through short first-person-approved copy. Statistics establish scale; specific moments create connection. Never write generic inspiration copy when a real detail is available.
-
-### Story transition system
-
-The route line is not decoration. It is the narrative hand-off between scenes:
-
-- Hero to origin: the line leaves the landscape road, narrows and enters the black story section.
-- Origin to map: the line passes behind the final sentence and becomes the first India route segment.
-- Map to featured story: the selected country marker expands into the next photograph while the map recedes.
-- Featured story to kindness gallery: the line separates into small human connection points.
-- Book to support: the line appears between book pages, then exits as the next unfinished route.
-- Support to finale: the supporter action illuminates one more segment before the wheel moves toward country 24.
-
-All transitions must preserve direction from left-to-right or bottom-to-top. Do not use random entrances from different directions.
-
-## 4. Recommended technical architecture
-
-Use:
-
-- Next.js App Router with TypeScript, created with `create-next-app@latest`.
-- CSS Modules for component-specific styling and `app/globals.css` for tokens/resets.
-- GSAP, ScrollTrigger and `@gsap/react` for the complete motion system.
-- D3 Geo, D3 Shape and TopoJSON Client for the interactive world map.
-- Local JSON/TypeScript and MDX content. No database or CMS for version one.
-- Next.js `Image`, font and metadata features.
-- Vitest plus React Testing Library for unit/component tests.
-- Playwright for critical responsive and reduced-motion flows.
-- Deployment target: Vercel, unless the owner selects another host.
-
-Install only the dependencies that are actually used:
-
-```bash
-npx create-next-app@latest ranjith-on-wheels --typescript --eslint --app --src-dir --import-alias "@/*"
-cd ranjith-on-wheels
-npm install gsap @gsap/react d3-geo d3-shape topojson-client world-atlas
-npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom @playwright/test @types/d3-geo @types/d3-shape @types/topojson-client
+```
+display-xl   clamp(46px, 8.5vw, 132px)   /* hero, finale */
+display-l    clamp(34px, 5vw, 76px)      /* act openers */
+h2           clamp(26px, 3.4vw, 46px)
+h3           21px
+lede         clamp(17px, 1.9vw, 22px)
+body         17px
+caption      14px
+data         11.5px
 ```
 
-Do not add Framer Motion, Lenis, Three.js, a UI kit or another animation library unless a later requirement proves it necessary. GSAP and native browser scrolling are sufficient for version one.
+Load both with `next/font` and self-host. Mono is reserved for real measurements — never as decorative small caps.
 
-All GSAP work must run in client components through `useGSAP()` with scoped refs and automatic cleanup. Register plugins once in a client-only animation module.
+### 3.3 Photography
 
-## 5. Site architecture
+- Real, bright, editorial. Natural correction, optional light grain, one soft shadow (`--shadow-soft`).
+- **No site-wide dark overlay.** Where text sits on an image, use a localised gradient scrim behind that text block only, and verify 4.5:1.
+- `next/image` throughout, explicit `sizes`, fixed aspect ratios, blur placeholders, meaningful `alt` describing the scene rather than "photo of Ranjith".
+- Crops: hero 3:2, mobile 4:5, country cards 3:2. Never crop through a face or cut the bicycle in half.
+- **Exception: the support QR is never processed.** See §9.
 
-### Routes
+### 3.4 Layout
 
-```text
-/
-/journey
-/journey/[country]
-/book
-/about
-/support
-/support/success
-/support/cancel
-/donate -> permanent redirect to /support
-/contact
+- Container `1280px`, gutter `--gutter`. Media breaks full bleed; type never does.
+- One visual focus per screen. If a section has two competing focal points, split it.
+- Generous vertical rhythm: `clamp(96px, 12vh, 180px)` between acts.
+- Story panels over the map are glass: `--glass` background, `backdrop-filter: blur(20px)`, `--glass-stroke` 1px border, `--shadow-soft`. Max width `520px`, left-anchored on desktop, bottom sheet on mobile.
+
+---
+
+## 4. The living map
+
+### 4.1 Technology
+
+```
+maplibre-gl  ^5          — globe projection, terrain, flyTo
+pmtiles or a hosted style — basemap
 ```
 
-The homepage is the cinematic story. `/journey` is the full searchable country archive. Each `/journey/[country]` page provides a shareable chapter with photos, video, route context and story text.
+Basemap: a light outdoor/terrain style with minimal labels. Use **MapTiler Outdoor** if the owner provides a key (better relief shading), otherwise **OpenFreeMap Liberty** with a custom light paint override — no key required. Put the choice behind `NEXT_PUBLIC_MAP_STYLE_URL` so it can be swapped without a code change.
 
-### Homepage acts
+Water `--sea`, land `--land`, minimal labels at 60% opacity, no POIs, no road labels below zoom 6. 3D terrain via `setTerrain` with `exaggeration: 1.3` on desktop only.
 
-1. Wheel-to-world hero
-2. The reason the journey began
-3. Animated world journey
-4. Kindness and challenge stories
-5. The road is still moving
+### 4.2 Architecture — one instance, many consumers
 
-The homepage includes a short, emotionally appropriate support invitation after the book. The full explanation and payment action live on `/support`.
-
-### Storytelling presentation rules
-
-- Start scenes with a strong visual moment, then reveal context.
-- Keep one idea per screen on desktop; do not place long biography text beside a complex animation.
-- Alternate scale: full-screen landscape, intimate portrait, world map, human detail, open road.
-- Use chapter labels such as `COUNTRY 13 - MONGOLIA`, but let the headline communicate emotion.
-- Let difficult stories breathe. Do not turn dangerous or painful moments into game-like achievements.
-- End every challenge with the action that kept the journey moving.
-- Use real ambient details from the book: weather, roads, food, shelter, waiting, rejection and unexpected help.
-- Do not expose the whole story at once. Reveal place, tension and resolution in sequence.
-- Keep homepage story summaries under 80 words; full detail belongs on the country page.
-- The final action should feel earned: experience the journey first, then invite the visitor to follow or support it.
-
-## 6. Homepage master sequence
-
-### Global navigation
-
-Desktop:
-
-- Light ivory navigation bar above the hero, inspired by editorial travel products.
-- Left: wheel mark plus RANJITH ON WHEELS.
-- Centre: Story, Journey, Book, Support, About.
-- Right: green **Follow the journey** button.
-- Change to a translucent dark bar after the first scroll section, but do not use a heavy glass effect.
-
-Mobile:
-
-- Logo left, accessible menu button right.
-- Full-screen dark menu with large text links.
-- Social links visible in the menu.
-
-### Act 1 - Wheel-to-world hero
-
-Visual:
-
-- Full-bleed landscape travel photograph.
-- Dark top/bottom gradient for legibility.
-- Oversized centred or left-aligned serif headline.
-- Thin animated route line crossing the photograph.
-- Begin with a close-up wheel rim occupying much of the screen. As it rotates, the camera appears to pull backward until the circle reads as the bicycle wheel inside the landscape.
-- One small wheel marker then follows the route line across the photograph.
-- The route should visually align with the road in the chosen hero photograph wherever possible.
-
-Recommended copy:
-
-```text
-A JOURNEY FOR GENERATIONS
-
-The world,
-one pedal
-at a time.
-
-48,000+ kilometres. 23 countries. One bicycle carrying a promise,
-a purpose and thousands of human stories.
-```
-
-Actions:
-
-- Primary: **Ride the journey**
-- Secondary: **Follow the next kilometre**
-
-Statistics at the bottom:
-
-- 48,000+ kilometres
-- 23 countries
-- 4+ years riding
-
-### Act 2 - The origin
-
-Lead with emotion, not biography.
-
-Recommended headline:
-
-```text
-The journey did not begin with a bicycle.
-It began with a promise.
-```
-
-Use a black editorial section with one portrait, one short paragraph and a quiet link to the full About page. Explain that the journey became connected to his father's memory and a decision to live with purpose. Have the owner approve the final wording before launch.
-
-Do not show the complete explanation immediately. Reveal it in three beats:
-
-1. `Loss changed the direction of his life.`
-2. `A bicycle gave that direction a road.`
-3. `The road became a promise to keep moving.`
-
-These are draft narrative beats, not approved quotations. The owner must approve or replace them.
-
-### Act 3 - The world
-
-Recommended headline:
-
-```text
-The world became the road.
-```
-
-This is the signature experience. On desktop, pin the section while the visitor scrolls through five geographic chapters. On mobile, do not pin for a long distance; use a swipeable/step-based story with the map remaining above the text.
-
-Five map chapters:
-
-1. India - Where the promise became a journey
-2. South and Southeast Asia - Learning to trust the unknown
-3. East Asia - Connection beyond language
-4. Australia - Two rejections, one destination
-5. Europe - The road reaches country twenty-three
-
-The final map state shows all 23 countries and the route ending at Slovakia.
-
-At every geographic chapter, use a location-specific visual and emotional beat:
-
-- India: first wheel turn and the decision to leave.
-- Southeast Asia: humidity, unfamiliar roads, limited money and unexpected help.
-- East Asia: language barriers, hospitality and Mongolia's scale.
-- Australia: rejection before arrival, then the road opening.
-- Europe: rapid border changes and the latest chapter in Slovakia.
-
-The visitor should always understand three things without reading a long paragraph: where the journey is, what changed there and why it matters.
-
-Map modes:
-
-- **Route:** orange line, ordered country markers and chapter progress.
-- **Kindness:** keep the base route visible at low opacity; show expanding green rings at India, Vietnam, Malaysia, South Korea and Australia. Each opens a short human story.
-- **Challenge:** keep the route visible at low opacity; use orange diamond markers at Sri Lanka, Thailand, Indonesia, Mongolia and Australia. Each opens the challenge and how he continued.
-
-Do not change the entire page colour between modes. The mode changes meaning, marker shape, emphasis and copy while preserving the single visual theme.
-
-Each selected country/story reveals one compact editorial panel:
-
-- Country and chapter number
-- Story title
-- 40-80 word summary
-- One image thumbnail
-- Link: **Open full chapter**
-
-Desktop route animation may use display-anchor coordinates until GPX data is available. Generate smooth great-circle segments by sampling `d3.geoInterpolate()` between successive points. Do not connect country centres with visually harsh straight SVG segments.
-
-### Act 4 - The real journey
-
-Use three full-width editorial story sequences rather than a card grid:
-
-1. **The elephant escape** - Sri Lanka
-2. **When only Rs 150 remained** - Thailand
-3. **Two rejections, one destination** - Australia
-
-Follow these with a horizontal or stacked human gallery titled:
-
-```text
-The road was carried by strangers.
-```
-
-Every story follows the same structure:
-
-- What happened
-- Who or what helped
-- What the road taught him
-
-Avoid fake quotations. Only use direct quotes supplied or approved by the owner.
-
-### Book section
-
-Treat the book as a physical travel object, not a product card.
-
-- Large book-cover image with a subtle 3D tilt on fine-pointer devices.
-- Headline: **The complete journey lives between these pages.**
-- Short description.
-- Actions: Read a sample / Buy or enquire.
-- Disable the tilt on touch devices and reduced-motion settings.
-
-### Homepage support invitation
-
-Place a restrained support invitation between the book and Act 5. It should feel like a continuation of the story, not an advertisement.
-
-Recommended copy:
-
-```text
-THE JOURNEY IS SELF-POWERED, BUT NEVER SOLO.
-
-Help the next kilometre happen.
-
-Support can become a meal, a safe night, a bicycle repair,
-a border crossing or the next story shared from the road.
-```
-
-Actions:
-
-- Primary: **Support the journey** -> `/support`
-- Secondary: **See how support is used** -> transparency section on `/support`
-
-Do not show a fake donation total, fake urgency, countdown or fabricated supporter count.
-
-### Dedicated Support the Journey / Donate page
-
-Public route: `/support`. Add a permanent redirect from `/donate` so either term reaches the same canonical page. Use **Support the Journey** in navigation because it feels more human and less transactional.
-
-#### Required owner decisions before payments go live
-
-Do not choose or activate a payment provider until the owner confirms:
-
-- Legal name of the payment recipient.
-- Recipient country and whether the recipient is an individual, business, association or registered charity.
-- Accepted currencies.
-- One-time only or one-time plus recurring support.
-- Payment provider/account already approved for that recipient.
-- Refund/contact policy.
-- Whether a public funding goal is real and can be kept current.
-
-If these are not confirmed, complete the page design with a disabled **Support options coming soon** state. Never insert a developer's personal payment details or create a financial account on the owner's behalf.
-
-#### Page narrative
-
-The page follows a four-part emotional flow:
-
-1. **Why help** - The road continues and the work is independently created.
-2. **What support enables** - Practical, specific categories.
-3. **How it is handled** - Secure payment and transparent disclosure.
-4. **What happens next** - Return to the ongoing journey and follow updates.
-
-#### Support hero
-
-Use a full-bleed road image with Ranjith and the loaded bicycle. Continue the orange route line from the homepage into this page.
-
-Recommended copy:
-
-```text
-SUPPORT THE ROAD AHEAD
-
-Help the next kilometre happen.
-
-Every contribution helps keep the bicycle moving,
-the camera recording and the next story possible.
-```
-
-Primary action: **Choose your support**
-
-Secondary action: **How support is used**
-
-#### Support choices
-
-Use editable options from `src/content/support.ts`. Suggested labels:
-
-- **A meal on the road**
-- **A safe night's rest**
-- **An essential bicycle repair**
-- **Help carry the next chapter**
-- **Choose another amount**
-
-Do not claim a contribution buys an exact item unless the owner supplies and maintains a truthful amount for that claim. Otherwise describe the labels as examples of what support may help cover.
-
-Only show recurring support if the approved payment provider and recipient account support it. The default should be one-time.
-
-#### Where support goes
-
-Present a quiet editorial breakdown, not a sales chart:
-
-- Food and water
-- Safe accommodation when camping is not possible
-- Bicycle parts, repairs and safety equipment
-- Visas, permits and unavoidable transport
-- Camera, connectivity and story production
-
-Add `Last updated: <date>` to the transparency content. If percentages or totals are shown, they must come from owner-provided records and sum correctly. If no verified records are supplied, list categories without numeric claims.
-
-#### Payment architecture
-
-Version one must redirect to a provider-hosted checkout or payment link. The portfolio must not collect, transmit or store card or bank details.
-
-Create a small provider-neutral configuration:
+The map is mounted **once**, in the root layout, inside a `<MapProvider>`. It persists across route changes. Sections do not animate the map; they *request states* from a single controller.
 
 ```ts
-export type SupportOption = {
-  id: string;
-  label: string;
-  description: string;
-  amount?: number;
-  currency?: string;
-  checkoutUrl?: string;
-  enabled: boolean;
-};
-
-export const supportConfig = {
-  recipientDisplayName: "REPLACE_ME",
-  recipientType: "REPLACE_ME",
-  providerName: "REPLACE_ME",
-  oneTimeEnabled: false,
-  recurringEnabled: false,
-  transparencyUpdatedAt: "REPLACE_ME",
-  options: [] satisfies SupportOption[],
-} as const;
+type MapState =
+  | { kind: "idle" }
+  | { kind: "flying";   legId: LegId }
+  | { kind: "settling"; legId: LegId }
+  | { kind: "reading";  legId: LegId; countryId?: CountryId };
 ```
 
 Rules:
+- Story text swaps **only** in `reading`. Never during `flying`. This is what V4 meant by the 1.2s settle.
+- Fast scrolling must not queue flights. Debounce leg requests by 180ms and fly only to the *latest* requested leg, cancelling any in-flight camera move.
+- Route / Kindness / Challenge modes change the marker layer and panel content. They **never** reset the camera.
 
-- Never expose secret keys in client code or the repository.
-- Never build a fake card-number form.
-- Validate allowlisted checkout hosts before rendering links.
-- Open checkout in the same tab unless the provider requires otherwise.
-- Do not include donation amount, financial identifiers or sensitive data in analytics events.
-- A success page may say payment succeeded only when a signed provider response or server-side verified session proves it. Otherwise show neutral return copy.
-- Do not call support `tax deductible`, `charitable` or a `charitable donation` unless the owner provides documented legal status and approved wording.
-- Add clear contact, privacy, payment-processing and refund information.
+### 4.3 Route rendering
 
-#### Support page animation
+- One GeoJSON `LineString` through the 23 country anchors, smoothed with a Catmull-Rom resample so it curves rather than zig-zags.
+- `lineMetrics: true` + `line-gradient` — coral core, `--route-glow` at the leading edge.
+- Progressive draw driven by scroll: `line-gradient` stop position is the completion fraction.
+- **The unfinished segment:** after Bratislava, one dashed segment running to the frame edge, `line-dasharray: [2, 3]`, opacity fading to 0. It is never labelled and never completes.
+- A small bicycle dot moves **only** during `flying`. It is stationary while the visitor reads.
+- Ocean sections (India→Sri Lanka, Malaysia→Indonesia, →Australia) render dashed and are labelled `SEA CROSSING` in mono. Do not draw a solid cycling line across water.
 
-- Hero route draws from the previous page's visual entry point.
-- As support choices enter, the wheel pauses at a junction and the choices appear as road signs.
-- Selecting an option illuminates one short route segment and updates the summary. Do not use flashing, confetti, artificial scarcity or emotional pressure.
-- The checkout button uses a simple forward-arrow movement on hover/focus.
-- On a verified success page, the route extends one segment and the copy reads: **You helped carry the journey forward.**
-- Reduced motion shows the selected state instantly.
+### 4.4 Degradation tiers
 
-#### Support page sections
+| Tier | Trigger | Behaviour |
+|---|---|---|
+| 1 | Desktop, WebGL, `deviceMemory ≥ 4` | Globe, terrain, tilt, full camera flight |
+| 2 | Mobile or low memory | Flat projection, no terrain, `pitch: 0`, tap-driven country changes, no pinned scroll |
+| 3 | No WebGL, `prefers-reduced-motion`, or `Save-Data` | Pre-rendered static map image per leg (generated at build), route as an SVG overlay, complete and readable immediately |
 
-```text
-SupportHero
-SupportWhy
-SupportOptions
-SupportUseBreakdown
-SupportTransparency
-PaymentDisclosure
-SupportFAQ
-SupportFinalCTA
-```
+Tier 3 must look deliberate. Generate the static images at build time with a headless render and commit them — do not ship a grey box.
 
-Suggested FAQ topics:
+---
 
-- Is this a charitable donation?
-- Which currencies are accepted?
-- Can I support monthly?
-- How is support used?
-- Who processes the payment?
-- How do I request payment help or a refund?
+## 5. Motion system
 
-### Act 5 - Still moving
+### 5.1 Authority
 
-The orange route must visibly leave the map section and enter the finale. This makes the whole page feel like one continuous experience.
+**One orchestrator owns scroll.** `src/motion/orchestrator.ts` holds every `ScrollTrigger` and is the only thing that talks to the map controller. Components declare what they need via a hook; they never create their own scroll-linked map animation. Use `useGSAP()` with scoped refs and clean up on unmount without exception.
 
-Use another full-bleed image with a stronger dark gradient.
-
-Recommended copy:
-
-```text
-SLOVAKIA - COUNTRY 23 - NOT THE FINISH
-
-The map ends here.
-The journey doesn't.
-
-Country twenty-three is only the newest chapter.
-Follow the next kilometre as it happens.
-```
-
-Primary social actions:
-
-- YouTube - Journey films
-- Instagram - Daily road stories
-
-Place the wheel on a dotted route near the bottom. It rolls toward a circle labelled `24 - ?`, followed by:
-
-```text
-THE NEXT COUNTRY IS STILL BEING WRITTEN
-```
-
-Final footer includes collaboration email, social links, copyright and the Solution to Pollution message.
-
-## 7. Motion direction and exact choreography
-
-Create one reusable motion vocabulary. Most reveals should use `power3.out`; route/camera movement should use `power2.inOut`. Avoid elastic and bounce easing.
-
-### Motion hierarchy
-
-Motion must communicate one of four meanings:
-
-1. **Forward travel** - route drawing, wheel movement and section hand-offs.
-2. **Discovery** - image masks, map focus and chapter reveals.
-3. **Memory** - slower portrait movement and quiet text reveals.
-4. **Decision** - selected map mode, story or support option becoming clear.
-
-If an animation does not serve one of those meanings, remove it.
-
-Create a shared motion configuration in `src/lib/motion.ts`:
+### 5.2 Tokens
 
 ```ts
-export const motion = {
-  ease: {
-    reveal: "power3.out",
-    travel: "power2.inOut",
-    settle: "power2.out",
-  },
-  duration: {
-    micro: 0.22,
-    reveal: 0.8,
-    scene: 1.2,
-    route: 4.8,
-  },
-  stagger: {
-    text: 0.1,
-    markers: 0.06,
-  },
-} as const;
-```
-
-Use a single `ReducedMotionProvider` so components do not implement conflicting checks.
-
-### Initial page load: 0-6 seconds
-
-| Time | Animation |
-| --- | --- |
-| 0.0-1.4s | Hero image scales from 1.07 to 1.00. Never start from blur. |
-| 0.2-0.8s | Navigation enters from `y: -16`, opacity 0 to 1. |
-| 0.25-1.10s | Close wheel rim rotates 240 degrees while the camera pulls back to reveal the full bicycle/road image. |
-| 0.45-1.8s | Headline lines reveal upward from overflow-hidden masks with a 0.10s stagger. |
-| 1.0-2.0s | Supporting copy and CTAs rise 20px and appear. |
-| 0.8-5.8s | SVG route draws using `strokeDashoffset`; wheel follows the same path. |
-| 1.8-3.3s | Statistics count to their final values once. Preserve `+` signs. |
-| 3.0-4.0s | Scroll cue appears. |
-
-Do not hide the page behind a long loading screen. If a loader is required while the hero image decodes, keep it under 1.5 seconds and use the wheel mark.
-
-### Hero scroll transition
-
-- Scrub hero image vertically by no more than 8% for gentle depth.
-- Reduce the hero copy opacity only after it has moved above 35% of the viewport.
-- Route line should appear to continue into Act 2.
-- Do not pin the hero.
-- Use a shared route connector positioned from measured DOM anchors. Do not rely on one giant absolute SVG with hard-coded page coordinates.
-
-### Act 2 reveal
-
-- Headline reveals by lines.
-- Portrait uses a vertical `clip-path` reveal.
-- Supporting paragraph appears after the image is 30% revealed.
-- Background chapter number may move horizontally by 4-6% with scroll.
-
-### Act 3 pinned map timeline
-
-Desktop `ScrollTrigger`:
-
-```text
-trigger: map section
-start: top top
-end: +=500%
-pin: true
-scrub: 0.8
-anticipatePin: 1
-```
-
-Timeline labels:
-
-```text
-0.00 india
-0.18 southeast-asia
-0.38 east-asia
-0.58 australia
-0.76 europe
-0.94 slovakia
-1.00 complete
-```
-
-At each label:
-
-- Extend the route line to the chapter endpoint.
-- Move the wheel to the endpoint.
-- Apply a restrained camera translate/scale toward the active region.
-- Highlight only completed country markers.
-- Replace the story panel using a horizontal mask transition, not a plain crossfade.
-- Update `aria-live` only at chapter boundaries, never on every scroll frame.
-
-Between geographic chapters, briefly reveal one approved image inside the active story panel. The sequence is map -> place label -> image detail -> meaning. Do not crossfade multiple large photographs over the map at once.
-
-Keep camera scale moderate so the visitor never loses geographic context. The final state zooms back to the full world route.
-
-### Map mode transition
-
-Duration: 600-900ms.
-
-- Route mode: all markers scale from 0.7 to 1 with order-based stagger.
-- Kindness mode: route opacity goes to 0.28; rings expand once and settle.
-- Challenge mode: route opacity goes to 0.28; diamond markers rise 8px and settle.
-- Selected story panel masks out left and masks in from right.
-- Cancel and clean previous timelines before starting a new mode transition.
-
-### Story sequences
-
-- Image enters with `clip-path` and a 1.03 to 1.00 scale.
-- Headline lines reveal 100ms apart.
-- Small country/date labels precede the headline by 150ms.
-- Reveal narrative beats in order: place, tension, human turn, meaning.
-- Use a thin reading-progress line for long country pages; do not add floating progress widgets to the homepage.
-- On scroll past, do not reverse every animation; preserve the read state.
-
-### Cross-section cinematic transitions
-
-- **Hero -> origin:** the final hero route point remains visible while the background darkens; the point becomes the dot above the origin label.
-- **Origin -> world:** the dot expands into the India map marker and the world outline resolves around it.
-- **World -> challenge story:** the active marker enlarges while its story photograph reveals inside the circle, then expands to the story frame.
-- **Story -> book:** the vertical image edge becomes the book spine.
-- **Book -> support:** a page-turn shadow reveals the support headline; keep this subtle and under 700ms.
-- **Support -> still moving:** the selected support route segment joins the unfinished route leading toward `24 - ?`.
-
-Implement these as independent, testable section transitions. Do not create one fragile timeline spanning the entire document.
-
-### Micro-interactions
-
-- Links: underline or arrow travels 4-6px on hover/focus.
-- Country markers: grow by no more than 15% and reveal the country name.
-- Story thumbnails: scale from 1.00 to a maximum of 1.025.
-- Buttons: translate upward a maximum of 2px; never bounce.
-- Mobile menu: reveal links with a 60ms stagger and restore focus on close.
-- Never animate the pointer cursor, replace the native cursor or create motion that follows every mouse movement.
-
-### Act 5 finale
-
-- Dark image rises behind the section with slow scroll-linked parallax.
-- `The map ends here` appears first.
-- Italic `The journey doesn't` follows 180ms later.
-- Social actions rise together after the headline.
-- The wheel rolls once across the dotted line toward `24 - ?`.
-- The wheel stops before the question mark; never loop it.
-
-### Animation reliability
-
-- Wait for the hero image and fonts needed by the first scene before measuring its timeline.
-- Call `ScrollTrigger.refresh()` after responsive images settle and after breakpoint changes.
-- Use `gsap.matchMedia()` for desktop/tablet/mobile timelines; do not use deprecated `ScrollTrigger.matchMedia()`.
-- Store requestAnimationFrame IDs and cancel them on unmount.
-- Do not create more than one ScrollTrigger for the same narrative progress when one master section timeline is enough.
-- On browser back/forward navigation, restore a readable section state before refreshing triggers.
-- All content must remain visible when JavaScript fails.
-
-### Reduced motion
-
-When `prefers-reduced-motion: reduce` is active:
-
-- Disable smooth scrubbing, parallax, long pins, counters, wheel travel and image scaling.
-- Show the final readable state immediately.
-- Keep simple opacity transitions under 150ms or remove them entirely.
-- Make every route chapter available through buttons/links without animation.
-
-## 8. Content model
-
-Create `src/content/site.ts`:
-
-```ts
-export const siteContent = {
-  name: "Ranjith on Wheels",
-  personName: "Ranjith Kumar Dagara",
-  message: "Solution to Pollution",
-  distanceKm: 48000,
-  distanceSuffix: "+",
-  countryCount: 23,
-  yearsOnRoad: 4,
-  yearsSuffix: "+",
-  currentCountry: "Slovakia",
-  youtubeUrl: "REPLACE_ME",
-  instagramUrl: "REPLACE_ME",
-  collaborationEmail: "REPLACE_ME",
-  bookUrl: "REPLACE_ME",
-  supportUrl: "/support",
-} as const;
-```
-
-Create `src/content/journey.ts` with this type:
-
-```ts
-export type JourneyCountry = {
-  order: number;
-  slug: string;
-  name: string;
-  iso3: string;
-  displayAnchor: [longitude: number, latitude: number];
-  chapter: "india" | "southeast-asia" | "east-asia" | "australia" | "europe";
-  featured: boolean;
-  coverImage: string;
-  coverAlt: string;
-  summary: string;
-  lesson?: string;
-  kindnessStory?: string;
-  challengeStory?: string;
-  videoUrl?: string;
-  gallery: Array<{ src: string; alt: string }>;
+export const ease = {
+  travel: "power2.inOut",             // camera, route draw
+  reveal: "expo.out",                 // content entrances
+  ui:     "power2.out",               // hover, controls
+};
+export const dur = {
+  micro: 0.18, ui: 0.32, reveal: 0.8, travel: 2.2, settle: 1.2,
 };
 ```
 
-Add all 23 countries in order. Mark uncertain copy as `TODO_OWNER_APPROVAL` rather than fabricating it.
+Rules:
+- `transform` and `opacity` only. Anything else requires a justifying comment.
+- All entrances are directional: left-to-right or bottom-to-top, matching the route. No entrances from the right, and no scale-in-from-centre.
+- One reveal per viewport. Stagger capped at 5 items, 60ms apart.
+- Trigger-once motion never replays. Scroll-linked motion is always reversible.
+- Banned: looping glow, typewriter, spinning wheel loaders, bounce/elastic easing, parallax on text.
 
-Create `src/content/navigation.ts`, `src/content/socials.ts` and MDX chapter files only if they reduce duplication. Do not spread one fact across multiple files.
+### 5.3 Signature transition — the wheel becomes the world
 
-Create `src/content/support.ts` using the provider-neutral model in the dedicated Support the Journey section. Payment actions remain disabled until every required owner decision is complete.
+The opening move, and the thing the site is remembered for.
 
-Manual update workflow:
+1. Hero holds a real photograph with the bicycle's front wheel prominent.
+2. An SVG circle traces the rim in coral over 1.1s (`ease.reveal`).
+3. On first scroll, that circle scales up and the photograph crossfades away while the MapLibre globe fades in **centred on India with the globe's limb aligned to where the circle was**. The circle is the globe.
+4. The route's first coral segment leaves the wheel's contact point.
 
-1. Change totals/current country in `site.ts`.
-2. Add the new country object to `journey.ts`.
-3. Add its images under `public/media/journey/<country-slug>/`.
-4. Add or update the country chapter.
-5. Run validation tests that compare `countryCount` with the journey array length.
+Build this as a dedicated component with its own reduced-motion branch (photo → map, straight crossfade, no trace).
 
-## 9. Component and folder plan
+### 5.4 Choreography per act
 
-```text
-src/
-  app/
-    layout.tsx
-    page.tsx
-    globals.css
-    journey/
-      page.tsx
-      [country]/page.tsx
-    book/page.tsx
-    about/page.tsx
-    support/
-      page.tsx
-      success/page.tsx
-      cancel/page.tsx
-    contact/page.tsx
-  components/
-    layout/
-      SiteHeader.tsx
-      MobileMenu.tsx
-      SiteFooter.tsx
-    home/
-      HeroJourney.tsx
-      OriginStory.tsx
-      JourneyAtlas.tsx
-      JourneyChapterPanel.tsx
-      StoryFeature.tsx
-      HumanGallery.tsx
-      BookFeature.tsx
-      SupportInvitation.tsx
-      StillMovingFinale.tsx
-    map/
-      WorldJourneyMap.tsx
-      RoutePath.tsx
-      CountryMarker.tsx
-      MapModeControls.tsx
-    motion/
-      LineReveal.tsx
-      ImageReveal.tsx
-      CountUp.tsx
-      RouteConnector.tsx
-      ReducedMotionProvider.tsx
-    support/
-      SupportHero.tsx
-      SupportOptions.tsx
-      SupportUseBreakdown.tsx
-      SupportTransparency.tsx
-      PaymentDisclosure.tsx
-      SupportFAQ.tsx
-    ui/
-      ButtonLink.tsx
-      Eyebrow.tsx
-      SocialLink.tsx
-  content/
-    site.ts
-    journey.ts
-    support.ts
-  lib/
-    gsap.ts
-    map.ts
-    metadata.ts
-    validation.ts
-  styles/
-    tokens.css
-    typography.css
-public/
-  media/
-    hero/
-    story/
-    journey/
-    book/
-    support/
-  data/
-    countries-110m.json
+| Act | Motion |
+|---|---|
+| 1 Hero | Wheel trace → globe morph. Distance counter climbs 0 → 48,000 once, on entry only. |
+| 2 Origin | Map recedes to 30% opacity behind a paper panel. Type reveals line by line via mask wipe, not fade. |
+| 3 Journey | Five pinned legs on desktop. Each: fly (2.2s) → settle (1.2s) → panel swaps → hold. Mobile: tap-driven, no pin. |
+| 4 Stories | Selected country marker expands into the story photograph while the map dims to 20%. |
+| 5 Book | Map hidden. Full paper section. The route reappears between the book spread and exits below. |
+| 6 Support | Route arrives at the support card and stops. Card fades up. **The QR itself never animates.** |
+| 7 Finale | Navy. Route resumes as the dashed unfinished segment and runs off the top edge toward the Follow buttons. |
+
+### 5.5 Reduced motion
+
+`prefers-reduced-motion: reduce` disables: the loader, all ScrollTrigger scrubbing, every camera flight, the counter, the route draw, the wheel morph. The map renders Tier 3 static with all 23 markers and the complete route. Every panel shows its final content. **Nothing is hidden behind an animation that no longer runs** — test by forcing the flag on and reading the whole page.
+
+---
+
+## 6. Page architecture
+
+### Home — seven acts
+
+```
+1  HERO            paper + photo    wheel → globe, distance counter, one CTA
+2  ORIGIN          paper            the promise; map at 30% behind
+3  JOURNEY         map              5 pinned legs, glass panel, 3 modes
+4  STORIES         paper + photo    3 featured moments, six-beat each
+5  BOOK            paper            cover, one honest paragraph, buy link
+6  SUPPORT         white            QR + UPI side by side (§9)
+7  FOLLOW          navy             YouTube + Instagram, unfinished route
 ```
 
-Keep server components by default. Add `"use client"` only to components that need state, browser APIs or GSAP.
+Support is the **second-last** section. Follow is last. Do not reorder.
 
-## 10. Responsive behaviour
+### Routes
 
-### Desktop: 1024px and wider
+| Route | Ship in V1 | Notes |
+|---|---|---|
+| `/` | Yes | The seven acts |
+| `/journey/[country]` | Yes — all 23 | Never empty (§8) |
+| `/support` | Yes | Full destination, §9 |
+| `/about`, `/book`, `/contact` | Yes | Concise |
+| `/donate` | Yes | Permanent redirect to `/support` |
+| `/journey` archive | Defer | V2 |
 
-- Full cinematic hero.
-- Pinned five-stage map.
-- Two-column editorial story layouts.
-- Large photography and generous spacing.
+---
 
-### Tablet: 768-1023px
+## 7. Content model
 
-- Reduce display type and map zoom.
-- Keep map pinning only if it remains stable in real-device tests.
-- Stack copy below or above media when space is limited.
-
-### Mobile: 320-767px
-
-- No long pinned map sequence.
-- Display map, then five native chapter buttons or a swipeable scroll-snap chapter strip.
-- Keep controls at least 44px high.
-- Stack social actions.
-- Use shorter headline line breaks chosen specifically for mobile.
-- Keep route/story content accessible without hover.
-- Test Safari iOS address-bar changes; avoid relying only on `100vh`. Prefer `100svh`/`100dvh` with fallback.
-- Support choices become one vertical list with a persistent but non-obstructive summary above the checkout action.
-
-## 11. Accessibility requirements
-
-- Semantic landmarks and one logical `h1`.
-- Visible keyboard focus.
-- Skip-to-content link.
-- Navigation and menu fully keyboard accessible.
-- Every informative image has meaningful alt text; decorative route imagery uses empty alt or `aria-hidden`.
-- Map has a text equivalent listing countries in journey order.
-- Country markers are real buttons or paired with a keyboard-operable country list.
-- Dynamic map chapter changes use one polite live region.
-- Colour is never the only signal; modes also use labels and marker shapes.
-- No autoplay sound. Optional ambient sound must default off and have a persistent visible control.
-- Donation/support choices, disclosures and payment-provider name must be readable before the checkout action receives focus.
-- Never rely on route illumination alone to communicate a selected support option.
-- Meet WCAG AA contrast.
-
-## 12. Performance requirements
-
-- Target Lighthouse: Performance 90+, Accessibility 95+, Best Practices 95+, SEO 95+ on a production build.
-- Keep initial JavaScript lean. Dynamically import the interactive map below the fold.
-- Use `next/image` for responsive sizing, modern formats, lazy loading and layout stability.
-- Hero image may be priority-loaded; all other images remain lazy.
-- Preload only the display font styles actually used.
-- Animate transforms and opacity. Avoid animating layout properties during scroll.
-- Keep simultaneous filter/blur animations to a minimum.
-- Do not render a WebGL globe for version one.
-- Kill ScrollTriggers and animation frames on component unmount.
-- Recalculate map dimensions with `ResizeObserver` and refresh ScrollTrigger after font/image layout settles.
-- Keep checkout on a trusted provider-hosted page; never load a third-party card form merely for visual consistency.
-- Add a strict Content Security Policy and allow only the confirmed payment-provider domains required for navigation or callbacks.
-
-## 13. SEO and sharing
-
-- Site-wide title template and description.
-- Open Graph image using a hero photograph and readable Ranjith on Wheels title.
-- Person/creator and website structured data where accurate.
-- Country pages use canonical URLs and unique metadata.
-- Generate sitemap and robots file.
-- Every featured story and country page must have a clean share URL.
-- Add social-profile links using real URLs supplied by the owner.
-- Give `/support` unique metadata focused on supporting an independent bicycle journey. Do not use charity schema or tax-deductibility claims without verified legal status.
-
-## 14. Asset checklist for the owner
-
-Request these before final visual polish:
-
-- Logo in SVG or high-resolution transparent PNG.
-- 3-5 horizontal hero candidates, ideally 2400px wide or larger.
-- One strong portrait with the loaded bicycle.
-- 1-5 photos for each country.
-- Exact YouTube, Instagram and contact URLs.
-- Book cover and purchase/sample link.
-- Approved father/origin story wording.
-- Names and permissions for identifiable people featured in kindness stories.
-- GPX/KML files, Strava exports or a city-by-city route list if an accurate route is required.
-- Optional ambient road/audio recordings.
-- Payment recipient legal name, country and entity type.
-- Approved payment-provider account/link and supported currencies.
-- Approved one-time/recurring support options.
-- Support/refund contact and legally reviewed payment wording where required.
-- Verified transparency categories, amounts or percentages if numeric claims will be shown.
-
-Until final assets arrive, use clearly named local placeholders. Do not use images copied from the reference websites.
-
-## 15. Implementation phases for Claude Code
-
-### Phase 0 - Repository audit
-
-- Inspect the existing repository, package manager and conventions.
-- Do not overwrite unrelated user work.
-- Report the current structure and any blockers.
-- Confirm the dev, lint and test commands.
-
-### Phase 1 - Foundation
-
-- Create/confirm the Next.js App Router and TypeScript structure.
-- Add fonts, tokens, global styles, header, footer and base metadata.
-- Add content files and tests for the 23-country order.
-- Build responsive layout shells with real copy.
-
-### Phase 2 - Cinematic hero and origin
-
-- Implement the photographic hero, route overlay, wheel marker, line-reveal typography and counters.
-- Implement Act 2 editorial origin section.
-- Add reduced-motion behaviour immediately, not later.
-
-### Phase 3 - Journey map
-
-- Implement the projected world map and smooth sampled route.
-- Add the five desktop chapters and mobile step-based alternative.
-- Add Route, Kindness and Challenge modes.
-- Add keyboard-equivalent country navigation.
-
-### Phase 4 - Stories and book
-
-- Build the three featured challenge stories.
-- Build the people/kindness gallery.
-- Build book feature.
-
-### Phase 5 - Support and finale
-
-- Build the homepage support invitation.
-- Build `/support`, `/support/success` and `/support/cancel`.
-- Add the `/donate` permanent redirect.
-- Keep payment actions disabled until the recipient, provider, URLs and disclosures are approved.
-- Implement the provider-hosted checkout link only after validation.
-- Build Act 5 and physically connect the route from map through support to the finale.
-
-### Phase 6 - Secondary routes
-
-- Journey archive and country pages.
-- About, book and contact routes.
-- Metadata, social sharing and structured data.
-
-### Phase 7 - Quality pass
-
-- Responsive tests at 320, 375, 768, 1024, 1440 and 1920px.
-- Keyboard, screen-reader semantics and reduced-motion tests.
-- Verify no overlapping text, image distortion or empty map.
-- Production build, lint, unit tests and Playwright smoke tests.
-- Lighthouse audit and image/font optimisation.
-
-Do not move to the next phase while the current phase has TypeScript, lint or runtime errors.
-
-## 16. Acceptance criteria
-
-The work is complete only when:
-
-- The design feels cinematic and photographic, not like a template.
-- The same route line visually connects hero, map and finale.
-- The opening animation completes smoothly and never blocks access.
-- The 23 countries appear in the correct order.
-- The desktop map tells the journey in five scroll stages.
-- Mobile users can access all map chapters without a long pinned scroll.
-- Route, Kindness and Challenge modes visibly change the map and story panel.
-- The finale makes YouTube and Instagram the dominant actions.
-- The support invitation feels like part of the story rather than an advertisement.
-- `/support` explains why support matters, where it may be used and who processes payment before checkout.
-- The site never collects or stores card/bank details.
-- Payment buttons remain disabled until approved provider configuration is complete.
-- No charity, tax-deductibility, funding-progress or exact-use claim appears without verification.
-- All changing data is editable in `site.ts`/`journey.ts`.
-- There is no social API or automatic update system.
-- Reduced motion shows the complete content without animation dependence.
-- No text overlaps at required breakpoints.
-- No copied reference-site assets or copy are used.
-- `npm run build`, lint and tests pass.
-
-## 17. Working rules for Claude Code
-
-1. Read this file completely before changing code.
-2. Inspect the repository before choosing tools or replacing files.
-3. Preserve user files and existing work.
-4. Implement one phase at a time in small, reviewable changes.
-5. Use semantic HTML and progressive enhancement.
-6. Keep story content separate from presentation components.
-7. Never invent travel facts. Mark missing facts for owner approval.
-8. Do not add dependencies that duplicate existing capabilities.
-9. Use `useGSAP()` and scoped refs; clean every animation on unmount.
-10. Test reduced motion and mobile during each phase.
-11. After each phase, run format, lint, tests and production build.
-12. Report exactly what changed, what was verified and which owner assets remain missing.
-13. Never commit payment secrets, personal banking details or unapproved checkout URLs.
-14. Never present an unverified return from a payment provider as a confirmed successful payment.
-
-## 18. First command to give Claude Code
-
-Paste the following after placing this document at the repository root as `CLAUDE.md`:
-
-```text
-Read CLAUDE.md completely. Then inspect the current repository without changing anything.
-
-Give me:
-1. A short audit of the existing stack and folder structure.
-2. Conflicts between the repository and CLAUDE.md.
-3. The exact files you will create or modify for Phase 1.
-4. Any missing assets that block Phase 1, separating real blockers from items that can use temporary placeholders.
-5. A concise implementation plan.
-
-After the audit, proceed with Phase 1 unless there is a destructive conflict or a missing decision that would materially change the architecture. Preserve all unrelated files. Run lint, tests and the production build before reporting completion.
+```
+src/content/
+  site.ts                 site-wide facts
+  legs.ts                 5 legs: id, name, countryIds, camera {center,zoom,pitch,bearing}
+  countries.ts            23 entries (below)
+  stories.ts              3 featured, six-beat fields
+  approved-voice.ts       owner-approved first-person lines only
+  support.ts              UPI config + disclosure copy
 ```
 
-After approving Phase 1, use:
-
-```text
-Continue with Phase 2 from CLAUDE.md. Build the cinematic hero and origin section using the real supplied Ranjith photographs. Implement the full animation choreography and reduced-motion state. Do not start the map yet. Test at 320px, 768px and 1440px, then run lint, tests and production build.
+```ts
+type Country = {
+  id: string;            // "slovakia"
+  order: number;         // 1..23
+  name: string;
+  legId: LegId;
+  anchor: [number, number];      // display anchor, NOT the track
+  intro: string;                 // from the Image Register, verbatim
+  image: { src: string; alt: string; credit: string } | null;
+  source: { label: string; url: string; accessed: string };
+  mode: ("route" | "kindness" | "challenge")[];
+};
 ```
 
-For the support phase, use:
+Country `intro` strings come from `Ranjith_on_Wheels_Country_Content_and_Image_Register.md` and are used exactly as written there. Do not paraphrase or extend them.
+
+A test must assert: 23 entries, `order` 1–23 with no gaps, matching the canonical list, every entry has a non-empty `intro` and a `source.url`.
+
+---
+
+## 8. Country pages — no empty states
+
+Every country page and map panel ships complete. A visitor must never see "photograph pending", an empty card, a blank image frame or an internal task label.
+
+**Image resolution order:**
+1. Approved book photograph (countries 1–14).
+2. Selected frame or official thumbnail from Ranjith's own reel/vlog (countries 15–23).
+3. **Fallback treatment:** a large, styled light terrain map of that country rendered at the same aspect ratio as a photograph, with the country outline in coral and its marker placed. Full-bleed, with the completed intro copy over it.
+
+Tier 3 is a designed state, not a placeholder. It should look like an editorial cartography choice. Build it first so no page is ever broken.
+
+Credits live in a collapsible drawer at the foot of the page: book page range, or post/video URL plus date accessed. Never in the headline.
+
+---
+
+## 9. Support
+
+### 9.1 Layout
+
+`/support` and the home support act share one component. Left: a real travel photograph and three sentences of original copy about keeping the ride going. Right: both payment methods, visible simultaneously, no gate, no "learn how support is used" interstitial.
+
+Above the two methods: **"Choose the option that works in your UPI app."**
+
+| Method | Display | Behaviour |
+|---|---|---|
+| Scan and pay | The supplied PhonePe JPEG, **unmodified** | Expand to lightbox, download original |
+| Pay with UPI ID | `7020346416@ybl`, large, selectable | Copy button with confirmation; optional `upi://` deep link on mobile only |
+
+### 9.2 QR integrity — technical requirements
+
+These prevent a QR that scans wrong or not at all:
+
+- Render with a plain `<img>`, **not** `next/image`, **not** a CSS background. No blur placeholder, no optimisation pass, no format conversion, no responsive resizing below native resolution.
+- No CSS `filter`, `opacity < 1`, `border-radius`, `transform`, `mix-blend-mode` or overlay of any kind on the QR element.
+- Minimum rendered width 240px, on pure `--white`, with at least 16px of white quiet zone on all four sides.
+- The QR never animates. The card around it may fade in; the QR may not.
+- Explicit `width`/`height` attributes to prevent layout shift.
+
+### 9.3 Owner verification required before launch
+
+The QR resolves to `7020346416@axl`; the typed identifier is `7020346416@ybl`. Both may be valid handles on the same number, but the difference is visible to anyone who checks, and unexplained it reads as a red flag.
+
+**Blocker:** obtain owner confirmation of both identifiers and an approved one-line explanation, and label each method distinctly (`Scan with any UPI app` / `Or pay to this UPI ID`). Until confirmed, render the section with a `// OWNER: confirm VPA pair` comment and ship only the QR.
+
+### 9.4 Prohibited
+
+No supporter counter, funding goal, progress bar, scanning animation, fake success message, charity or tax-deductibility claim, or statement about exactly how funds are used unless the owner supplies verified wording. The site never collects or stores card or bank details.
+
+---
+
+## 10. Accessibility
+
+- [ ] 4.5:1 body contrast everywhere, including glass panels over map and text over photography
+- [ ] Glass panels tested over both dark terrain and bright sea — if either fails, raise `--glass` opacity rather than darkening the type
+- [ ] Every country reachable by keyboard: the map has a parallel visually-ordered list of 23 links, not a canvas-only interaction
+- [ ] Map canvas `aria-hidden`; the journey's meaning lives in the panels
+- [ ] Route/Kindness/Challenge are real radio inputs with `aria-checked`
+- [ ] Visible focus ring: 2px `--route`, 3px offset
+- [ ] Sequential heading order, one `h1` per route
+- [ ] Reduced motion pass: all content present, nothing hidden
+- [ ] JS disabled: copy, images, country links and the UPI ID all render
+- [ ] `alt` text describes the scene, never "image" or "photo"
+
+---
+
+## 11. Performance budget
+
+| Metric | Target |
+|---|---|
+| LCP (mobile 4G) | < 2.2s — the hero photograph, not the map |
+| CLS | < 0.05 |
+| Initial JS (gzip) | < 210 KB |
+| MapLibre | Dynamically imported, mounts when Act 2 is within one viewport |
+| Country image | ≤ 260 KB AVIF, WebP fallback |
+| Map frame rate | 60fps desktop, ≥ 30fps mobile during flight |
+
+The hero must be fully readable and photographic before any map JavaScript is parsed. The map is an enhancement to the story, never a prerequisite for it.
+
+---
+
+## 12. Implementation phases
+
+Every phase ends runnable, lint-clean, type-clean, with a production build passing. Do not begin a phase with errors outstanding in the previous one.
+
+**Phase 0 — Audit.** Inspect the repo. Report stack, structure, conflicts with this file, and the exact Phase 1 file list. Change nothing.
+
+**Phase 1 — Foundation.** Next.js App Router + TS. Tokens, fonts, layout shells, header, footer, metadata. All content files with real copy from the Image Register. Tests for the 23-country invariant. *Reviewable: static site, correct type and spacing, no motion, no map.*
+
+**Phase 2 — Country system.** All 23 country pages and the Tier 3 terrain-map fallback treatment. Build the fallback before any real imagery so no page is ever empty. *Reviewable: 23 complete pages.*
+
+**Phase 3 — Hero and origin.** Photographic hero, wheel-trace, distance counter, origin act. Reduced motion implemented in the same commit, not later. *Reviewable: Acts 1–2.*
+
+**Phase 4 — Map.** MapLibre provider, persistent instance, state machine, route geometry with sea crossings and the unfinished segment, five legs, three modes, keyboard list, all three degradation tiers. *Reviewable: Act 3 on desktop and mobile.*
+
+**Phase 5 — Wheel-to-globe.** The signature transition joining Acts 1 and 3. Built last of the motion work because it depends on both sides existing. *Reviewable: the opening, end to end.*
+
+**Phase 6 — Stories, book, support, finale.** Three featured stories, book act, support (QR rules in §9 are non-negotiable), navy finale with the unfinished route. *Reviewable: the full home film.*
+
+**Phase 7 — Secondary routes and quality.** About, book, contact, `/donate` redirect, metadata, OG images, sitemap. Then: 320/375/768/1024/1440/1920 responsive pass, keyboard pass, reduced-motion pass, axe, Lighthouse, Playwright smoke tests.
+
+---
+
+## 13. Acceptance criteria
+
+- [ ] Reads as a bright travel film, not a template — no dark theme remnants outside finale and footer
+- [ ] One coral route visually connects hero → map → support → finale
+- [ ] The wheel-to-globe transition works, and degrades to a clean crossfade
+- [ ] 23 countries, correct order, every one with completed copy, a visible image treatment and a linked source
+- [ ] No visitor-facing placeholder, empty panel or task label anywhere
+- [ ] Desktop tells the journey in five legs; mobile reaches every leg without a long pinned scroll
+- [ ] Route/Kindness/Challenge change markers and panel without resetting the camera
+- [ ] Text never swaps while the camera is flying
+- [ ] Sea crossings are dashed and labelled, never drawn as cycling
+- [ ] The route after Bratislava is dashed, unfinished, and leads into Follow
+- [ ] Support sits immediately before Follow; both methods visible at once; QR unmodified and unanimated
+- [ ] No supporter counter, progress bar, charity or tax claim
+- [ ] All changing figures editable in `site.ts`
+- [ ] No social API
+- [ ] Reduced motion shows everything
+- [ ] No copied sentence from book, vlog or article anywhere in the site
+- [ ] `npm run build`, lint, unit tests and Playwright pass
+
+---
+
+## 14. Working rules for Claude Code
+
+1. Read this file completely before changing anything.
+2. Audit before choosing tools. Preserve unrelated files.
+3. One phase at a time, small reviewable commits.
+4. Semantic HTML and progressive enhancement. The story must survive JS failure.
+5. Content stays in `src/content/`, never inside components.
+6. Never invent a travel fact. Mark gaps `// OWNER: <question>` and report them.
+7. `useGSAP()` with scoped refs; clean up every animation and every MapLibre listener.
+8. Reduced motion and mobile are tested inside each phase, not at the end.
+9. After each phase: format, lint, test, production build. Report what changed, what was verified, what owner assets are still missing.
+10. Never commit payment secrets or unapproved checkout URLs. Never present an unverified provider return as a successful payment.
+11. If an instruction here conflicts with your default approach, follow this file and flag the conflict in your report.
+
+---
+
+## Appendix A — Master kickoff prompt
+
+Save this file as `CLAUDE.md` at the repository root alongside `Ranjith_on_Wheels_Country_Content_and_Image_Register.md`, then paste:
 
 ```text
-Continue with Phase 5 from CLAUDE.md. Build the Support the Journey experience and Act 5 finale. First verify whether the support configuration is complete. If recipient identity, provider URL, currencies or disclosures are missing, render a polished disabled preview and list the exact owner decisions required; do not create or activate a payment account. Keep payment provider-hosted and do not collect card data. Implement the complete reduced-motion and mobile states, then run lint, tests and the production build.
+Read CLAUDE.md completely, then read Ranjith_on_Wheels_Country_Content_and_Image_Register.md.
+
+Before writing any code, give me:
+
+1. Confirmation you understand §0 (Decision log), §2 (Narrative spine), §5 (Motion
+   system) and §9 (Support) — five lines each, in your own words.
+2. An audit of the current repository: stack, structure, package manager, existing
+   work that must be preserved.
+3. Every conflict between the repository and this specification.
+4. The exact file list you will create or modify for Phase 1.
+5. Blockers for Phase 1, separated into real blockers and items that can proceed
+   with the designed fallback treatments described in §8.
+
+Then execute Phase 1 only. Stop at the end of Phase 1 and wait for review.
+
+Constraints for Phase 1:
+- Next.js App Router, TypeScript, CSS Modules, self-hosted fonts via next/font
+- Tokens from §3.1 as CSS custom properties in app/globals.css — not Tailwind config
+- No map, no GSAP, no motion of any kind in this phase
+- All 23 country entries populated with the exact intro copy from the Image Register
+- A passing test asserting the 23-country invariant described in §7
+- Run lint, typecheck, unit tests and a production build before reporting
+
+If anything in CLAUDE.md conflicts with how you would normally build this, follow
+CLAUDE.md and list the conflict in your report.
 ```
 
-Then continue through Phases 3-7 using the acceptance criteria in this file.
+## Appendix B — Later phase prompts
 
-## 19. Technical references
+**Phase 4 (the map) — the one most likely to go wrong:**
 
-- [Next.js Image Optimization](https://nextjs.org/docs/app/getting-started/images)
-- [GSAP with React and useGSAP](https://gsap.com/resources/React/)
-- [GSAP ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/)
-- [D3 geographic projections and paths](https://d3js.org/d3-geo)
-- [Claude Code project memory with CLAUDE.md](https://docs.anthropic.com/en/docs/claude-code/memory)
+```text
+Continue with Phase 4 from CLAUDE.md: the living map.
+
+Build in this order and show me each before moving on:
+1. MapProvider with a single persistent MapLibre instance in the root layout,
+   dynamically imported, mounting when Act 2 is within one viewport.
+2. The MapState machine from §4.2. Prove that text swaps only in "reading" and
+   that rapid scrolling cancels in-flight camera moves rather than queueing them.
+3. Route geometry: smoothed line through the 23 anchors, dashed sea crossings with
+   SEA CROSSING labels, and the unfinished dashed segment after Bratislava.
+4. Five legs with the camera parameters from legs.ts, three marker modes that do
+   not reset the camera, and the parallel keyboard-accessible country list.
+5. All three degradation tiers from §4.4, including build-time static map images
+   for Tier 3.
+
+Do not build the wheel-to-globe transition — that is Phase 5.
+Test at 375px and 1440px, with reduced motion forced on, and on a throttled
+mid-range mobile profile. Run lint, typecheck, tests and the production build.
+```
+
+**Phase 6 (support) — the one with legal and trust exposure:**
+
+```text
+Continue with Phase 6 from CLAUDE.md, support section only, before the stories work.
+
+First check src/content/support.ts against §9.3. If the VPA pair is not confirmed
+by the owner with approved explanatory wording, render the QR method only, add the
+// OWNER comment, and list exactly what you need — do not guess an explanation and
+do not hide the discrepancy.
+
+Implement §9.2 QR integrity requirements literally: plain <img>, no next/image, no
+filters, no radius, no transform, no animation, 240px minimum, 16px quiet zone on
+white. Add a test that fails if any CSS transform, filter or border-radius is
+applied to the QR element.
+
+No supporter counter, progress bar, scanning animation or success message.
+```

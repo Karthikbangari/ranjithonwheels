@@ -4,8 +4,8 @@ import { useRef } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap, registerGsap } from "@/lib/gsap";
-import { motion as motionConfig } from "@/lib/motion";
-import { siteContent } from "@/content/site";
+import { ease, dur, stagger } from "@/lib/motion";
+import { site } from "@/content/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { LineReveal } from "@/components/motion/LineReveal";
@@ -93,12 +93,12 @@ export function HeroJourney() {
       gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
       gsap.set(markerRef.current, { autoAlpha: 0 });
 
-      const tl = gsap.timeline({ defaults: { ease: motionConfig.ease.reveal } });
+      const tl = gsap.timeline({ defaults: { ease: ease.reveal } });
 
       tl.fromTo(
         imageWrapRef.current,
         { scale: 1.9, transformOrigin: "58% 85%" },
-        { scale: 1, duration: 1.15, ease: motionConfig.ease.travel },
+        { scale: 1, duration: 1.15, ease: ease.travel },
         0,
       )
         .fromTo(
@@ -108,7 +108,7 @@ export function HeroJourney() {
             scale: 1,
             rotate: 240,
             duration: 0.85,
-            ease: motionConfig.ease.travel,
+            ease: ease.travel,
           },
           0.25,
         )
@@ -116,20 +116,16 @@ export function HeroJourney() {
         .fromTo(
           lines ?? [],
           { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: motionConfig.stagger.text },
+          { yPercent: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           0.45,
         )
         .fromTo(
           revealTargets,
           { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: 0.15 },
+          { y: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           1.0,
         )
-        .to(
-          path,
-          { strokeDashoffset: 0, duration: motionConfig.duration.route, ease: motionConfig.ease.travel },
-          0.8,
-        )
+        .to(path, { strokeDashoffset: 0, duration: dur.travel, ease: ease.travel }, 0.8)
         .to(
           markerRef.current,
           {
@@ -142,12 +138,12 @@ export function HeroJourney() {
           markerRef.current,
           {
             motionPath: { path, alignOrigin: [0.5, 0.5] },
-            duration: motionConfig.duration.route,
-            ease: motionConfig.ease.travel,
+            duration: dur.travel,
+            ease: ease.travel,
           } as gsap.TweenVars,
           0.8,
         )
-        .fromTo(scrollCueRef.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 3.0);
+        .fromTo(scrollCueRef.current, { opacity: 0 }, { opacity: 1, duration: dur.reveal }, 3.0);
 
       return () => {
         window.removeEventListener("resize", syncRouteGeometry);
@@ -207,9 +203,9 @@ export function HeroJourney() {
           <LineReveal lines={["The world,", "one pedal", "at a time."]} />
         </h1>
         <p className={styles.lede} ref={ledeRef}>
-          {siteContent.distanceKm.toLocaleString()}
-          {siteContent.distanceSuffix} kilometres. {siteContent.countryCount} countries. One
-          bicycle carrying a promise, a purpose and thousands of human stories.
+          {site.distanceKm.toLocaleString()}
+          + kilometres. {site.countryCount} countries. One bicycle carrying a promise, a purpose
+          and thousands of human stories.
         </p>
         <div className={styles.actions} ref={actionsRef}>
           <ButtonLink href="/journey">Ride the journey</ButtonLink>
@@ -221,19 +217,19 @@ export function HeroJourney() {
           <div className={styles.stat}>
             <dt className={styles.statLabel}>Kilometres</dt>
             <dd className={styles.statValue}>
-              <CountUp value={siteContent.distanceKm} suffix={siteContent.distanceSuffix} delay={1.8} />
+              <CountUp value={site.distanceKm} suffix="+" delay={1.8} />
             </dd>
           </div>
           <div className={styles.stat}>
             <dt className={styles.statLabel}>Countries</dt>
             <dd className={styles.statValue}>
-              <CountUp value={siteContent.countryCount} delay={1.9} />
+              <CountUp value={site.countryCount} delay={1.9} />
             </dd>
           </div>
           <div className={styles.stat}>
             <dt className={styles.statLabel}>Years riding</dt>
             <dd className={styles.statValue}>
-              <CountUp value={siteContent.yearsOnRoad} suffix={siteContent.yearsSuffix} delay={2.0} />
+              <CountUp value={site.years} suffix="+" delay={2.0} />
             </dd>
           </div>
         </dl>

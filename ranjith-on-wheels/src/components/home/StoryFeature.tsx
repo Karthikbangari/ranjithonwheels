@@ -4,14 +4,12 @@ import { useRef } from "react";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import { gsap, registerGsap, ScrollTrigger } from "@/lib/gsap";
-import { motion as motionConfig } from "@/lib/motion";
+import { ease, dur, stagger } from "@/lib/motion";
 import type { JourneyCountry } from "@/content/journey";
-import { FallbackImage } from "@/components/ui/FallbackImage";
+import { CountryCoverImage } from "@/components/journey/CountryCoverImage";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 import styles from "./StoryFeature.module.css";
-
-const TODO = "TODO_OWNER_APPROVAL";
 
 export function StoryFeature({ country, reverse = false }: { country: JourneyCountry; reverse?: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -21,11 +19,14 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
   const linkRef = useRef<HTMLAnchorElement>(null);
   const reducedMotion = useReducedMotion();
 
+  // Only render beats that actually have sourced content — never a
+  // placeholder. See the OWNER note beside this country's entry in
+  // journey.ts for what's still missing.
   const beats = [
-    { label: "What happened", text: country.challengeStory ?? TODO },
-    { label: "Who or what helped", text: country.whoHelped ?? TODO },
-    { label: "What the road taught him", text: country.lesson ?? TODO },
-  ];
+    { label: "What happened", text: country.challengeStory },
+    { label: "Who or what helped", text: country.whoHelped },
+    { label: "What the road taught him", text: country.lesson },
+  ].filter((beat): beat is { label: string; text: string } => Boolean(beat.text));
 
   useGSAP(
     () => {
@@ -52,7 +53,7 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
       }
 
       const tl = gsap.timeline({
-        defaults: { ease: motionConfig.ease.reveal },
+        defaults: { ease: ease.reveal },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 70%",
@@ -66,24 +67,24 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
         {
           clipPath: "inset(0 0% 0 0%)",
           scale: 1,
-          duration: motionConfig.duration.scene,
-          ease: motionConfig.ease.travel,
+          duration: dur.settle,
+          ease: ease.travel,
         },
         0,
       )
         .fromTo(
           lines ?? [],
           { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: 0.1 },
+          { yPercent: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           0.2,
         )
         .fromTo(
           beatItems ?? [],
           { y: 16, opacity: 0 },
-          { y: 0, opacity: 1, duration: motionConfig.duration.reveal, stagger: 0.15 },
+          { y: 0, opacity: 1, duration: dur.reveal, stagger: stagger.default },
           0.4,
         )
-        .fromTo(linkRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 0.7);
+        .fromTo(linkRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: dur.ui }, 0.7);
 
       return () => {
         tl.scrollTrigger?.kill();
@@ -96,11 +97,12 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
   return (
     <section className={`${styles.section} ${reverse ? styles.reverse : ""}`} ref={sectionRef}>
       <div className={styles.mediaWrap} ref={mediaRef}>
-        <FallbackImage
+        <CountryCoverImage
+          slug={country.slug}
+          anchor={country.displayAnchor}
           src={country.coverImage}
           alt={country.coverAlt}
           sizes="(max-width: 1023px) 100vw, 50vw"
-          pendingLabel={`${country.name} photograph pending`}
         />
       </div>
       <div className={styles.copy}>
@@ -108,7 +110,7 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
           Country {country.order} — {country.name}
         </span>
         <h2 className={styles.headline} ref={headlineRef}>
-          <LineReveal lines={[country.summary]} />
+          <LineReveal lines={[country.summary ?? country.name]} />
         </h2>
         <div className={styles.beats} ref={beatsRef}>
           {beats.map((beat) => (

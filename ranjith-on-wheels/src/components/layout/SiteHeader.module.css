@@ -7,14 +7,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--page-gutter);
-  background: var(--color-ivory);
-  color: var(--color-night);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background: var(--white);
+  color: var(--ink);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .scrolled {
-  background: rgba(5, 7, 6, 0.82);
-  color: var(--color-ivory);
+  border-bottom-color: var(--line);
+  box-shadow: var(--shadow-soft);
 }
 
 .brand {

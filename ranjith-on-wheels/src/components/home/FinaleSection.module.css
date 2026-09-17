@@ -7,7 +7,7 @@
   gap: 28px;
   overflow: hidden;
   padding: 96px var(--page-gutter) 64px;
-  color: var(--color-ivory);
+  color: var(--ink-inverse);
 }
 
 .imageWrap {
@@ -27,9 +27,9 @@
   z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(5, 7, 6, 0.75) 0%,
-    rgba(5, 7, 6, 0.55) 40%,
-    rgba(5, 7, 6, 0.92) 100%
+    rgba(11, 26, 38, 0.75) 0%,
+    rgba(11, 26, 38, 0.55) 40%,
+    rgba(11, 26, 38, 0.92) 100%
   );
 }
 
@@ -49,7 +49,7 @@
 .headline em {
   display: block;
   font-style: italic;
-  color: var(--color-route);
+  color: var(--route);
 }
 
 .socialActions {
@@ -69,7 +69,7 @@
 
 .socialLink:hover,
 .socialLink:focus-visible {
-  border-bottom-color: var(--color-route);
+  border-bottom-color: var(--route);
 }
 
 .socialLabel {
@@ -79,7 +79,7 @@
 
 .socialDescription {
   font-size: 0.85rem;
-  color: var(--color-muted);
+  color: rgba(244, 241, 234, 0.7);
 }
 
 .roadWrap {
@@ -97,7 +97,7 @@
 }
 
 .dottedLine {
-  stroke: var(--color-muted);
+  stroke: rgba(244, 241, 234, 0.7);
   stroke-width: 2;
   stroke-dasharray: 2 8;
   stroke-linecap: round;
@@ -106,12 +106,12 @@
 
 .wheel {
   fill: none;
-  stroke: var(--color-ivory);
+  stroke: var(--ink-inverse);
   stroke-width: 2;
 }
 
 .nextCountry {
-  color: var(--color-muted);
+  color: rgba(244, 241, 234, 0.7);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

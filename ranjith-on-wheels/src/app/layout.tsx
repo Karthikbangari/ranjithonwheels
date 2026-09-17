@@ -1,43 +1,50 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Fraunces, Manrope, Geist_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider";
-import { siteContent, siteUrl } from "@/content/site";
+import { MapProvider } from "@/components/map/MapProvider";
+import { site, siteUrl } from "@/content/site";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  axes: ["opsz", "SOFT"],
   style: ["normal", "italic"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const description = `${siteContent.personName} has cycled ${siteContent.distanceKm.toLocaleString()}${siteContent.distanceSuffix} kilometres across ${siteContent.countryCount} countries. Follow the journey that continues from ${siteContent.currentCountry}.`;
+const description = `${site.traveller} has cycled ${site.distanceKm.toLocaleString()}+ kilometres across ${site.countryCount} countries. Follow the journey that continues from ${site.latestCountry}.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${siteContent.name} - ${siteContent.message}`,
-    template: `%s - ${siteContent.name}`,
+    default: `${site.name} - ${site.message}`,
+    template: `%s - ${site.name}`,
   },
   description,
   openGraph: {
     type: "website",
-    siteName: siteContent.name,
-    title: `${siteContent.name} - ${siteContent.message}`,
+    siteName: site.name,
+    title: `${site.name} - ${site.message}`,
     description,
     images: [{ url: "/media/hero/open-road.jpg" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteContent.name} - ${siteContent.message}`,
+    title: `${site.name} - ${site.message}`,
     description,
     images: ["/media/hero/open-road.jpg"],
   },
@@ -48,14 +55,14 @@ const structuredData = {
   "@graph": [
     {
       "@type": "Person",
-      name: siteContent.personName,
-      alternateName: siteContent.name,
+      name: site.traveller,
+      alternateName: site.name,
       description,
       url: siteUrl,
     },
     {
       "@type": "WebSite",
-      name: siteContent.name,
+      name: site.name,
       url: siteUrl,
     },
   ],
@@ -63,19 +70,21 @@ const structuredData = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable}`}>
       <body>
         <ReducedMotionProvider>
-          <SkipLink />
-          <SiteHeader />
-          <main id="main-content" tabIndex={-1}>
-            {children}
-          </main>
-          <SiteFooter />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-          />
+          <MapProvider>
+            <SkipLink />
+            <SiteHeader />
+            <main id="main-content" tabIndex={-1}>
+              {children}
+            </main>
+            <SiteFooter />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+            />
+          </MapProvider>
         </ReducedMotionProvider>
       </body>
     </html>

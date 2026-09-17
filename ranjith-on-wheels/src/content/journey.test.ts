@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { siteContent } from "./site";
+import { site } from "./site";
 import { journeyCountries } from "./journey";
 
 describe("journey content", () => {
   it("matches the site-wide country count", () => {
-    expect(journeyCountries).toHaveLength(siteContent.countryCount);
+    expect(journeyCountries).toHaveLength(site.countryCount);
   });
 
   it("is ordered sequentially starting at 1", () => {
@@ -20,6 +20,6 @@ describe("journey content", () => {
 
   it("ends the route at the current country", () => {
     const last = journeyCountries[journeyCountries.length - 1];
-    expect(last.name).toBe(siteContent.currentCountry);
+    expect(last.name).toBe(site.latestCountry);
   });
 });

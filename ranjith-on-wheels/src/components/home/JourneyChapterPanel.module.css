@@ -2,9 +2,11 @@
   display: flex;
   gap: 16px;
   padding: 20px;
-  border: 1px solid var(--color-line);
-  border-radius: 8px;
-  background: rgba(5, 7, 6, 0.4);
+  border: 1px solid var(--glass-stroke);
+  border-radius: var(--radius-control);
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-soft);
   max-width: 420px;
 }
 
@@ -13,9 +15,9 @@
   flex-shrink: 0;
   width: 84px;
   height: 84px;
-  border-radius: 6px;
+  border-radius: var(--radius-media);
   overflow: hidden;
-  background: var(--color-forest);
+  background: var(--paper);
 }
 
 .thumbImage {
@@ -33,7 +35,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .title {
@@ -42,7 +44,7 @@
 
 .summary {
   font-size: 0.9rem;
-  color: var(--color-muted);
+  color: var(--ink-soft);
 }
 
 .link {
