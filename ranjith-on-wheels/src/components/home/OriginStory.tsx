@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
@@ -9,8 +9,6 @@ import { ease, dur, stagger } from "@/lib/motion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
-import { useMapController } from "@/components/map/MapProvider";
-import { useMapTier } from "@/lib/mapTier";
 import styles from "./OriginStory.module.css";
 
 const beats = [
@@ -27,29 +25,6 @@ export function OriginStory() {
   const linkRef = useRef<HTMLAnchorElement>(null);
   const chapterNumberRef = useRef<HTMLSpanElement>(null);
   const reducedMotion = useReducedMotion();
-  const { requestMount } = useMapController();
-  const tier = useMapTier();
-
-  // CLAUDE.md §11: MapLibre stays out of the initial bundle and only starts
-  // loading once the visitor is about one viewport away from this section —
-  // early enough that it's ready by the time Act 3 needs it, never blocking
-  // the hero's LCP. Tier 3 visitors (§4.4) never get the live map at all,
-  // so there's nothing to preload for them.
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || tier === 3) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          requestMount();
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "100% 0px" },
-    );
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, [requestMount, tier]);
 
   useGSAP(
     () => {

@@ -1,0 +1,223 @@
+.pinSection {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding: 96px var(--page-gutter) 48px;
+  background: var(--paper);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.headlineGroup {
+  max-width: 32rem;
+}
+
+.headline {
+  font-size: clamp(2rem, 4vw, 3rem);
+  max-width: 16ch;
+}
+
+.mapFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 960 / 500;
+  border-radius: var(--radius-media);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  background: var(--sea);
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sea {
+  fill: var(--sky);
+}
+
+.land {
+  fill: var(--land);
+  stroke: rgba(16, 33, 47, 0.12);
+  stroke-width: 0.6;
+}
+
+.routeLine {
+  fill: none;
+  stroke: var(--route);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.crossingLine {
+  fill: none;
+  stroke: var(--route);
+  stroke-width: 1.6;
+  stroke-dasharray: 3 4;
+  opacity: 0.7;
+}
+
+.unfinishedLine {
+  fill: none;
+  stroke: var(--route);
+  stroke-width: 1.6;
+  stroke-dasharray: 3 4;
+  opacity: 0.4;
+}
+
+.crossingLabel {
+  font-family: var(--font-data);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  fill: var(--ink-soft);
+  paint-order: stroke;
+  stroke: var(--white);
+  stroke-width: 3px;
+  transition: opacity 0.4s ease;
+}
+
+.tip {
+  fill: var(--route-glow);
+  stroke: var(--white);
+  stroke-width: 1.5;
+}
+
+.markerOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.sidebar {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 26rem;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-stroke);
+  border-radius: var(--radius-control);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.chapterLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.chapterMeaning {
+  font-size: 1.2rem;
+  max-width: 24ch;
+}
+
+.mobileChapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chapterButton {
+  padding: 8px 14px;
+  min-height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.chapterButton:hover {
+  color: var(--ink);
+}
+
+.chapterButtonActive {
+  background: var(--route);
+  border-color: var(--route);
+  color: var(--white);
+}
+
+.countryList {
+  width: 100%;
+}
+
+.countryListSummary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  list-style: none;
+}
+
+.countryListSummary::-webkit-details-marker {
+  display: none;
+}
+
+.countryListItems {
+  margin-top: 12px;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.countryListItems a {
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line);
+}
+
+.countryListItems a:hover,
+.countryListItems a:focus-visible {
+  text-decoration-color: var(--route);
+}
+
+@media (max-width: 767px) {
+  .pinSection {
+    min-height: 0;
+    padding-top: 88px;
+  }
+
+  .mapFrame {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Stays absolute (not static) so it can't grow the aspect-ratio-locked
+     .mapFrame taller than its own box — that previously dragged
+     .markerOverlay's inset:0 coordinate space along with it, scattering
+     markers across the sidebar's area instead of the map. */
+  .sidebar {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
+    max-height: 60%;
+    overflow-y: auto;
+  }
+}

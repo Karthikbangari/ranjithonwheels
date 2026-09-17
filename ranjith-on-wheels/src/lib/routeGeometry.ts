@@ -99,11 +99,13 @@ export type RouteCheckpoint = {
   point: LonLat;
 };
 
+type Reveal = { revealAt: number };
+
 export type RouteData = {
   mainLine: Feature<LineString>;
-  crossingLines: Feature<LineString>[];
-  crossingLabels: FeatureCollection<Point, { label: string }>;
-  unfinishedLine: Feature<LineString>;
+  crossingLines: Feature<LineString, Reveal>[];
+  crossingLabels: FeatureCollection<Point, { label: string } & Reveal>;
+  unfinishedLine: Feature<LineString, Reveal>;
   checkpoints: RouteCheckpoint[];
 };
 
@@ -122,8 +124,10 @@ export function buildRouteData(): RouteData {
   const segments = sampleSmoothedSegments(anchors);
 
   const mainCoords: LonLat[] = [];
-  const crossingLines: Feature<LineString>[] = [];
-  const crossingLabelFeatures: Feature<Point, { label: string }>[] = [];
+  // revealAt is a raw cumulative length until normalised to 0-1 below,
+  // alongside the checkpoint fractions this shares its scale with.
+  const crossingLines: Feature<LineString, Reveal>[] = [];
+  const crossingLabelFeatures: Feature<Point, { label: string } & Reveal>[] = [];
   const checkpoints: RouteCheckpoint[] = [];
 
   let cumulative = 0;
@@ -136,15 +140,19 @@ export function buildRouteData(): RouteData {
     const segmentLength = pathLength(segmentSamples);
 
     if (isCrossing) {
+      // Revealed once the main line's draw progress reaches where this
+      // crossing arrives — a raw cumulative length for now, normalised to
+      // 0-1 in the same pass as the checkpoints below.
+      const revealAt = cumulative + segmentLength;
       crossingLines.push({
         type: "Feature",
-        properties: {},
+        properties: { revealAt },
         geometry: { type: "LineString", coordinates: segmentSamples },
       });
       const mid = segmentSamples[Math.floor(segmentSamples.length / 2)];
       crossingLabelFeatures.push({
         type: "Feature",
-        properties: { label: "SEA CROSSING" },
+        properties: { label: "SEA CROSSING", revealAt },
         geometry: { type: "Point", coordinates: mid },
       });
       // The main line still needs to reach the arrival anchor so the next
@@ -167,6 +175,12 @@ export function buildRouteData(): RouteData {
   const totalLength = cumulative || 1;
   checkpoints.forEach((checkpoint) => {
     checkpoint.fraction = checkpoint.fraction / totalLength;
+  });
+  crossingLines.forEach((line) => {
+    line.properties.revealAt = line.properties.revealAt / totalLength;
+  });
+  crossingLabelFeatures.forEach((label) => {
+    label.properties.revealAt = label.properties.revealAt / totalLength;
   });
 
   // The unfinished segment: continues past Slovakia along its final
@@ -196,7 +210,7 @@ export function buildRouteData(): RouteData {
     crossingLabels: { type: "FeatureCollection", features: crossingLabelFeatures },
     unfinishedLine: {
       type: "Feature",
-      properties: {},
+      properties: { revealAt: 1 },
       geometry: { type: "LineString", coordinates: unfinishedCoords },
     },
     checkpoints,
