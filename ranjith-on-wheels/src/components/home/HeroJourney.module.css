@@ -98,7 +98,7 @@
 
 .lede {
   max-width: 52ch;
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(251, 240, 228, 0.7);
   font-size: 1.1rem;
 }
 
@@ -127,7 +127,7 @@
 
 .statLabel {
   font-size: 0.8rem;
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(251, 240, 228, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -140,7 +140,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(251, 240, 228, 0.7);
   writing-mode: vertical-rl;
 }
 

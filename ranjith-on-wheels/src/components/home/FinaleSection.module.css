@@ -79,7 +79,7 @@
 
 .socialDescription {
   font-size: 0.85rem;
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(251, 240, 228, 0.7);
 }
 
 .roadWrap {
@@ -97,7 +97,7 @@
 }
 
 .dottedLine {
-  stroke: rgba(244, 241, 234, 0.7);
+  stroke: rgba(251, 240, 228, 0.7);
   stroke-width: 2;
   stroke-dasharray: 2 8;
   stroke-linecap: round;
@@ -111,7 +111,7 @@
 }
 
 .nextCountry {
-  color: rgba(244, 241, 234, 0.7);
+  color: rgba(251, 240, 228, 0.7);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

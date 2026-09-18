@@ -33,7 +33,11 @@
   border-radius: var(--radius-media);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
-  background: var(--sea);
+  /* The pale atmospheric tone, not the water fill — this only ever shows
+     as letterbox/pillarbox bars around the SVG when the frame's aspect
+     ratio doesn't exactly match the viewBox's, so it should read as "sky
+     behind the map," not a mismatched second ocean color. */
+  background: var(--sky);
 }
 
 .svg {
@@ -45,12 +49,12 @@
 }
 
 .sea {
-  fill: var(--sky);
+  fill: var(--sea);
 }
 
 .land {
   fill: var(--land);
-  stroke: rgba(16, 33, 47, 0.12);
+  stroke: rgba(27, 27, 31, 0.12);
   stroke-width: 0.6;
 }
 

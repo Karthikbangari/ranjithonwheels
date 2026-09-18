@@ -25,6 +25,7 @@ Read this first. If the owner disagrees with any decision, change it here before
 | 10 | **QR/VPA mismatch flagged for owner verification.** | The QR resolves to `7020346416@axl` and the typed ID is `7020346416@ybl`. Both may be legitimate handles on the same number, but an unexplained mismatch reads as fraud to a careful donor. See §9.2 — this needs an owner-approved explanatory line before launch. |
 | 11 | **MapLibre GL / globe / terrain (decision #3, §4.1) is superseded by a minimal illustrated SVG map.** | After seeing the live MapLibre map (real basemap tiles, bilingual place labels, POI icons), the owner asked for something cleaner instead: flat landmasses, no real place names, a coral route that draws itself in and connects country dots as the visitor scrolls. Built as one `JourneyMap` component (`src/components/map/JourneyMap.tsx`) using d3-geo + topojson, animated via GSAP/ScrollTrigger driving SVG `stroke-dashoffset` — no WebGL, no live tiles, no Mapbox-style degradation tiers, since this same lightweight render works identically for every visitor (reduced motion / narrow viewports just skip straight to the complete state). This replaces §4's MapProvider/tier-1-2-3 architecture and §4.1's technology table wherever they conflict. |
 | 12 | **QR/VPA mismatch (decision #10) confirmed a non-issue by the owner.** | `7020346416@axl` (from the QR) is correct; `7020346416@ybl` never matched anything in the codebase and needed no explanatory copy. `/support` continues to show only the QR and `@axl` — see §9.3. |
+| 13 | **§3.1 tokens replaced with a richer "Sunset Adventure" palette.** | The owner found the daylight palette washed out and asked for something richer. Paper warmed from grey-white to cream (`#FFF8F0`); route deepened from `#F15B3A` to a burnt-orange `#C83507` and support from `#0F8C78` to a deeper teal `#1C7A6E` — both specifically chosen to pass 4.5:1 as text and as a button background under white text, which the original brighter values did not (verified by computing WCAG contrast ratios directly). `route-glow` (`#FFB703`, golden amber) stays bright since it's decorative-only, never text. Also fixed a pre-existing bug this surfaced: the map's `.sea`/`--sky` and `.mapFrame`/`--sea` token pairings were inverted, so the water fill and the frame's letterbox backdrop were swapped. |
 
 ---
 
@@ -97,33 +98,37 @@ Every featured story and every leg panel follows: **Place → Desire → Tension
 
 ### 3.1 Tokens
 
+Superseded by decision #13 ("Sunset Adventure" palette) — the live values are in `src/app/globals.css`, reproduced here so this table stays a working reference rather than drifting from the code:
+
 ```css
 :root {
   /* surfaces */
-  --paper:        #F7F5F0;
+  --paper:        #FFF8F0;
   --white:        #FFFFFF;
-  --navy:         #0B1A26;   /* finale + footer ONLY */
+  --navy:         #14213D;   /* finale + footer ONLY */
 
   /* type */
-  --ink:          #10212F;
-  --ink-soft:     #41515D;
-  --ink-inverse:  #F4F1EA;
+  --ink:          #1B1B1F;
+  --ink-soft:     #5C5552;
+  --ink-inverse:  #FBF0E4;
 
   /* map */
-  --sky:          #D8EEF7;
-  --sea:          #5EB6D6;
-  --land:         #C9DBC7;
+  --sky:          #D6EEF0;   /* pale backdrop behind the map frame */
+  --sea:          #1D8FA6;   /* the actual water fill */
+  --land:         #C7B682;
 
-  /* accents */
-  --route:        #F15B3A;   /* the route line, and nothing else structural */
-  --route-glow:   #FFBE63;   /* route edge, active marker halo */
-  --support:      #0F8C78;   /* follow + support actions only */
+  /* accents — route/support are deliberately darker than a "vivid" first
+     pass would suggest: both must pass 4.5:1 as text color AND as a button
+     background under white text (verified against WCAG, not eyeballed). */
+  --route:        #C83507;   /* the route line, and nothing else structural */
+  --route-glow:   #FFB703;   /* decorative only (never text) — stays bright */
+  --support:      #1C7A6E;   /* follow + support actions only */
 
   /* structure */
-  --line:         rgba(16, 33, 47, 0.14);
-  --glass:        rgba(255, 255, 255, 0.80);
+  --line:         rgba(27, 27, 31, 0.14);
+  --glass:        rgba(255, 255, 255, 0.82);
   --glass-stroke: rgba(255, 255, 255, 0.55);
-  --shadow-soft:  0 12px 40px rgba(16, 33, 47, 0.10);
+  --shadow-soft:  0 12px 40px rgba(27, 27, 31, 0.12);
 
   --header-height: 72px;
   --gutter: clamp(20px, 5vw, 88px);

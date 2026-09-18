@@ -1,30 +1,35 @@
 :root {
-  /* surfaces */
-  --paper: #f7f5f0;
+  /* surfaces — "Sunset Adventure" palette (CLAUDE.md §0 decision #13):
+     warm cream in place of the original grey-white paper, so the site
+     stops reading as pastel/washed out. */
+  --paper: #fff8f0;
   --white: #ffffff;
-  --navy: #0b1a26; /* finale + footer ONLY */
+  --navy: #14213d; /* finale + footer ONLY */
 
   /* type */
-  --ink: #10212f;
-  --ink-soft: #41515d;
-  --ink-inverse: #f4f1ea;
+  --ink: #1b1b1f;
+  --ink-soft: #5c5552;
+  --ink-inverse: #fbf0e4;
 
   /* map */
-  --sky: #d8eef7;
-  --sea: #5eb6d6;
-  --land: #c9dbc7;
+  --sky: #d6eef0;
+  --sea: #1d8fa6;
+  --land: #c7b682;
 
-  /* accents */
-  --route: #f15b3a; /* the route line, and nothing else structural */
-  --route-glow: #ffbe63; /* route edge, active marker halo */
-  --support: #0f8c78; /* follow + support actions only */
+  /* accents — deepened from the brighter first pass specifically so these
+     pass 4.5:1 as text color and as a button background under white text
+     (CLAUDE.md §10); route-glow carries the brighter, purely decorative
+     pop since it's never used as text. */
+  --route: #c83507; /* the route line, and nothing else structural */
+  --route-glow: #ffb703; /* route edge, active marker halo */
+  --support: #1c7a6e; /* follow + support actions only */
 
   /* structure */
-  --line: rgba(16, 33, 47, 0.14);
-  --line-inverse: rgba(244, 241, 234, 0.22);
-  --glass: rgba(255, 255, 255, 0.8);
+  --line: rgba(27, 27, 31, 0.14);
+  --line-inverse: rgba(251, 240, 228, 0.22);
+  --glass: rgba(255, 255, 255, 0.82);
   --glass-stroke: rgba(255, 255, 255, 0.55);
-  --shadow-soft: 0 12px 40px rgba(16, 33, 47, 0.1);
+  --shadow-soft: 0 12px 40px rgba(27, 27, 31, 0.12);
 
   --header-height: 72px;
   --page-gutter: clamp(20px, 5vw, 88px);

@@ -8,12 +8,12 @@
 }
 
 .sea {
-  fill: var(--sky);
+  fill: var(--sea);
 }
 
 .land {
   fill: var(--land);
-  stroke: rgba(16, 33, 47, 0.12);
+  stroke: rgba(27, 27, 31, 0.12);
   stroke-width: 0.6;
 }
 
