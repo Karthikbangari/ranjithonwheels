@@ -27,21 +27,22 @@ test.describe("prefers-reduced-motion", () => {
     }
   });
 
-  test("travel map shows the highlighted countries immediately, with no pause or wipe", async ({
+  test("journey map shows the complete route immediately, with no glide or reveal delay", async ({
     page,
   }) => {
     await page.goto("/");
-    const map = page.getByAltText("World map showing countries visited during the journey");
-    await map.scrollIntoViewIfNeeded();
+    await page.evaluate(() => document.getElementById("journey-map")?.scrollIntoView());
     await page.waitForTimeout(500);
-    // CLAUDE.md §5.5: reduced motion shows the final highlighted state
-    // immediately — no 2-second pause, no clip-path wipe.
+    // CLAUDE.md §0 decision #17 / CLAUDE.md §5.5: reduced motion shows the
+    // finished journey immediately — camera already on the last country,
+    // every reachable country already filled red, no glide/pulse/ride
+    // animation to wait out.
+    const map = page.locator('svg[aria-label*="Map centred on Slovakia"]');
     await expect(map).toBeVisible();
-    const highlightWrap = page.locator('[class*="highlightWrap"]');
-    await expect(highlightWrap).toHaveCSS("opacity", "1");
-    await expect(highlightWrap).toHaveCSS("clip-path", "inset(0px 0% 0px 0px)");
-    await page.getByText("All 23 countries").click();
-    await expect(page.getByRole("link", { name: /23\. Slovakia/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Slovakia", level: 3 })).toBeVisible();
+    await expect(page.getByText("Country 23 of 23")).toBeVisible();
+    await page.getByText(/All \d+ countries/).click();
+    await expect(page.getByRole("button", { name: /23\. Slovakia/ })).toBeVisible();
   });
 
   test("finale wheel rests before the next-country marker, not mid-animation", async ({ page }) => {

@@ -25,3 +25,11 @@ export const kindnessCountrySlugs = [
   "south-korea",
   "australia",
 ];
+
+export const challengeCountrySlugs = [
+  "sri-lanka",
+  "thailand",
+  "indonesia",
+  "mongolia",
+  "australia",
+];
