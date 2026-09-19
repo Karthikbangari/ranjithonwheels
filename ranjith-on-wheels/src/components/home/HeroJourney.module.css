@@ -25,11 +25,41 @@
   z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(11, 26, 38, 0.55) 0%,
-    rgba(11, 26, 38, 0.05) 30%,
-    rgba(11, 26, 38, 0.15) 55%,
-    rgba(11, 26, 38, 0.92) 100%
+    rgba(20, 33, 61, 0.55) 0%,
+    rgba(20, 33, 61, 0.05) 30%,
+    rgba(20, 33, 61, 0.15) 55%,
+    rgba(20, 33, 61, 0.92) 100%
   );
+}
+
+/* A slow, subtle breathing glow low in the frame — the one deliberate
+   "looping" animation on the site (CLAUDE.md §5.2 bans this generally; see
+   CLAUDE.md §0 decision #15 for the owner-directed exception). Kept slow
+   and low-opacity so it reads as ambient warmth, not a distraction, and it
+   sits behind the content so it never competes with the headline. */
+.ambientGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse 60% 45% at 30% 88%,
+    color-mix(in srgb, var(--route-glow) 35%, transparent) 0%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  animation: ambient-breathe 8s ease-in-out infinite;
+}
+
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
 }
 
 .routeSvg {
@@ -45,7 +75,7 @@
   stroke: var(--route);
   stroke-width: 4;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 6px rgba(241, 91, 58, 0.6));
+  filter: drop-shadow(0 0 6px rgba(200, 53, 7, 0.6));
 }
 
 .routeMarker {

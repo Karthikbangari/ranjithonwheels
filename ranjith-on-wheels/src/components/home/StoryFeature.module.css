@@ -21,6 +21,14 @@
   overflow: hidden;
 }
 
+.mediaWrap img {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mediaWrap:hover img {
+  transform: scale(1.06);
+}
+
 .copy {
   display: flex;
   flex-direction: column;

@@ -1,8 +1,18 @@
 .eyebrow {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 0.75rem;
   font-weight: 600;
   color: color-mix(in srgb, currentColor 70%, transparent);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--route);
+  flex-shrink: 0;
 }

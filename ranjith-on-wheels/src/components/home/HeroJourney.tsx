@@ -166,6 +166,7 @@ export function HeroJourney() {
         />
       </div>
       <div className={styles.gradient} aria-hidden="true" />
+      <div className={styles.ambientGlow} aria-hidden="true" />
       <svg
         ref={routeSvgRef}
         className={styles.routeSvg}

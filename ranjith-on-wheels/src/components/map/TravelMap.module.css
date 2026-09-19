@@ -54,7 +54,21 @@
   inset: 0;
   clip-path: inset(0 100% 0 0);
   opacity: 0;
-  filter: drop-shadow(0 0 10px rgba(200, 53, 7, 0.1));
+  animation: highlight-breathe 6s ease-in-out infinite;
+}
+
+/* Invisible until the reveal opens the clip-path, so this costs nothing
+   before that — a slow glow pulse on the revealed countries, the same
+   owner-directed exception to CLAUDE.md §5.2's "no looping glow" rule as
+   the hero's ambient light (see CLAUDE.md §0 decision #15). */
+@keyframes highlight-breathe {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(200, 53, 7, 0.12));
+  }
+  50% {
+    filter: drop-shadow(0 0 18px rgba(200, 53, 7, 0.28));
+  }
 }
 
 .stats {

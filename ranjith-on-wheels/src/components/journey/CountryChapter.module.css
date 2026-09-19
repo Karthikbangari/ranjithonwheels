@@ -18,7 +18,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(11, 26, 38, 0.35) 0%, rgba(11, 26, 38, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(20, 33, 61, 0.35) 0%, rgba(20, 33, 61, 0.92) 100%);
 }
 
 .heroContent {
