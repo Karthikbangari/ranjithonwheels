@@ -11,10 +11,14 @@ import { LineReveal } from "@/components/motion/LineReveal";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 import styles from "./OriginStory.module.css";
 
+// CLAUDE.md §0 decision #16: owner-supplied "original inspiration text",
+// split into the three sentences it's already written in — matching the
+// spec's own motion note ("the short paragraph reveals in three calm
+// blocks") without needing a different reveal mechanism from before.
 const beats = [
-  "Loss changed the direction of his life.",
-  "A bicycle gave that direction a road.",
-  "The road became a promise to keep moving.",
+  "Ranjith did not set out to collect country names.",
+  "He began with a bicycle, a personal reason to keep moving, and a belief that the road can connect people who may never share the same language.",
+  "Every border since then has become part of one longer promise: keep going, keep learning and leave the road kinder than it was found.",
 ];
 
 export function OriginStory() {
@@ -110,9 +114,7 @@ export function OriginStory() {
       <div className={styles.copy}>
         <Eyebrow>The origin</Eyebrow>
         <h2 className={styles.headline} ref={headlineRef}>
-          <LineReveal
-            lines={["The journey did not begin with a bicycle.", "It began with a promise."]}
-          />
+          <LineReveal lines={["A promise can become a road."]} />
         </h2>
         <ul className={styles.beats} ref={beatsRef}>
           {beats.map((beat) => (

@@ -10,11 +10,17 @@
   background: var(--white);
   color: var(--ink);
   border-bottom: 1px solid transparent;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.4s ease, color 0.4s ease;
 }
 
+/* CLAUDE.md §0 decision #16: "the header is white/ivory and light; it
+   becomes blue only after the hero is passed." Reuses the existing
+   scroll-past-70%-of-a-viewport threshold, which already approximates
+   "past the hero" on every page, not just the homepage. */
 .scrolled {
-  border-bottom-color: var(--line);
+  background: var(--support);
+  color: var(--ink-inverse);
+  border-bottom-color: transparent;
   box-shadow: var(--shadow-soft);
 }
 

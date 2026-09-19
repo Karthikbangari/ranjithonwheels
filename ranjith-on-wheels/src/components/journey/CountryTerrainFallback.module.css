@@ -13,7 +13,7 @@
 
 .land {
   fill: var(--land);
-  stroke: rgba(27, 27, 31, 0.12);
+  stroke: rgba(16, 24, 40, 0.12);
   stroke-width: 0.6;
 }
 

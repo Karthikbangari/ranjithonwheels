@@ -5,7 +5,7 @@ import styles from "./ButtonLink.module.css";
 type ButtonLinkProps = {
   href: string;
   children: ReactNode;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "route";
 };
 
 export function ButtonLink({ href, children, variant = "primary" }: ButtonLinkProps) {

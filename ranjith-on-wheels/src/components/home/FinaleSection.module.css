@@ -27,9 +27,9 @@
   z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(20, 33, 61, 0.75) 0%,
-    rgba(20, 33, 61, 0.55) 40%,
-    rgba(20, 33, 61, 0.92) 100%
+    rgba(7, 28, 59, 0.75) 0%,
+    rgba(7, 28, 59, 0.55) 40%,
+    rgba(7, 28, 59, 0.92) 100%
   );
 }
 
@@ -79,7 +79,7 @@
 
 .socialDescription {
   font-size: 0.85rem;
-  color: rgba(251, 240, 228, 0.7);
+  color: rgba(255, 249, 240, 0.7);
 }
 
 .roadWrap {
@@ -97,7 +97,7 @@
 }
 
 .dottedLine {
-  stroke: rgba(251, 240, 228, 0.7);
+  stroke: rgba(255, 249, 240, 0.7);
   stroke-width: 2;
   stroke-dasharray: 2 8;
   stroke-linecap: round;
@@ -111,7 +111,7 @@
 }
 
 .nextCountry {
-  color: rgba(251, 240, 228, 0.7);
+  color: rgba(255, 249, 240, 0.7);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

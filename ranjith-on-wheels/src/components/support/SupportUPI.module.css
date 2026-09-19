@@ -42,6 +42,23 @@
   max-width: 52ch;
 }
 
+.method {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+
+.methodLabel {
+  font-weight: 600;
+}
+
+.methodHint {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
 .idRow {
   display: flex;
   flex-wrap: wrap;

@@ -1,35 +1,49 @@
 :root {
-  /* surfaces — "Sunset Adventure" palette (CLAUDE.md §0 decision #13):
-     warm cream in place of the original grey-white paper, so the site
-     stops reading as pastel/washed out. */
-  --paper: #fff8f0;
+  /* surfaces — "The Red Line Across a Blue World" (CLAUDE.md §0 decision
+     #16), superseding the Sunset Adventure palette (#13). --paper is the
+     existing token name every section already builds on, so it takes the
+     spec's "ivory" value (its main reading surface); --ivory is kept as
+     an identical alias for new code that wants that exact vocabulary
+     (e.g. an "ivory panel"). --paper-deep is the spec's separate, slightly
+     duller paper tone, for the rare spot that wants to sit a shade below
+     the main surface without dropping to --white or --sky. */
+  --paper: #fff9f0;
+  --ivory: #fff9f0;
+  --paper-deep: #f5f0e8;
   --white: #ffffff;
-  --navy: #14213d; /* finale + footer ONLY */
+  --navy: #071c3b; /* "night-blue" — finale + footer ONLY */
 
   /* type */
-  --ink: #1b1b1f;
-  --ink-soft: #5c5552;
-  --ink-inverse: #fbf0e4;
+  --ink: #101828;
+  --ink-soft: #5a6472;
+  --ink-inverse: #fff9f0;
 
-  /* map */
-  --sky: #d6eef0;
-  --sea: #1d8fa6;
-  --land: #c7b682;
+  /* map — spec describes ocean as one pale sky blue rather than the old
+     two-tone sky/sea split, so --sea stays close to --sky (a touch more
+     saturated for depth) rather than jumping to the full-strength
+     --support blue, which reads as a UI color, not a water fill. */
+  --sky: #ddeeff; /* ocean, and the map frame's backdrop */
+  --sea: #c7e4fb; /* ocean, slightly deeper — depth on close-in country maps */
+  --land: #bedcf7; /* unvisited countries */
 
-  /* accents — deepened from the brighter first pass specifically so these
-     pass 4.5:1 as text color and as a button background under white text
-     (CLAUDE.md §10); route-glow carries the brighter, purely decorative
-     pop since it's never used as text. */
-  --route: #c83507; /* the route line, and nothing else structural */
-  --route-glow: #ffb703; /* route edge, active marker halo */
-  --support: #1c7a6e; /* follow + support actions only */
+  /* accents — red is the journey itself: the route, visited-country
+     emphasis, and ONE strong call to action per screen — never the
+     default button color. Blue (--support, named for its role rather
+     than its hue since every consumer already keys off that name) is
+     what carries navigation, most buttons and the map. Both red values
+     pass 4.5:1 as text and as a button background under white text
+     (checked the same way decision #13 was). */
+  --route: #e6242a; /* india-red: the route line, and nothing else structural */
+  --route-dark: #b5121b; /* darker red inner edge on visited countries */
+  --route-glow: #ffb44a; /* sunrise gold — route edge, active marker halo */
+  --support: #0b4ea2; /* journey-blue: nav, most buttons, the map, the final page */
 
   /* structure */
-  --line: rgba(27, 27, 31, 0.14);
-  --line-inverse: rgba(251, 240, 228, 0.22);
+  --line: rgba(16, 24, 40, 0.14);
+  --line-inverse: rgba(255, 249, 240, 0.22);
   --glass: rgba(255, 255, 255, 0.82);
   --glass-stroke: rgba(255, 255, 255, 0.55);
-  --shadow-soft: 0 12px 40px rgba(27, 27, 31, 0.12);
+  --shadow-soft: 0 12px 40px rgba(16, 24, 40, 0.12);
 
   --header-height: 72px;
   --page-gutter: clamp(20px, 5vw, 88px);

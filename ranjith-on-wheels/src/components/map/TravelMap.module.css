@@ -39,7 +39,7 @@
   aspect-ratio: 1672 / 941;
   border-radius: 10px;
   overflow: hidden;
-  filter: drop-shadow(0 8px 30px rgba(27, 27, 31, 0.08));
+  filter: drop-shadow(0 8px 30px rgba(16, 24, 40, 0.08));
 }
 
 .base,
@@ -64,10 +64,10 @@
 @keyframes highlight-breathe {
   0%,
   100% {
-    filter: drop-shadow(0 0 8px rgba(200, 53, 7, 0.12));
+    filter: drop-shadow(0 0 8px rgba(230, 36, 42, 0.12));
   }
   50% {
-    filter: drop-shadow(0 0 18px rgba(200, 53, 7, 0.28));
+    filter: drop-shadow(0 0 18px rgba(230, 36, 42, 0.28));
   }
 }
 

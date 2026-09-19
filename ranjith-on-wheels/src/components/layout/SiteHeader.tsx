@@ -35,7 +35,13 @@ export function SiteHeader() {
       </nav>
       <div className={styles.actions}>
         <span className={styles.follow}>
-          <ButtonLink href={followCta.href}>{followCta.label}</ButtonLink>
+          {/* Once the header turns blue past the hero, a blue "primary"
+              button on it would nearly vanish — swap to the outlined
+              variant, which reads off currentColor and stays legible on
+              both the light and blue header states. */}
+          <ButtonLink href={followCta.href} variant={scrolled ? "secondary" : "primary"}>
+            {followCta.label}
+          </ButtonLink>
         </span>
         <MobileMenu />
       </div>

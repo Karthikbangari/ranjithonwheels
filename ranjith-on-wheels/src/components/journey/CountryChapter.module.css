@@ -18,7 +18,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(20, 33, 61, 0.35) 0%, rgba(20, 33, 61, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(7, 28, 59, 0.35) 0%, rgba(7, 28, 59, 0.92) 100%);
 }
 
 .heroContent {
@@ -34,7 +34,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(251, 240, 228, 0.7);
+  color: rgba(255, 249, 240, 0.7);
 }
 
 .headline {

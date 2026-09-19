@@ -201,17 +201,18 @@ export function HeroJourney() {
       <div className={styles.content}>
         <Eyebrow>A journey for generations</Eyebrow>
         <h1 className={styles.headline} ref={headlineRef}>
-          <LineReveal lines={["The world,", "one pedal", "at a time."]} />
+          <LineReveal lines={["One bicycle.", "A world still", "opening."]} />
         </h1>
         <p className={styles.lede} ref={ledeRef}>
-          {site.distanceKm.toLocaleString()}
-          + kilometres. {site.countryCount} countries. One bicycle carrying a promise, a purpose
-          and thousands of human stories.
+          {site.distanceKm.toLocaleString()}+ kilometres across {site.countryCount} countries,
+          carried by a purpose that began at home.
         </p>
         <div className={styles.actions} ref={actionsRef}>
-          <ButtonLink href="/journey">Ride the journey</ButtonLink>
+          <ButtonLink href="/journey" variant="route">
+            Explore the route
+          </ButtonLink>
           <ButtonLink href="#finale" variant="secondary">
-            Follow the next kilometre
+            Watch the latest ride
           </ButtonLink>
         </div>
         <dl className={styles.stats}>

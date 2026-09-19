@@ -15,7 +15,7 @@
   left: var(--page-gutter);
   font-family: var(--font-display);
   font-size: clamp(6rem, 14vw, 12rem);
-  color: rgba(27, 27, 31, 0.08);
+  color: rgba(16, 24, 40, 0.08);
   line-height: 1;
   pointer-events: none;
 }

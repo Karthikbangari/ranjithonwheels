@@ -23,15 +23,18 @@ export const supportConfig = {
 // bank details ever pass through this site, and the amount is chosen freely
 // by the supporter in their own UPI app.
 //
-// The QR/VPA discrepancy CLAUDE.md §9.3 flagged (QR decodes to
-// 7020346416@axl; the spec separately referenced 7020346416@ybl, which
-// never appeared anywhere else in this codebase) has been confirmed by the
-// owner as a non-issue — @axl is correct and the only identifier this site
-// shows. See CLAUDE.md §0 decision #12.
+// CLAUDE.md §9.3 originally flagged a QR/VPA discrepancy (QR decodes to
+// @axl; a separate @ybl was referenced but never appeared anywhere in the
+// codebase). Decision #12 first resolved this as "show @axl only, @ybl is
+// a non-issue"; the owner has since directed (decision #16) that both are
+// real and distinct: @axl is what the QR resolves to, @ybl is a separate
+// manual-entry UPI ID. Both are shown as two clearly labelled methods
+// rather than implying they're the same identifier shown twice.
 export const upiConfig = {
   recipientDisplayName: "Dagara Ranjith Kumar",
-  upiId: "7020346416@axl",
+  qrUpiId: "7020346416@axl",
   qrImage: "/media/support/upi-qr.jpg",
+  manualUpiId: "7020346416@ybl",
 } as const;
 
 export function isSupportConfigured(): boolean {
