@@ -10,9 +10,9 @@ type CountryCoverImageProps = Omit<ImageProps, "onError" | "fill"> & {
 };
 
 // Thin client-boundary wrapper: Server Components (CountryChapter,
-// JourneyChapterPanel) can't pass a renderFallback function prop straight
-// into FallbackImage, so this takes plain serialisable props instead and
-// builds that closure on the client side.
+// JourneyArchive) can't pass a renderFallback function prop straight into
+// FallbackImage, so this takes plain serialisable props instead and builds
+// that closure on the client side.
 export function CountryCoverImage({ slug, anchor, ...imageProps }: CountryCoverImageProps) {
   return (
     <FallbackImage {...imageProps} renderFallback={() => <CountryTerrainFallback slug={slug} anchor={anchor} />} />

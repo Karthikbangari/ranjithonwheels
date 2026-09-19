@@ -27,19 +27,21 @@ test.describe("prefers-reduced-motion", () => {
     }
   });
 
-  test("journey map shows the complete static route immediately, with no live map or scrolling", async ({
+  test("travel map shows the highlighted countries immediately, with no pause or wipe", async ({
     page,
   }) => {
     await page.goto("/");
-    const map = page.locator('svg[aria-label*="complete cycling route"]');
+    const map = page.getByAltText("World map showing countries visited during the journey");
     await map.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
-    // CLAUDE.md §4.4 Tier 3 / §5.5: reduced motion gets a static SVG map
-    // with every marker and the whole route already drawn — never the live
-    // WebGL map, which is skipped entirely for this tier.
+    // CLAUDE.md §5.5: reduced motion shows the final highlighted state
+    // immediately — no 2-second pause, no clip-path wipe.
     await expect(map).toBeVisible();
-    await expect(page.locator("[data-map-canvas-host] canvas")).toHaveCount(0);
-    await expect(page.locator('button[aria-label="Slovakia"]')).toBeVisible();
+    const highlightWrap = page.locator('[class*="highlightWrap"]');
+    await expect(highlightWrap).toHaveCSS("opacity", "1");
+    await expect(highlightWrap).toHaveCSS("clip-path", "inset(0px 0% 0px 0px)");
+    await page.getByText("All 23 countries").click();
+    await expect(page.getByRole("link", { name: /23\. Slovakia/ })).toBeVisible();
   });
 
   test("finale wheel rests before the next-country marker, not mid-animation", async ({ page }) => {

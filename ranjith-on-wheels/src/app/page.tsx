@@ -3,7 +3,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { HeroJourney } from "@/components/home/HeroJourney";
 import { OriginStory } from "@/components/home/OriginStory";
-import { JourneyMap } from "@/components/map/JourneyMap";
+import { TravelMap } from "@/components/map/TravelMap";
 import { StoryFeature } from "@/components/home/StoryFeature";
 import { HumanGallery } from "@/components/home/HumanGallery";
 import { BookFeature } from "@/components/home/BookFeature";
@@ -19,7 +19,7 @@ export default function Home() {
 
       <OriginStory />
 
-      <JourneyMap />
+      <TravelMap />
 
       <div id="real-journey">
         {featuredStories.map((country, index) => (

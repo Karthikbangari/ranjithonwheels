@@ -1,7 +1,5 @@
 import type { JourneyChapter } from "./journey";
 
-export type MapMode = "route" | "kindness" | "challenge";
-
 export type AtlasChapter = {
   id: JourneyChapter;
   label: string;
@@ -25,13 +23,5 @@ export const kindnessCountrySlugs = [
   "vietnam",
   "malaysia",
   "south-korea",
-  "australia",
-];
-
-export const challengeCountrySlugs = [
-  "sri-lanka",
-  "thailand",
-  "indonesia",
-  "mongolia",
   "australia",
 ];
