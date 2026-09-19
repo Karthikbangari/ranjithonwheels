@@ -44,11 +44,14 @@
   color: var(--white);
 }
 
+/* A fixed aspect ratio, not a viewport-height frame: the map always shows
+   the whole flat world (no camera zoom), so it should read like the
+   reference images — one clean, evenly proportioned map — rather than
+   stretching to fill an arbitrary tall section. */
 .frame {
   position: relative;
   width: 100%;
-  height: 82vh;
-  min-height: 480px;
+  aspect-ratio: 1672 / 941;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
@@ -89,22 +92,6 @@
   stroke-width: 1.5;
 }
 
-.routeReached {
-  fill: none;
-  stroke: var(--route);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-}
-
-.routeFuture {
-  fill: none;
-  stroke: var(--support);
-  stroke-width: 1.4;
-  stroke-dasharray: 2 4;
-  stroke-linecap: round;
-  opacity: 0.6;
-}
-
 .peopleDot {
   fill: var(--route-glow);
   stroke: var(--white);
@@ -113,12 +100,6 @@
 
 .challengeDot {
   fill: var(--route-dark);
-  stroke: var(--white);
-  stroke-width: 1;
-}
-
-.rideDot {
-  fill: var(--route);
   stroke: var(--white);
   stroke-width: 1;
 }
@@ -137,16 +118,6 @@
   paint-order: stroke;
   stroke: var(--ivory);
   stroke-width: 3px;
-}
-
-.fadedLabel {
-  fill: var(--ink-soft);
-  font-size: 6.5px;
-  text-anchor: middle;
-  opacity: 0.75;
-  paint-order: stroke;
-  stroke: var(--ivory);
-  stroke-width: 2.5px;
 }
 
 /* Plays once on mount for India, per the brief's opening beat — not a
@@ -288,10 +259,8 @@
 }
 
 @media (max-width: 767px) {
-  .frame {
-    height: auto;
-    aspect-ratio: 3 / 4;
-  }
+  /* Keeps the same wide aspect ratio as desktop rather than cropping to a
+     taller box — the whole world, uncropped, is the point of this map. */
 
   /* Stays absolute (not static) — .frame has overflow:hidden for the map
      itself, so a static-flow panel here would either get clipped or force

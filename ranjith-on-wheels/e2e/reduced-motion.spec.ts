@@ -33,11 +33,10 @@ test.describe("prefers-reduced-motion", () => {
     await page.goto("/");
     await page.evaluate(() => document.getElementById("journey-map")?.scrollIntoView());
     await page.waitForTimeout(500);
-    // CLAUDE.md §0 decision #17 / CLAUDE.md §5.5: reduced motion shows the
-    // finished journey immediately — camera already on the last country,
-    // every reachable country already filled red, no glide/pulse/ride
-    // animation to wait out.
-    const map = page.locator('svg[aria-label*="Map centred on Slovakia"]');
+    // CLAUDE.md §0 decision #18 / CLAUDE.md §5.5: reduced motion shows the
+    // finished journey immediately — every reachable country already
+    // filled red, panel already on the last country, no reveal delay.
+    const map = page.locator('svg[aria-label*="currently on Slovakia"]');
     await expect(map).toBeVisible();
     await expect(page.getByRole("heading", { name: "Slovakia", level: 3 })).toBeVisible();
     await expect(page.getByText("Country 23 of 23")).toBeVisible();
