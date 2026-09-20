@@ -11,12 +11,21 @@ import { LineReveal } from "@/components/motion/LineReveal";
 import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 import styles from "./StoryFeature.module.css";
 
-export function StoryFeature({ country, reverse = false }: { country: JourneyCountry; reverse?: boolean }) {
+export function StoryFeature({
+  country,
+  reverse = false,
+  storyHref,
+}: {
+  country: JourneyCountry;
+  reverse?: boolean;
+  // Set only for the ten countries with a dedicated /stories/[slug] page.
+  storyHref?: string;
+}) {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const beatsRef = useRef<HTMLDivElement>(null);
-  const linkRef = useRef<HTMLAnchorElement>(null);
+  const linkRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
   // Only render beats that actually have sourced content — never a
@@ -120,9 +129,16 @@ export function StoryFeature({ country, reverse = false }: { country: JourneyCou
             </div>
           ))}
         </div>
-        <Link href={`/journey/${country.slug}`} className={styles.link} ref={linkRef}>
-          Open full chapter
-        </Link>
+        <div className={styles.links} ref={linkRef}>
+          {storyHref ? (
+            <Link href={storyHref} className={styles.link}>
+              Read the story
+            </Link>
+          ) : null}
+          <Link href={`/journey/${country.slug}`} className={styles.link}>
+            Open full chapter
+          </Link>
+        </div>
       </div>
     </section>
   );

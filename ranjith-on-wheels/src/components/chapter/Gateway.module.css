@@ -1,0 +1,195 @@
+/*
+ * Page 4 — the chapter gateway. The one dark full-screen map: a night-blue
+ * world, the road ahead in lit blue, the road ridden in red. (The owner asked
+ * for it dark — CLAUDE.md §0 decision #20.)
+ */
+.gateway {
+  scroll-margin-top: var(--header-height);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: calc(100svh - var(--header-height));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding: clamp(40px, 7vh, 72px) 0 32px;
+  background: radial-gradient(120% 90% at 50% 0%, #0d2f5e 0%, var(--navy) 60%);
+  color: var(--ink-inverse);
+}
+
+.copy {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--page-gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px 48px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--ink-inverse);
+}
+
+.h2 {
+  font-size: var(--text-display-l);
+  color: var(--ink-inverse);
+  max-width: 14ch;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 249, 240, 0.86);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.swatchBlue,
+.swatchRed {
+  display: inline-block;
+  width: 34px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.swatchBlue {
+  background: repeating-linear-gradient(90deg, var(--blue-lit) 0 6px, transparent 6px 11px);
+}
+
+.swatchRed {
+  background: var(--route);
+}
+
+.figures {
+  display: flex;
+  gap: 40px;
+}
+
+.figures > div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+
+.figures dt {
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 249, 240, 0.72);
+}
+
+.figures dd {
+  font-family: var(--font-data);
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.figures small {
+  font-size: 0.6em;
+  letter-spacing: 0.12em;
+  color: rgba(255, 249, 240, 0.8);
+}
+
+/* On a phone the whole world is too small to tap, so the map keeps a usable
+   width and scrolls sideways inside its own frame. */
+.mapScroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.mapWrap {
+  width: 100%;
+  min-width: 760px;
+  max-width: 1600px;
+  margin: 0 auto;
+  aspect-ratio: 2 / 1;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.land path {
+  fill: #0d2a52;
+  stroke: #1a4179;
+  stroke-width: 0.7;
+}
+
+.marker {
+  cursor: pointer;
+}
+
+/* The ring below is the focus indicator; the browser's own box around the
+   whole link (label included) would just be noise on a map. */
+.marker:focus-visible {
+  outline: none;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.ring {
+  fill: none;
+  stroke: var(--route);
+  stroke-width: 1.5;
+  opacity: 0.45;
+}
+
+.core {
+  fill: var(--ink-inverse);
+  stroke: var(--route);
+  stroke-width: 3;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--ink-inverse);
+  paint-order: stroke;
+  stroke: var(--navy);
+  stroke-width: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.marker:hover .ring,
+.marker:focus-visible .ring {
+  opacity: 1;
+  stroke: var(--route-glow);
+  stroke-width: 2.5;
+}
+
+.caption {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--page-gutter);
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.08em;
+  color: rgba(255, 249, 240, 0.7);
+}

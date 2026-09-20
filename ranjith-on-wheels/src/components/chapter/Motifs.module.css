@@ -1,0 +1,78 @@
+/*
+ * Shared frame for the ten story motifs. Every colour comes from the
+ * --story-* custom properties StoryPage sets on its wrapper, so one
+ * stylesheet serves all ten colour worlds. Every motif rests in its finished
+ * state here — the GSAP setup only animates toward it (see useChapterMotion).
+ */
+.stage {
+  position: relative;
+  aspect-ratio: 5 / 2;
+  border-radius: var(--radius-media);
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--story-tint) 35%, var(--white)) 0%,
+    var(--story-tint) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--story-accent) 20%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Scene motifs are built to be cropped to the middle on a phone; traversal
+   motifs (the ride, the ferry, the horizon) keep their full width instead. */
+@media (max-width: 640px) {
+  .scene {
+    aspect-ratio: 3 / 2;
+  }
+}
+
+.clock {
+  position: absolute;
+  top: 8%;
+  left: 4%;
+  padding: 8px 14px;
+  border-radius: var(--radius-control);
+  background: var(--glass);
+  border: 1px solid var(--glass-stroke);
+  color: var(--story-ink);
+  font-family: var(--font-data);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.signal {
+  position: absolute;
+  top: 8%;
+  right: 4%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-control);
+  background: var(--glass);
+  border: 1px solid var(--glass-stroke);
+  color: var(--story-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.signal svg {
+  width: 20px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .clock,
+  .signal {
+    font-size: 0.68rem;
+    padding: 6px 10px;
+  }
+}

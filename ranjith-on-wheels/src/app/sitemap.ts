@@ -3,7 +3,7 @@ import { journeyCountries } from "@/content/journey";
 import { siteUrl } from "@/content/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["", "/journey", "/book", "/about", "/support", "/contact"].map((path) => ({
+  const staticRoutes = ["", "/stories", "/journey", "/book", "/about", "/support", "/contact"].map((path) => ({
     url: `${siteUrl}${path}`,
     lastModified: new Date(),
   }));

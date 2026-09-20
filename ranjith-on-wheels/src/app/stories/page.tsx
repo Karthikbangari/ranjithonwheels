@@ -28,7 +28,12 @@ export default function StoriesPage() {
         </p>
       </section>
       {topStories.map((country, index) => (
-        <StoryFeature key={country.slug} country={country} reverse={index % 2 === 1} />
+        <StoryFeature
+          key={country.slug}
+          country={country}
+          reverse={index % 2 === 1}
+          storyHref={`/journey/${country.slug}`}
+        />
       ))}
     </>
   );

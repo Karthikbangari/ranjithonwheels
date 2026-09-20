@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/content/site";
+import { JourneyGateway } from "@/components/chapter/JourneyGateway";
 import { JourneyArchive } from "@/components/journey/JourneyArchive";
 import styles from "@/components/journey/JourneyArchive.module.css";
 
@@ -18,6 +19,7 @@ export default function JourneyPage() {
           + kilometres. Search or filter by chapter to open any country&apos;s chapter.
         </p>
       </section>
+      <JourneyGateway />
       <JourneyArchive />
     </>
   );

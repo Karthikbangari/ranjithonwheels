@@ -34,6 +34,7 @@
      pass 4.5:1 as text and as a button background under white text
      (checked the same way decision #13 was). */
   --route: #e6242a; /* india-red: the route line, and nothing else structural */
+  --blue-lit: #5aa2ff; /* the road ahead, on a dark ground (chapter heroes, the gateway map) */
   --route-dark: #b5121b; /* darker red inner edge on visited countries */
   --route-glow: #ffb44a; /* sunrise gold — route edge, active marker halo */
   --support: #0b4ea2; /* journey-blue: nav, most buttons, the map, the final page */
