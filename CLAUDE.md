@@ -503,6 +503,7 @@ These are the things the site is waiting on. **None of them blocks development**
 - [ ] Cambodia cover / hero
 - [ ] Singapore cover / hero
 - [ ] China cover / hero
+- (`npm run content:status` also lists every other country that has no photograph yet — Sri Lanka, Thailand, Australia and the Europe leg among them. Those are not being requested until their manuscripts exist; the three above are the ones currently asked for.)
 - Also optional per country: `gallery[]` (each photograph becomes a Page 10 film frame), `signatureImage` (replaces the Page 11 illustration), `videoUrl` (linked from the signature page).
 
 **CONTENT REQUIRED** — each is a story entry in `src/content/stories.ts` (`contentStatus: "verified"` only once checked against the manuscript); until then the chapter shows its wordless atmospheric interlude.
