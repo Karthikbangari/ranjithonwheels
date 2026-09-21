@@ -33,6 +33,8 @@ export function TransitionLink({
   contour,
   glow,
   sea,
+  opening,
+  stats,
   children,
   className,
 }: {
@@ -47,6 +49,10 @@ export function TransitionLink({
   contour: string;
   glow: string;
   sea: boolean;
+  // The rest of the hero's text stack, so the veil is exactly as tall as the
+  // hero it becomes and every line lands where the hero's will.
+  opening: string;
+  stats: Array<{ value: string; unit: string; label: string }>;
   children: ReactNode;
   className?: string;
 }) {
@@ -92,12 +98,31 @@ export function TransitionLink({
           <div data-v-name style="font-family:var(--font-display);font-weight:420;letter-spacing:-.02em;font-size:clamp(64px,15.5vw,250px);line-height:.92"></div>
         </div>
         <p data-v-coords style="margin:0;font-family:var(--font-data);font-size:12px;letter-spacing:.14em;color:rgba(255,249,240,.82)"></p>
+        ${opening ? `<p data-v-opening style="margin:0;max-width:22ch;font-family:var(--font-display);font-style:italic;font-size:clamp(22px,2.7vw,40px);line-height:1.12;text-wrap:balance"></p>` : ""}
+        ${
+          stats.length > 0
+            ? `<dl style="margin:6px 0 0;display:flex;flex-wrap:wrap;gap:10px 36px">${stats
+                .map(
+                  () =>
+                    `<div data-v-stat style="display:flex;flex-direction:column-reverse;gap:2px"><dt style="font-size:.85rem;color:rgba(255,249,240,.78)"></dt><dd style="margin:0;font-family:var(--font-data);font-size:clamp(1.3rem,2.4vw,1.9rem);letter-spacing:.04em;font-variant-numeric:tabular-nums"><span></span> <span style="font-size:.7em;letter-spacing:.12em;color:rgba(255,249,240,.8)"></span></dd></div>`,
+                )
+                .join("")}</dl>`
+            : ""
+        }
       </div>`;
     // Text goes in as text, never as markup.
     const spans = veil.querySelectorAll<HTMLElement>("[data-v-line] span");
     spans[0].textContent = chapterLine;
     if (spans[1]) spans[1].textContent = region;
     veil.querySelector<HTMLElement>("[data-v-name]")!.textContent = name;
+    const openingEl = veil.querySelector<HTMLElement>("[data-v-opening]");
+    if (openingEl) openingEl.textContent = opening;
+    veil.querySelectorAll<HTMLElement>("[data-v-stat]").forEach((el, index) => {
+      el.querySelector("dt")!.textContent = stats[index].label;
+      const parts = el.querySelectorAll("dd span");
+      parts[0].textContent = stats[index].value;
+      parts[1].textContent = stats[index].unit;
+    });
     const coordsEl = veil.querySelector<HTMLElement>("[data-v-coords]")!;
     coordsEl.textContent = formatCoords(fromLonLat);
     document.body.appendChild(veil);
@@ -129,6 +154,7 @@ export function TransitionLink({
         0.35,
       )
       .to(q("[data-v-line]"), { opacity: 1, duration: 0.4 }, 0.5)
+      .fromTo(veil.querySelectorAll("[data-v-opening], dl"), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.8)
       // 4. …the terrain morphs in…
       .to(q("[data-v-terrain]"), { opacity: 1, duration: 0.8, ease: ease.ui }, 0.35)
       // 5. …and the country's type enters, where the hero's type will be.

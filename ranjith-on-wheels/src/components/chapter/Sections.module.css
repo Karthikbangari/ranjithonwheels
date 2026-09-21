@@ -762,6 +762,11 @@
   .interludeScene [data-heavy] {
     display: none;
   }
+
+  /* Less empty gradient above the landscape on a phone. */
+  .interlude {
+    min-height: 44svh;
+  }
 }
 
 /* The red road (ridden) runs through the landscape as the visitor scrolls;

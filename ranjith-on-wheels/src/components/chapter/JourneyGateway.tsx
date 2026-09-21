@@ -5,6 +5,7 @@ import { site } from "@/content/site";
 import { arc, landPaths, project, worldProjection } from "@/lib/chapterGeo";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Grain } from "./Grain";
+import { MapScroll } from "./MapScroll";
 import { TerrainBackdrop } from "./TerrainBackdrop";
 import { Scene } from "./Scene";
 import styles from "./Gateway.module.css";
@@ -84,7 +85,7 @@ export function JourneyGateway() {
           )
           .join("")}
       </style>
-      <div className={styles.mapScroll}>
+      <MapScroll className={styles.mapScroll}>
         <div className={styles.mapWrap}>
           <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className={styles.svg} role="group" aria-label="World map of the journey. Every country is a link to its chapter.">
             <defs>
@@ -150,7 +151,7 @@ export function JourneyGateway() {
             </g>
           </svg>
         </div>
-      </div>
+      </MapScroll>
       <p className={styles.caption}>Indicative route — drawn between display anchors, not the cycling track.</p>
     </Scene>
   );

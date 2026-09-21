@@ -153,6 +153,13 @@ test.describe("the chapter gateway (Page 4)", () => {
     expect(bg).not.toMatch(/rgb\(0, 0, 0\)/);
   });
 
+  test("on a phone the map opens centred on the journey, not the Atlantic", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/journey");
+    const scrolled = await page.locator("#chapter-gateway [class*=mapScroll]").evaluate((el) => el.scrollLeft);
+    expect(scrolled).toBeGreaterThan(50);
+  });
+
   test("every marker is keyboard-reachable and opens its chapter", async ({ page }) => {
     await page.goto("/journey");
     const marker = page.locator('#chapter-gateway a[data-slug="japan"]');
@@ -274,6 +281,43 @@ test.describe("chapter details (decision #21)", () => {
     await expect(page).toHaveURL(/\/journey\/thailand$/, { timeout: 8000 });
     await expect(page.getByRole("heading", { name: "Thailand", level: 1 })).toBeVisible();
     await expect(page.locator("#chapter-veil")).toHaveCount(0, { timeout: 8000 });
+  });
+
+  test("the veil's type lands exactly where the next hero's type is — no ghosting, no jump", async ({ page }) => {
+    for (const [from, to, name] of [
+      ["cambodia", "thailand", "Thailand"],
+      ["singapore", "indonesia", "Indonesia"], // an opening line and two stats
+    ]) {
+      await page.goto(`/journey/${from}`);
+      await page.locator("#chapter-transition").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1200);
+      await page.getByRole("link", { name: new RegExp(`Enter ${name}`) }).click();
+      // Both exist for a moment: the veil, and the new hero beneath it.
+      await page.waitForFunction(
+        (n) => document.querySelector("#chapter-veil") && document.querySelector("#chapter-intro h1")?.textContent === n,
+        name,
+        { timeout: 8000 },
+      );
+      const offsets = await page.evaluate(() => {
+        const top = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().top) : null);
+        const left = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().left) : null);
+        const veil = document.querySelector("#chapter-veil")!;
+        const hero = document.querySelector("#chapter-intro")!;
+        const pairs: Record<string, [Element | null, Element | null]> = {
+          name: [veil.querySelector("[data-v-name]"), hero.querySelector("h1 .line-inner")],
+          coords: [veil.querySelector("[data-v-coords]"), hero.querySelector("p[class*=coords]")],
+          line: [veil.querySelector("[data-v-line]"), hero.querySelector("p[class*=chapterLine]")],
+          opening: [veil.querySelector("[data-v-opening]"), hero.querySelector("p[class*=opening]")],
+        };
+        return Object.fromEntries(
+          Object.entries(pairs).map(([key, [a, b]]) => [key, a && b ? [(top(a) ?? 0) - (top(b) ?? 0), (left(a) ?? 0) - (left(b) ?? 0)] : null]),
+        );
+      });
+      for (const [key, delta] of Object.entries(offsets)) {
+        expect(delta, `${from}→${to}: ${key}`).toEqual([0, 0]);
+      }
+      await expect(page).toHaveURL(new RegExp(`/journey/${to}$`));
+    }
   });
 
   test("Instagram and YouTube stay hidden until real URLs are supplied — never a guessed profile", async ({ page }) => {

@@ -7,6 +7,7 @@ import { site } from "@/content/site";
 import { formatCoords } from "@/lib/coords";
 import { contourLayers } from "@/lib/contours";
 import { getAtmosphere } from "@/content/atmospheres";
+import { buildChapter } from "@/content/chapters";
 import { Scene } from "./Scene";
 import { TransitionLink } from "./TransitionLink";
 import styles from "./Sections.module.css";
@@ -20,6 +21,7 @@ export function ChapterTransition({ chapter }: { chapter: Chapter }) {
   // Everything the hand-off veil needs to already look like the next hero.
   const nextAtmosphere = next ? getAtmosphere(next.slug) : null;
   const sea = next ? Boolean(seaCrossings[next.slug]) : false;
+  const nextChapter = next ? buildChapter(next.slug) : null;
   const nextRegion = next ? atlasChapters.find((item) => item.id === next.chapter)?.label ?? "" : "";
 
   return (
@@ -53,6 +55,12 @@ export function ChapterTransition({ chapter }: { chapter: Chapter }) {
               contour={nextAtmosphere ? contourLayers(nextAtmosphere.terrain, 4)[1] : ""}
               glow={nextAtmosphere?.theme.glow ?? "#5aa2ff"}
               sea={sea}
+              opening={nextChapter?.opening ?? ""}
+              stats={(nextChapter?.story?.stats ?? []).map((stat) => ({
+                value: `${stat.prefix ?? ""}${stat.value.toLocaleString("en-US")}`,
+                unit: stat.unit,
+                label: stat.label,
+              }))}
               className={styles.nextLink}
             >
               <span data-reveal>Enter {next.name}</span>

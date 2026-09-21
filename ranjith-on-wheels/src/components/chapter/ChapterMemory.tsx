@@ -18,9 +18,10 @@ import styles from "./Sections.module.css";
 export function ChapterMemory({ chapter, media }: { chapter: Chapter; media: CountryMedia }) {
   const { people, country } = chapter;
   const count = Math.max(people.length, media.gallery.length);
+  // Margins top and bottom leave the outline clear of the frame's printed labels.
   const art = heroMap(country.slug, country.displayAnchor, 600, 400, [
-    [60, 40],
-    [540, 360],
+    [60, 64],
+    [540, 320],
   ]);
 
   return (
