@@ -2,7 +2,6 @@ import type { CSSProperties } from "react";
 import type { Chapter } from "@/content/chapters";
 import { site } from "@/content/site";
 import { formatCoords } from "@/lib/coords";
-import { Grain } from "./Grain";
 import { Scene } from "./Scene";
 import { SceneLayer } from "./SceneLayer";
 import styles from "./Sections.module.css";
@@ -27,7 +26,6 @@ export function ChapterInterlude({ chapter }: { chapter: Chapter }) {
       aria-label={`${country.name}: the road through`}
     >
       <SceneLayer kinds={atmosphere.scenes} seed={atmosphere.terrain.seed + 9} night={night} className={styles.interludeScene} />
-      <Grain strength={night ? 1.4 : 0.6} />
       <div className={styles.interludeRoad} aria-hidden="true">
         <span className={styles.interludeRed} data-road />
         <span className={styles.interludeBlue} />

@@ -4,7 +4,6 @@ import { journeyCountries } from "@/content/journey";
 import { site } from "@/content/site";
 import { arc, landPaths, project, worldProjection } from "@/lib/chapterGeo";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { Grain } from "./Grain";
 import { MapScroll } from "./MapScroll";
 import { TerrainBackdrop } from "./TerrainBackdrop";
 import { Scene } from "./Scene";
@@ -37,14 +36,13 @@ export function JourneyGateway() {
       aria-labelledby="gateway-heading"
       style={{ "--story-glow": "#5aa2ff" } as CSSProperties}
     >
-      {/* Layered depth, not a black screen: charcoal ground, a faint terrain
-          texture, a pool of atmospheric light and a very light grain. */}
+      {/* Layered depth, not a black screen: a charcoal ground, a faint terrain
+          texture and a pool of atmospheric light — kept quiet on purpose. */}
       <TerrainBackdrop
         terrain={{ style: "contour", seed: 305, levels: 16, scale: 0.85, amp: 1.2, stretch: [1.2, 1] }}
         className={styles.terrain}
       />
       <div className={styles.light} aria-hidden="true" />
-      <Grain strength={1.5} />
       <div className={styles.copy}>
         <div className={styles.intro}>
           <Eyebrow>Chapter gateway</Eyebrow>

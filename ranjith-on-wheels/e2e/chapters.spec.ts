@@ -292,27 +292,30 @@ test.describe("chapter details (decision #21)", () => {
       await page.locator("#chapter-transition").scrollIntoViewIfNeeded();
       await page.waitForTimeout(1200);
       await page.getByRole("link", { name: new RegExp(`Enter ${name}`) }).click();
-      // Both exist for a moment: the veil, and the new hero beneath it.
-      await page.waitForFunction(
-        (n) => document.querySelector("#chapter-veil") && document.querySelector("#chapter-intro h1")?.textContent === n,
+      // Both exist for a moment: the veil, and the new hero beneath it. Measure
+      // inside the wait itself, so the veil can't fade out between "both
+      // exist" and the measurement.
+      const handle = await page.waitForFunction(
+        (n) => {
+          const veil = document.querySelector("#chapter-veil");
+          const hero = document.querySelector("#chapter-intro");
+          if (!veil || !hero || hero.querySelector("h1")?.textContent !== n) return null;
+          const top = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().top) : null);
+          const left = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().left) : null);
+          const pairs: Record<string, [Element | null, Element | null]> = {
+            name: [veil.querySelector("[data-v-name]"), hero.querySelector("h1 .line-inner")],
+            coords: [veil.querySelector("[data-v-coords]"), hero.querySelector("p[class*=coords]")],
+            line: [veil.querySelector("[data-v-line]"), hero.querySelector("p[class*=chapterLine]")],
+            opening: [veil.querySelector("[data-v-opening]"), hero.querySelector("p[class*=opening]")],
+          };
+          return Object.fromEntries(
+            Object.entries(pairs).map(([key, [a, b]]) => [key, a && b ? [(top(a) ?? 0) - (top(b) ?? 0), (left(a) ?? 0) - (left(b) ?? 0)] : null]),
+          );
+        },
         name,
         { timeout: 8000 },
       );
-      const offsets = await page.evaluate(() => {
-        const top = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().top) : null);
-        const left = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().left) : null);
-        const veil = document.querySelector("#chapter-veil")!;
-        const hero = document.querySelector("#chapter-intro")!;
-        const pairs: Record<string, [Element | null, Element | null]> = {
-          name: [veil.querySelector("[data-v-name]"), hero.querySelector("h1 .line-inner")],
-          coords: [veil.querySelector("[data-v-coords]"), hero.querySelector("p[class*=coords]")],
-          line: [veil.querySelector("[data-v-line]"), hero.querySelector("p[class*=chapterLine]")],
-          opening: [veil.querySelector("[data-v-opening]"), hero.querySelector("p[class*=opening]")],
-        };
-        return Object.fromEntries(
-          Object.entries(pairs).map(([key, [a, b]]) => [key, a && b ? [(top(a) ?? 0) - (top(b) ?? 0), (left(a) ?? 0) - (left(b) ?? 0)] : null]),
-        );
-      });
+      const offsets = (await handle.jsonValue()) as Record<string, [number, number] | null>;
       for (const [key, delta] of Object.entries(offsets)) {
         expect(delta, `${from}→${to}: ${key}`).toEqual([0, 0]);
       }

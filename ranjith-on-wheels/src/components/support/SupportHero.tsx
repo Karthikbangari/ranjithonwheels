@@ -17,9 +17,6 @@ export function SupportHero() {
         />
       </div>
       <div className={styles.gradient} aria-hidden="true" />
-      <svg className={styles.routeSvg} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M 4 22 C 25 10, 50 6, 70 10 S 92 20 97 16" className={styles.routePath} />
-      </svg>
       <div className={styles.content}>
         <Eyebrow>Support the road ahead</Eyebrow>
         <h1 className={styles.headline}>Help the next kilometre happen.</h1>

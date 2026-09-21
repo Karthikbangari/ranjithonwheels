@@ -54,6 +54,8 @@
   aspect-ratio: 1672 / 941;
   border-radius: 12px;
   overflow: hidden;
+  /* The ocean colour, so the map's letterbox is never a stripe of page cream. */
+  background: var(--sky);
   box-shadow: var(--shadow-soft);
 }
 

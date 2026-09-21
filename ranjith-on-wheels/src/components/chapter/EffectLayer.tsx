@@ -7,7 +7,7 @@ import { seeded } from "@/lib/contours";
 export function EffectLayer({ effect, seed, className }: { effect: HeroEffect; seed: number; className?: string }) {
   if (effect === "none") return null;
   const random = seeded(seed * 7 + 3);
-  const items = { dust: 30, mist: 4, streaks: 11, petals: 16, citylights: 44, highway: 14 }[effect];
+  const items = { dust: 30, mist: 4, streaks: 11, petals: 16, citylights: 18, highway: 6 }[effect];
 
   return (
     <svg

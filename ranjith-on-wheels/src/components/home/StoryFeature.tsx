@@ -15,9 +15,13 @@ export function StoryFeature({
   country,
   reverse = false,
   storyHref,
+  headline,
 }: {
   country: JourneyCountry;
   reverse?: boolean;
+  // A short headline for a full story; the summary then reads as body text
+  // instead of being set as a six-line heading.
+  headline?: string;
   // Set only for the ten countries with a dedicated /stories/[slug] page.
   storyHref?: string;
 }) {
@@ -119,8 +123,9 @@ export function StoryFeature({
           Country {country.order} — {country.name}
         </span>
         <h2 className={styles.headline} ref={headlineRef}>
-          <LineReveal lines={[country.summary ?? country.name]} />
+          <LineReveal lines={[headline ?? country.summary ?? country.name]} />
         </h2>
+        {headline && country.summary ? <p className={styles.summary}>{country.summary}</p> : null}
         <div className={styles.beats} ref={beatsRef}>
           {beats.map((beat) => (
             <div key={beat.label} className={styles.beat} data-beat>

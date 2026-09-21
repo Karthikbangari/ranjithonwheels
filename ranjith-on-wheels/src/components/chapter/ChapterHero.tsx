@@ -9,7 +9,6 @@ import { seaCrossings } from "@/content/chapters";
 import { heroMap, type HeroMap } from "@/lib/chapterGeo";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { EffectLayer } from "./EffectLayer";
-import { Grain } from "./Grain";
 import { SceneLayer } from "./SceneLayer";
 import { Scene } from "./Scene";
 import { TerrainBackdrop } from "./TerrainBackdrop";
@@ -59,7 +58,6 @@ export function ChapterHero({ chapter }: { chapter: Chapter }) {
       <MapLayer map={desktop} className={styles.mapDesktop} dashed={dashedRoute} />
       <MapLayer map={mobile} className={styles.mapMobile} dashed={dashedRoute} />
       <EffectLayer effect={atmosphere.effect} seed={atmosphere.terrain.seed} className={styles.effect} />
-      <Grain strength={night ? 1.6 : 0.7} />
 
       <div className={styles.content}>
         <p className={styles.chapterLine} data-meta>

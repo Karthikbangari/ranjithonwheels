@@ -24,12 +24,12 @@ export function TerrainBackdrop({ terrain, className }: { terrain: Terrain; clas
       <svg {...svgProps}>
         <g data-layer>
           <g data-drift data-depth={0.15}>
-            <path d={minor.join("")} fill="none" stroke="var(--ink-inverse)" strokeWidth={0.6} opacity={0.07} />
+            <path d={minor.join("")} fill="none" stroke="var(--ink-inverse)" strokeWidth={0.6} opacity={0.04} />
           </g>
         </g>
         <g data-layer>
           <g data-drift data-depth={0.4}>
-            <path d={major.join("")} fill="none" stroke="var(--story-glow)" strokeWidth={1} opacity={0.2} />
+            <path d={major.join("")} fill="none" stroke="var(--story-glow)" strokeWidth={1} opacity={0.1} />
           </g>
         </g>
       </svg>
@@ -45,9 +45,9 @@ export function TerrainBackdrop({ terrain, className }: { terrain: Terrain; clas
               d={d}
               fill="none"
               stroke={index % 2 === 0 ? "var(--ink-inverse)" : "var(--story-glow)"}
-              strokeWidth={0.9 + index * 0.35}
+              strokeWidth={0.8 + index * 0.25}
               strokeLinecap="round"
-              opacity={0.13 + index * 0.07}
+              opacity={0.05 + index * 0.03}
             />
           </g>
         </g>

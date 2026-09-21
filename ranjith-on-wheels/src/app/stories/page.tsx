@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { journeyCountries } from "@/content/journey";
 import { site } from "@/content/site";
+import { getStory } from "@/content/stories";
 import { StoryFeature } from "@/components/home/StoryFeature";
 import styles from "./page.module.css";
 
@@ -33,6 +34,7 @@ export default function StoriesPage() {
           country={country}
           reverse={index % 2 === 1}
           storyHref={`/journey/${country.slug}`}
+          headline={getStory(country.slug)?.headline}
         />
       ))}
     </>

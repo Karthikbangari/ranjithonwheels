@@ -47,6 +47,13 @@
   max-width: 16ch;
 }
 
+.summary {
+  max-width: 52ch;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
 .beats {
   display: flex;
   flex-direction: column;

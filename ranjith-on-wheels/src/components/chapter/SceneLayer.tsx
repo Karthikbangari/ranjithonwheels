@@ -21,7 +21,8 @@ export function SceneLayer({
   subtle?: boolean;
   className?: string;
 }) {
-  const weight = subtle ? 0.45 : 1;
+  // Quiet by default: the landscape is a backdrop, never the subject.
+  const weight = subtle ? 0.4 : 0.65;
   const { layers, lights, reflection } = sceneData(kinds, seed, night);
   const fill = (tone: "far" | "near" | "ink") =>
     tone === "far" ? "var(--hero-to)" : tone === "ink" ? "var(--story-ink)" : "var(--hero-from)";

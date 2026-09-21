@@ -25,12 +25,9 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
-    180deg,
-    rgba(7, 28, 59, 0.75) 0%,
-    rgba(7, 28, 59, 0.55) 40%,
-    rgba(7, 28, 59, 0.92) 100%
-  );
+  background:
+    linear-gradient(90deg, rgba(7, 28, 59, 0.88) 0%, rgba(7, 28, 59, 0.62) 45%, rgba(7, 28, 59, 0.2) 100%),
+    linear-gradient(180deg, rgba(7, 28, 59, 0.4) 0%, rgba(7, 28, 59, 0.9) 100%);
 }
 
 .content {
@@ -49,7 +46,7 @@
 .headline em {
   display: block;
   font-style: italic;
-  color: var(--route);
+  color: #ff6b70;
 }
 
 .socialActions {
