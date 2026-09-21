@@ -1,8 +1,11 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { journeyCountries } from "@/content/journey";
 import { site } from "@/content/site";
 import { arc, landPaths, project, worldProjection } from "@/lib/chapterGeo";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Grain } from "./Grain";
+import { TerrainBackdrop } from "./TerrainBackdrop";
 import { Scene } from "./Scene";
 import styles from "./Gateway.module.css";
 
@@ -26,7 +29,21 @@ export function JourneyGateway() {
   const unfinished = `M${lastX} ${lastY}C${lastX + 90} ${lastY - 70} ${lastX + 190} ${lastY - 210} ${lastX + 330} -80`;
 
   return (
-    <Scene name="gateway" className={styles.gateway} id="chapter-gateway" aria-labelledby="gateway-heading">
+    <Scene
+      name="gateway"
+      className={styles.gateway}
+      id="chapter-gateway"
+      aria-labelledby="gateway-heading"
+      style={{ "--story-glow": "#5aa2ff" } as CSSProperties}
+    >
+      {/* Layered depth, not a black screen: charcoal ground, a faint terrain
+          texture, a pool of atmospheric light and a very light grain. */}
+      <TerrainBackdrop
+        terrain={{ style: "contour", seed: 305, levels: 16, scale: 0.85, amp: 1.2, stretch: [1.2, 1] }}
+        className={styles.terrain}
+      />
+      <div className={styles.light} aria-hidden="true" />
+      <Grain strength={1.5} />
       <div className={styles.copy}>
         <div className={styles.intro}>
           <Eyebrow>Chapter gateway</Eyebrow>
@@ -82,13 +99,17 @@ export function JourneyGateway() {
               ))}
             </g>
             <g fill="none" strokeLinecap="round" aria-hidden="true">
+              {/* A wide, faint underlay is the glow — far cheaper than a blur filter. */}
+              {legs.map((d, index) => (
+                <path key={index} d={d} stroke="var(--blue-lit)" strokeWidth={10} opacity={0.12} />
+              ))}
               {legs.map((d, index) => (
                 <path key={index} data-seg d={d} stroke="var(--blue-lit)" strokeWidth={3} />
               ))}
               {legs.map((d, index) => (
-                <path key={index} data-ride d={d} stroke="var(--route)" strokeWidth={3.5} />
+                <path key={index} data-ride d={d} stroke="var(--route)" strokeWidth={3} opacity={0.92} />
               ))}
-              <path data-unfinished d={unfinished} stroke="url(#gateway-unfinished)" strokeWidth={3} strokeDasharray="4 12" />
+              <path data-unfinished d={unfinished} stroke="url(#gateway-unfinished)" strokeWidth={3.5} strokeDasharray="4 12" />
             </g>
             {journeyCountries.map((country, index) => {
               const [x, y] = points[index];

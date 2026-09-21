@@ -58,9 +58,26 @@
     );
 }
 
+/* Atmospheric light: a soft pool of the country's glow colour, high on the
+   right, so the dark end of every gradient has a source of light in it. */
+.light {
+  position: absolute;
+  inset: 0;
+  z-index: -4;
+  pointer-events: none;
+  background: radial-gradient(58% 60% at 80% 26%, color-mix(in srgb, var(--story-glow) 24%, transparent), transparent 72%);
+}
+
+.night .light {
+  background:
+    radial-gradient(46% 50% at 78% 24%, color-mix(in srgb, var(--story-glow) 30%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 20% 100%, color-mix(in srgb, var(--hero-to) 55%, transparent), transparent 75%);
+}
+
 .terrain,
 .map,
-.effect {
+.effect,
+.scene {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -70,6 +87,29 @@
 
 .terrain {
   z-index: -3;
+}
+
+/* A night country whose photograph was taken by day: the same photograph,
+   taken down to dusk, so the lights and road above it still read. */
+.night.withPhoto .scrim {
+  background:
+    linear-gradient(0deg, color-mix(in srgb, var(--hero-from) 94%, transparent) 0%, color-mix(in srgb, var(--hero-from) 70%, transparent) 45%, color-mix(in srgb, var(--hero-from) 52%, transparent) 100%),
+    linear-gradient(90deg, color-mix(in srgb, var(--hero-from) 70%, transparent) 0%, transparent 62%);
+}
+
+/* Under the scrim, so the type at the bottom left always sits on a darkened
+   ground, however busy the landscape behind it. */
+.scene {
+  z-index: -5;
+}
+
+/* Lighter on a phone: half of every particle layer is dropped, and its
+   scroll tweens are skipped with it (see choreography.ts). */
+@media (max-width: 899px) {
+  .effect [data-heavy],
+  .scene [data-heavy] {
+    display: none;
+  }
 }
 
 .withPhoto .terrain {

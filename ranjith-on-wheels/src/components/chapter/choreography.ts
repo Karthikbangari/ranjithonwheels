@@ -12,6 +12,14 @@ import { playOnView, scrubOnView } from "./useChapterMotion";
 // Motion rules (CLAUDE.md §5.2): transform and opacity, apart from the two
 // justified exceptions marked below — stroke-dashoffset to trace a path along
 // its length, and textContent for counters and coordinate readouts.
+//
+// Robustness rule (CLAUDE.md §0 decision #21): a scrubbed timeline must be
+// correct wherever the visitor arrives — a reload half way down, back/forward,
+// an anchor jump, a resize, a fling to the bottom. ScrollTrigger applies an
+// already-scrolled position with tween callbacks suppressed, so anything
+// written as *text* is also written from the trigger's own onRefresh/onUpdate
+// (see `withSync`), and anything set to an "early" state is set only where the
+// trigger will bring it back.
 type Api = typeof Gsap;
 type Node = HTMLElement | SVGElement;
 type Scene = (stage: HTMLElement, gsap: Api) => void | (() => void);
@@ -19,6 +27,9 @@ type Scene = (stage: HTMLElement, gsap: Api) => void | (() => void);
 const all = (stage: HTMLElement, selector: string) => Array.from(stage.querySelectorAll<Node>(selector));
 const one = <T extends Element>(stage: HTMLElement, selector: string) => stage.querySelector<T>(selector);
 const depthOf = (el: Node) => Number(el.dataset.depth ?? 0.5);
+// Elements hidden by CSS (the half of a particle layer a phone drops) are
+// neither painted nor worth animating.
+const shown = (el: Node) => getComputedStyle(el).display !== "none";
 
 // Trace a path along its length. Not a transform — but the only way to draw a
 // line on, and the rest state (no dasharray at all) is the complete line.
@@ -28,15 +39,24 @@ function prepareDraw(path: SVGGeometryElement) {
   return length;
 }
 
+// Text written from a scrub trigger's own callbacks as well as its tweens.
+function withSync<T extends object>(vars: T, sync: () => void) {
+  return { ...vars, onRefresh: sync, onUpdate: sync };
+}
+
 // Shapes drift at different speeds as the page scrolls: depth without ever
-// moving text (parallax on text is banned).
+// moving text (parallax on text is banned). One timeline and one trigger for
+// the whole group — not a trigger per particle.
 function drift(gsap: Api, stage: HTMLElement, els: Node[], distance: number, start = "top top") {
-  els.forEach((el) => {
-    gsap.to(el, {
-      y: -distance * depthOf(el),
-      ease: "none",
-      scrollTrigger: { trigger: stage, start, end: "bottom top", scrub: true },
-    });
+  const moving = els.filter(shown);
+  if (moving.length === 0) return;
+  const tl = gsap.timeline({
+    defaults: { ease: "none", duration: 1 },
+    scrollTrigger: { trigger: stage, start, end: "bottom top", scrub: true },
+  });
+  moving.forEach((el) => {
+    const amount = -distance * depthOf(el);
+    tl.to(el, el.dataset.axis === "x" ? { x: amount * 1.4 } : { y: amount }, 0);
   });
 }
 
@@ -59,25 +79,44 @@ function reveal(gsap: Api, stage: HTMLElement, selector = "[data-reveal]", start
 }
 
 const hero: Scene = (stage, gsap) => {
-  // The previous chapter's hand-off veil (see TransitionLink) is still up:
-  // this hero is what it was covering, so let it go.
+  // Arriving through the hand-off (see TransitionLink): the veil already shows
+  // this chapter's coordinates and name in exactly this position, so the hero
+  // must not replay its type — it just lifts the veil and lets the road, the
+  // terrain and the environment settle in around what is already there.
   const veil = document.getElementById("chapter-veil");
-  if (veil) gsap.to(veil, { opacity: 0, duration: 0.9, ease: ease.ui, delay: 0.25, onComplete: () => veil.remove() });
+  if (veil) gsap.to(veil, { opacity: 0, duration: 0.9, ease: ease.ui, delay: 0.2, onComplete: () => veil.remove() });
 
   const tl = gsap.timeline({ defaults: { ease: ease.reveal } });
   tl.fromTo(all(stage, "[data-photo]"), { scale: 1.14 }, { scale: 1, duration: 2.6, ease: ease.travel }, 0)
-    .fromTo(all(stage, "[data-layer]"), { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 1.4, stagger: 0.08 }, 0.1)
-    .fromTo(all(stage, ".line-inner"), { yPercent: 110 }, { yPercent: 0, duration: 1.1, stagger: 0.06 }, 0.25)
-    .fromTo(all(stage, "[data-meta]"), { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.06 }, 0.8)
-    .fromTo(all(stage, "[data-route-out], [data-marker]"), { opacity: 0 }, { opacity: 1, duration: 0.8 }, 1.4);
+    .fromTo(
+      all(stage, "[data-layer]"),
+      { opacity: 0, y: 36 },
+      { opacity: 1, y: 0, duration: 1.4, stagger: { amount: 0.5 } },
+      0.1,
+    )
+    .fromTo(all(stage, "[data-marker]"), { opacity: 0 }, { opacity: 1, duration: 0.8 }, 0.9);
+  if (!veil) {
+    tl.fromTo(all(stage, ".line-inner"), { yPercent: 110 }, { yPercent: 0, duration: 1.1, stagger: 0.06 }, 0.25).fromTo(
+      all(stage, "[data-meta]"),
+      { y: 18, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.9, stagger: 0.06 },
+      0.8,
+    );
+  }
 
   all(stage, "[data-outline]").forEach((path) => {
     const length = prepareDraw(path as unknown as SVGGeometryElement);
     tl.fromTo(path, { strokeDashoffset: length }, { strokeDashoffset: 0, duration: 2, ease: ease.travel }, 0.3);
   });
   all(stage, "[data-route-in]").forEach((path) => {
+    // A sea crossing arrives dashed (a navigation line across water), which
+    // can't be traced, so it fades in instead.
+    if (path.hasAttribute("data-dashed")) {
+      tl.fromTo(path, { opacity: 0 }, { opacity: 1, duration: 1.4 }, 0.4);
+      return;
+    }
     const length = prepareDraw(path as unknown as SVGGeometryElement);
-    tl.fromTo(path, { strokeDashoffset: length }, { strokeDashoffset: 0, duration: 1.6, ease: ease.travel }, 0.5);
+    tl.fromTo(path, { strokeDashoffset: length }, { strokeDashoffset: 0, duration: 1.6, ease: ease.travel }, 0.4);
   });
 
   drift(gsap, stage, all(stage, "[data-drift]"), 150);
@@ -106,10 +145,21 @@ const arrival: Scene = (stage, gsap) => {
   const to = coords?.dataset.to?.split(",").map(Number) as LonLat | undefined;
   const trip = { p: 0 };
 
+  // The traveller and the coordinates follow `trip.p`, written from the
+  // trigger's own refresh/update so they are right however the visitor arrived.
+  const sync = () => {
+    const point = progress.getPointAtLength(trip.p * length);
+    traveller?.setAttribute("cx", `${point.x}`);
+    traveller?.setAttribute("cy", `${point.y}`);
+    if (coords && from && to) {
+      coords.textContent = formatCoords([from[0] + (to[0] - from[0]) * trip.p, from[1] + (to[1] - from[1]) * trip.p]);
+    }
+  };
+
   gsap
     .timeline({
       defaults: { ease: "none" },
-      scrollTrigger: { trigger: map, start: "top 75%", end: "bottom 45%", scrub: 0.6 },
+      scrollTrigger: withSync({ trigger: map, start: "top 75%", end: "bottom 45%", scrub: 0.6 }, sync),
     })
     // The road ahead (blue, underneath) becomes the road ridden (red) as the
     // visitor scrolls: the line, the traveller and the coordinates travel together.
@@ -119,23 +169,8 @@ const arrival: Scene = (stage, gsap) => {
       dashed ? { opacity: 1 } : { strokeDashoffset: 0 },
       0,
     )
-    .fromTo(
-      trip,
-      { p: 0 },
-      {
-        p: 1,
-        onUpdate: () => {
-          const point = progress.getPointAtLength(trip.p * length);
-          traveller?.setAttribute("cx", `${point.x}`);
-          traveller?.setAttribute("cy", `${point.y}`);
-          if (coords && from && to) {
-            const at: LonLat = [from[0] + (to[0] - from[0]) * trip.p, from[1] + (to[1] - from[1]) * trip.p];
-            coords.textContent = formatCoords(at);
-          }
-        },
-      },
-      0,
-    );
+    .fromTo(trip, { p: 0 }, { p: 1, onUpdate: sync }, 0);
+  sync();
 };
 
 const DASH_PERIOD = 120;
@@ -156,14 +191,11 @@ const road: Scene = (stage, gsap) => {
 
   // Pinned where there is room to hold the whole panel on screen; on a phone
   // (or a short window) the same ride simply scrubs as the section passes.
+  // matchMedia rebuilds this on resize / orientation change.
   const media = gsap.matchMedia();
   const build = (pinned: boolean) => {
     const odometer = { value: 0 };
-    // Text, not a transform — the odometer is a counter. ScrollTrigger applies
-    // an already-scrolled position (a reload mid-page, the End key) with tween
-    // callbacks suppressed, so the text is also written from the trigger's own
-    // refresh/update, which are not: otherwise it would sit at 0 beside a
-    // finished road.
+    // Text, not a transform — the odometer is a counter (see `withSync`).
     const sync = () => {
       if (readout) readout.textContent = Math.round(odometer.value).toLocaleString("en-US");
     };
@@ -174,19 +206,20 @@ const road: Scene = (stage, gsap) => {
 
     const tl = gsap.timeline({
       defaults: { ease: "none" },
-      scrollTrigger: pinned
-        ? {
-            trigger: panel,
-            start: "top 88px",
-            end: () => `+=${count * window.innerHeight * 0.7}`,
-            pin: true,
-            scrub: 0.6,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onRefresh: sync,
-            onUpdate: sync,
-          }
-        : { trigger: stage, start: "top 75%", end: "bottom 45%", scrub: 0.6, onRefresh: sync, onUpdate: sync },
+      scrollTrigger: withSync(
+        pinned
+          ? {
+              trigger: panel,
+              start: "top 88px",
+              end: () => `+=${count * window.innerHeight * 0.7}`,
+              pin: true,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            }
+          : { trigger: stage, start: "top 75%", end: "bottom 45%", scrub: 0.6 },
+        sync,
+      ),
     });
     tl.to({}, { duration: count }, 0);
     // Whole dash periods and whole wheel turns, so the last frame is the
@@ -195,7 +228,6 @@ const road: Scene = (stage, gsap) => {
     // Spin each wheel about its own hub, not the SVG origin.
     tl.fromTo(wheels, { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 720 * count, duration: count }, 0);
     tl.fromTo(fill, { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: count }, 0);
-
     if (readout) tl.to(odometer, { value: total, duration: count, onUpdate: sync }, 0);
 
     steps.forEach((step, index) => {
@@ -211,11 +243,11 @@ const road: Scene = (stage, gsap) => {
   return () => media.revert();
 };
 
-const challenge: Scene = (stage, gsap) => {
+const environment: Scene = (stage, gsap) => {
   reveal(gsap, stage);
 
-  // Tremor: the seismograph traces itself and the page trembles, faintly,
-  // as the visitor scrolls through it.
+  // Seismic terrain: the seismograph traces itself and the page trembles,
+  // faintly, as the visitor scrolls through it. A description of the setting.
   const trace = one<SVGPathElement>(stage, "[data-trace]");
   if (trace) {
     const length = prepareDraw(trace);
@@ -238,20 +270,18 @@ const challenge: Scene = (stage, gsap) => {
     );
   }
 
-  // Embers rise (bottom to top) as the section passes.
-  const embers = all(stage, "[data-fx]");
-  embers.forEach((ember) => {
-    gsap.fromTo(
-      ember,
-      { y: 120 * depthOf(ember), opacity: 0 },
-      {
-        y: -220 * depthOf(ember),
-        opacity: 1,
-        ease: "none",
-        scrollTrigger: { trigger: stage, start: "top bottom", end: "bottom top", scrub: true },
-      },
-    );
-  });
+  // Volcanic geography: embers drift up (bottom to top) as the section passes
+  // — one timeline, one trigger for all of them.
+  const embers = all(stage, "[data-fx]").filter(shown);
+  if (embers.length > 0) {
+    const tl = gsap.timeline({
+      defaults: { ease: "none", duration: 1 },
+      scrollTrigger: { trigger: stage, start: "top bottom", end: "bottom top", scrub: true },
+    });
+    embers.forEach((ember) => {
+      tl.fromTo(ember, { y: 120 * depthOf(ember), opacity: 0 }, { y: -220 * depthOf(ember), opacity: 1 }, 0);
+    });
+  }
 };
 
 const discovery: Scene = (stage, gsap) => {
@@ -275,9 +305,8 @@ const discovery: Scene = (stage, gsap) => {
 };
 
 const memory: Scene = (stage, gsap) => {
-  const frames = all(stage, "[data-frame]");
   // Slow and quiet: each frame simply arrives, one after another.
-  frames.forEach((frame) => {
+  all(stage, "[data-frame]").forEach((frame) => {
     gsap.fromTo(
       frame,
       { opacity: 0, y: 24 },
@@ -291,14 +320,43 @@ const memory: Scene = (stage, gsap) => {
     );
   });
   // The film's sprocket rails creep past, barely.
-  all(stage, "[data-rail]").forEach((rail, index) => {
-    gsap.fromTo(
-      rail,
-      { x: index % 2 === 0 ? 24 : -24 },
-      { x: index % 2 === 0 ? -24 : 24, ease: "none", scrollTrigger: scrubOnView(stage, "bottom top") },
-    );
-  });
+  const rails = all(stage, "[data-rail]");
+  if (rails.length > 0) {
+    const tl = gsap.timeline({
+      defaults: { ease: "none", duration: 1 },
+      scrollTrigger: scrubOnView(stage, "bottom top"),
+    });
+    rails.forEach((rail, index) => tl.fromTo(rail, { x: index % 2 === 0 ? 24 : -24 }, { x: index % 2 === 0 ? -24 : 24 }, 0));
+  }
   reveal(gsap, stage);
+};
+
+// Page 11: the illustration (or, once supplied, the real photograph) settles
+// in the same stage with the same entrance — swapping one for the other never
+// changes the animation structure.
+const signature: Scene = (stage, gsap) => {
+  reveal(gsap, stage);
+  const photo = all(stage, "[data-sig-photo]");
+  if (photo.length > 0) {
+    gsap.fromTo(
+      photo,
+      { scale: 1.08 },
+      { scale: 1, duration: 2.4, ease: ease.travel, scrollTrigger: playOnView(stage) },
+    );
+  }
+};
+
+// Wordless atmosphere for a chapter with no manuscript yet: the country's own
+// landscape drifts at depth while the red road runs through it as the visitor
+// scrolls, and the coordinates tick across. No copy, so nothing to invent.
+const interlude: Scene = (stage, gsap) => {
+  drift(gsap, stage, all(stage, "[data-drift]"), 90, "top bottom");
+  gsap.fromTo(
+    all(stage, "[data-road]"),
+    { scaleX: 0, transformOrigin: "0% 50%" },
+    { scaleX: 1, ease: "none", scrollTrigger: { trigger: stage, start: "top 75%", end: "bottom 55%", scrub: 0.6 } },
+  );
+  reveal(gsap, stage, "[data-reveal]", "top 70%");
 };
 
 const departure: Scene = (stage, gsap) => {
@@ -311,8 +369,9 @@ const departure: Scene = (stage, gsap) => {
     defaults: { ease: "none" },
     scrollTrigger: { trigger: map, start: "top 75%", end: "bottom 45%", scrub: 0.6 },
   });
-  // This chapter turns from blue (the road ahead) to red (ridden): it has
-  // become a memory. The next road, still blue, draws out ahead of it.
+  // This chapter turns from blue (the road ahead) to red (ridden) as the
+  // visitor scrolls — progressively, never a switch — and the next road, still
+  // blue, draws out ahead of it.
   tl.fromTo(all(stage, "[data-blue]"), { opacity: 1 }, { opacity: 0 }, 0.1)
     .fromTo(all(stage, "[data-red]"), { opacity: 0 }, { opacity: 1 }, 0.1)
     .fromTo(all(stage, "[data-next]"), { opacity: 0 }, { opacity: 1 }, 0.55);
@@ -333,10 +392,17 @@ const transition: Scene = (stage, gsap) => {
     { opacity: 1 },
     { opacity: 0.12, ease: "none", scrollTrigger: { trigger: stage, start: "top 60%", end: "center 40%", scrub: true } },
   );
+  // The red road (ridden) exits to the right while the blue road (ahead)
+  // draws in behind it: one continuous line, changing colour as it goes.
   gsap.fromTo(
     all(stage, "[data-road]"),
     { scaleX: 0, transformOrigin: "0% 50%" },
     { scaleX: 1, ease: "none", scrollTrigger: { trigger: stage, start: "top 80%", end: "center 45%", scrub: true } },
+  );
+  gsap.fromTo(
+    all(stage, "[data-road-red]"),
+    { xPercent: 0 },
+    { xPercent: 12, ease: "none", scrollTrigger: { trigger: stage, start: "top 60%", end: "bottom 60%", scrub: true } },
   );
 };
 
@@ -347,56 +413,56 @@ const gateway: Scene = (stage, gsap) => {
   const odometer = one<HTMLElement>(stage, "[data-count]");
   const total = Number(odometer?.dataset.total ?? 0);
   const step = 0.1;
-  const redStart = 0.4 + segments.length * step + 0.3;
 
-  const tl = gsap.timeline({ scrollTrigger: { trigger: stage, start: "top 60%", toggleActions: "play none none none" } });
-  // The route follows the road it describes, so it is sequenced country by
-  // country rather than staggered in one burst — the one place the
-  // five-item stagger cap yields (recorded in CLAUDE.md §0 decision #20).
-  tl.fromTo(all(stage, "[data-land]"), { opacity: 0 }, { opacity: 1, duration: 1, ease: ease.ui }, 0);
-
-  // First the whole route is blue — the road ahead, country by country…
+  // First the whole route draws in blue — the road ahead, country by country —
+  // once, when the map comes into view. The route follows the road it
+  // describes, so it is sequenced country by country rather than staggered in
+  // one burst (the one place the five-item stagger cap yields — §0 #20).
+  const blue = gsap.timeline({ scrollTrigger: { trigger: stage, start: "top 75%", toggleActions: "play none none none" } });
+  blue.fromTo(all(stage, "[data-land]"), { opacity: 0 }, { opacity: 1, duration: 1, ease: ease.ui }, 0);
   segments.forEach((path, index) => {
     const length = prepareDraw(path);
-    tl.fromTo(
+    blue.fromTo(
       path,
       { strokeDashoffset: length },
       { strokeDashoffset: 0, duration: 0.35, ease: ease.travel },
-      0.4 + index * step,
+      0.3 + index * step,
     );
   });
-  tl.fromTo(dots, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: ease.ui, stagger: { each: step, from: "start" } }, 0.4);
+  blue.fromTo(dots, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: ease.ui, stagger: { each: step, from: "start" } }, 0.3);
 
-  // …then it turns red behind a wave that rides it end to end.
+  // …then it turns red *with the scroll*: the wave that rides the road, and
+  // the kilometre counter with it, follow the visitor's position on the page
+  // — progressive and reversible, never a switch.
+  const meter = { value: 0 };
+  const sync = () => {
+    if (odometer) odometer.textContent = Math.round(meter.value).toLocaleString("en-US");
+  };
+  sync();
+  const red = gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: withSync({ trigger: stage, start: "top 50%", end: "bottom 70%", scrub: 0.6 }, sync),
+  });
   rides.forEach((path, index) => {
     const length = prepareDraw(path);
-    tl.fromTo(
-      path,
-      { strokeDashoffset: length },
-      { strokeDashoffset: 0, duration: 0.4, ease: ease.travel },
-      redStart + index * 0.11,
-    );
+    red.fromTo(path, { strokeDashoffset: length }, { strokeDashoffset: 0, duration: 0.4 }, index * 0.11);
   });
-  tl.fromTo(all(stage, "[data-unfinished]"), { opacity: 0 }, { opacity: 1, duration: 1, ease: ease.ui }, redStart + rides.length * 0.11);
-
-  if (odometer) {
-    odometer.textContent = "0";
-    const meter = { value: 0 };
-    // Text, not a transform — the kilometre counter.
-    tl.to(
-      meter,
-      {
-        value: total,
-        duration: rides.length * 0.11 + 0.4,
-        ease: "none",
-        onUpdate: () => {
-          odometer.textContent = Math.round(meter.value).toLocaleString("en-US");
-        },
-      },
-      redStart,
-    );
-  }
+  const span = rides.length * 0.11 + 0.4;
+  red.fromTo(all(stage, "[data-unfinished]"), { opacity: 0 }, { opacity: 1, duration: 0.6 }, span - 0.2);
+  if (odometer) red.to(meter, { value: total, duration: span, onUpdate: sync }, 0);
 };
 
-export const choreographies = { hero, arrival, road, challenge, discovery, memory, departure, transition, gateway };
+export const choreographies = {
+  hero,
+  arrival,
+  road,
+  environment,
+  discovery,
+  memory,
+  signature,
+  interlude,
+  departure,
+  transition,
+  gateway,
+};
 export type SceneName = keyof typeof choreographies;

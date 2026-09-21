@@ -35,13 +35,13 @@ const optional: Record<string, string[]> = {
   cambodia: ["discovery", "memory", "signature"],
   malaysia: ["road", "memory", "signature"],
   singapore: ["road", "discovery", "signature"],
-  indonesia: ["road", "challenge", "discovery", "signature"],
+  indonesia: ["road", "environment", "discovery", "signature"],
   china: ["discovery", "signature"],
   japan: ["discovery", "memory", "signature"],
-  taiwan: ["road", "challenge", "signature"],
+  taiwan: ["road", "environment", "signature"],
   mongolia: ["discovery", "signature"],
 };
-const OPTIONAL_IDS = ["road", "challenge", "discovery", "memory", "signature"];
+const OPTIONAL_IDS = ["road", "environment", "discovery", "memory", "signature"];
 
 test.describe("the 23 cinematic chapters", () => {
   for (const { slug, name } of countries) {
@@ -54,6 +54,8 @@ test.describe("the 23 cinematic chapters", () => {
       );
       const expected = ["intro", "arrival"];
       if (slug === "south-korea") expected.push("notes");
+      // No verified manuscript: a wordless atmospheric interlude stands in.
+      if (!(slug in optional)) expected.push("interlude");
       // Order matches the owner's page sequence (Pages 5–13).
       for (const id of OPTIONAL_IDS) if ((optional[slug] ?? []).includes(id)) expected.push(id);
       expected.push("departure", "transition");
@@ -141,10 +143,14 @@ test.describe("the chapter gateway (Page 4)", () => {
     await page.goto("/journey");
     const gateway = page.locator("#chapter-gateway");
     await expect(gateway.locator("a[data-dot]")).toHaveCount(23);
-    await gateway.scrollIntoViewIfNeeded();
+    // The blue road turns red with the scroll, and the counter with it — so it
+    // only reaches its total once the visitor has ridden the whole map.
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await expect(gateway.locator("[data-count]")).toHaveText("48,000", { timeout: 12000 });
-    const bg = await gateway.evaluate((el) => getComputedStyle(el).backgroundColor + getComputedStyle(el).backgroundImage);
-    expect(bg).toMatch(/rgb\(7, 28, 59\)/);
+    // Very dark charcoal — layered, not pure black and not flat navy.
+    const bg = await gateway.evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(bg).toMatch(/rgb\(14, 20, 29\)/);
+    expect(bg).not.toMatch(/rgb\(0, 0, 0\)/);
   });
 
   test("every marker is keyboard-reachable and opens its chapter", async ({ page }) => {
@@ -189,5 +195,117 @@ test.describe("chapters — prefers-reduced-motion", () => {
     await page.getByRole("link", { name: /Enter Cambodia/ }).click();
     await expect(page).toHaveURL(/\/journey\/cambodia$/);
     await expect(page.locator("#chapter-veil")).toHaveCount(0);
+  });
+});
+
+test.describe("chapter details (decision #21)", () => {
+  test("the environment page describes the setting and never an event", async ({ page }) => {
+    await page.goto("/journey/indonesia");
+    const indonesia = page.locator("#chapter-environment");
+    await expect(indonesia.getByText("Regional terrain")).toBeVisible();
+    await page.goto("/journey/taiwan");
+    const taiwan = page.locator("#chapter-environment");
+    await expect(taiwan.getByText("Natural environment")).toBeVisible();
+    for (const section of [indonesia, taiwan]) {
+      const text = await section.innerText().catch(() => "");
+      expect(text).not.toMatch(/danger|encounter|erupt|survived|escaped|felt the|struck/i);
+    }
+    // The tag is never the word "challenge".
+    expect(await page.locator("#chapter-environment").innerText()).not.toMatch(/challenge/i);
+  });
+
+  test("a film frame with no photograph is a deliberate stand-in: outline, location, coordinates, memory number", async ({ page }) => {
+    await page.goto("/journey/vietnam");
+    const frame = page.locator("#chapter-memory [data-frame]").first();
+    await expect(frame.locator("svg path").first()).toBeAttached();
+    await expect(frame.getByText("Vietnam", { exact: true })).toBeVisible();
+    await expect(frame.getByText("14.06° N · 108.28° E")).toBeVisible();
+    await expect(frame.getByText("Memory 01")).toBeVisible();
+    expect(await frame.locator("img").count()).toBe(0);
+  });
+
+  test("every signature page says its illustration is a visual interpretation", async ({ page }) => {
+    for (const slug of ["india", "vietnam", "cambodia", "malaysia", "singapore", "indonesia", "china", "japan", "taiwan", "mongolia"]) {
+      await page.goto(`/journey/${slug}`);
+      await expect(page.locator("#chapter-signature").getByText("Visual interpretation"), slug).toBeVisible();
+      await expect(page.locator("#chapter-signature").getByText(/^Photograph/), slug).toHaveCount(0);
+    }
+  });
+
+  test("arrival metadata is location and coordinates — no date, no empty slot, and only a subtle indicative-route tag", async ({ page }) => {
+    await page.goto("/journey/cambodia");
+    const arrival = page.locator("#chapter-arrival");
+    const labels = await arrival.locator("dl dt").allTextContents();
+    expect(labels).toEqual(["Location", "Coordinates", "From", "Chapter"]);
+    expect(labels).not.toContain("Date");
+    await expect(arrival.getByText("Indicative route")).toHaveCount(1);
+    // No large disclaimer paragraph any more.
+    await expect(arrival.getByText(/not the cycling track/i)).toHaveCount(0);
+    for (const dd of await arrival.locator("dl dd").allInnerTexts()) expect(dd.trim()).not.toBe("");
+  });
+
+  test("the journey rail always says where we came from, where we are, and where we go next", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/journey/cambodia");
+    const rail = page.getByRole("navigation", { name: "Journey progress" });
+    await expect(rail).toBeVisible();
+    await expect(rail.getByRole("link", { name: /Vietnam/ })).toHaveAttribute("href", "/journey/vietnam");
+    await expect(rail.getByRole("link", { name: /Thailand/ })).toHaveAttribute("href", "/journey/thailand");
+    await expect(rail.getByText(/04 \/ 23 · Cambodia/)).toBeVisible();
+    expect(await rail.locator("i").count()).toBe(23);
+    expect(await rail.locator('i[data-state="done"]').count()).toBe(3);
+    expect(await rail.locator('i[data-state="here"]').count()).toBe(1);
+    expect(await rail.locator('i[data-state="ahead"]').count()).toBe(19);
+    await page.goto("/journey/india");
+    await expect(page.getByRole("navigation", { name: "Journey progress" }).getByText("The road begins")).toBeVisible();
+    await page.goto("/journey/slovakia");
+    await expect(page.getByRole("navigation", { name: "Journey progress" }).getByText("The road goes on")).toBeVisible();
+  });
+
+  test("the hand-off plays as one continuous move: veil in the next country's colours, then its hero, with the veil gone", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/journey/cambodia");
+    await page.locator("#chapter-transition").scrollIntoViewIfNeeded();
+    await page.getByRole("link", { name: /Enter Thailand/ }).click();
+    const veil = page.locator("#chapter-veil");
+    await expect(veil).toBeAttached({ timeout: 3000 });
+    await expect(veil.locator("[data-v-name]")).toHaveText("Thailand");
+    await expect(veil.locator("[data-v-line] span").first()).toHaveText("Chapter 05 of 23");
+    await expect(page).toHaveURL(/\/journey\/thailand$/, { timeout: 8000 });
+    await expect(page.getByRole("heading", { name: "Thailand", level: 1 })).toBeVisible();
+    await expect(page.locator("#chapter-veil")).toHaveCount(0, { timeout: 8000 });
+  });
+
+  test("Instagram and YouTube stay hidden until real URLs are supplied — never a guessed profile", async ({ page }) => {
+    for (const path of ["/", "/contact", "/journey/india", "/about"]) {
+      await page.goto(path);
+      expect(await page.locator('a[href*="instagram" i], a[href*="youtube" i], a[href*="youtu.be" i]').count(), path).toBe(0);
+    }
+  });
+
+  test("Bhagira is shown nowhere until verified details exist", async ({ page }) => {
+    for (const slug of ["india", "sri-lanka", "thailand", "vietnam", "australia", "slovakia"]) {
+      await page.goto(`/journey/${slug}`);
+      await expect(page.locator("#chapter-bhagira"), slug).toHaveCount(0);
+      expect(await page.locator("body").innerText(), slug).not.toMatch(/bhagira/i);
+    }
+  });
+
+  test("pending chapters show a wordless interlude, not developer text", async ({ page }) => {
+    await page.goto("/journey/thailand");
+    const interlude = page.locator("#chapter-interlude");
+    await expect(interlude).toBeAttached();
+    expect(await interlude.locator("p").allInnerTexts()).toHaveLength(1);
+    await expect(page.locator("[data-chapter]")).toHaveAttribute("data-content-status", "pending");
+    await page.goto("/journey/india");
+    await expect(page.locator("[data-chapter]")).toHaveAttribute("data-content-status", "verified");
+    await expect(page.locator("#chapter-interlude")).toHaveCount(0);
+  });
+
+  test("no country invents a date", async ({ page }) => {
+    for (const slug of ["india", "japan", "slovakia"]) {
+      await page.goto(`/journey/${slug}`);
+      expect(await page.locator("#chapter-arrival dt").allInnerTexts(), slug).not.toContain("Date");
+    }
   });
 });

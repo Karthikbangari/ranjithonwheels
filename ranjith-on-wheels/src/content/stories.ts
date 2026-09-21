@@ -39,11 +39,19 @@ export type StoryStat = {
 // its story actually has a moment for — nothing is invented to fill a slot.
 //   arrival   — entering the country          (Page 6)
 //   road      — the ride through the country  (Page 7, pinned, odometer)
-//   challenge — a hardship the summary states (Page 8) — only where real
+//   environment — the natural setting the summary names (Page 8): terrain, a
+//                 hazard as *geography* — never an event that happened to him
 //   discovery — a destination / food / culture (Page 9)
 //   people    — the people and the memory     (Page 10, film frames)
 //   signature — the one wow moment            (Page 11, bespoke motif)
-export type Beat = "arrival" | "road" | "challenge" | "discovery" | "people" | "signature";
+export type Beat = "arrival" | "road" | "environment" | "discovery" | "people" | "signature";
+
+// Whether a story's copy may be shown as final (CLAUDE.md §0 decision #21).
+//   pending  — no manuscript yet: nothing is written, the chapter stays atmospheric
+//   draft    — words exist but are not checked against the manuscript: never public
+//   verified — checked against the manuscript, with a page-verified citation
+// Only `verified` copy is ever rendered.
+export type ContentStatus = "pending" | "draft" | "verified";
 
 export type StoryMoment = {
   beat: Beat;
@@ -53,6 +61,7 @@ export type StoryMoment = {
 
 export type Story = {
   slug: string;
+  contentStatus: ContentStatus;
   headline: string;
   // The signature page's bespoke illustration. Optional: a story with a
   // signature moment but no motif yet still gets the page, in typography.
@@ -64,6 +73,7 @@ export type Story = {
 export const stories: Story[] = [
   {
     slug: "india",
+    contentStatus: "verified",
     headline: "15,000 kilometres before the first border.",
     motif: "falls",
     stats: [{ value: 15000, unit: "km", label: "the first leg" }],
@@ -92,6 +102,7 @@ export const stories: Story[] = [
   },
   {
     slug: "vietnam",
+    contentStatus: "verified",
     headline: "The first real culture shock.",
     motif: "terraces",
     stats: [],
@@ -120,6 +131,7 @@ export const stories: Story[] = [
   },
   {
     slug: "cambodia",
+    contentStatus: "verified",
     headline: "Buddhism shaped every day.",
     motif: "towers",
     stats: [],
@@ -143,6 +155,7 @@ export const stories: Story[] = [
   },
   {
     slug: "malaysia",
+    contentStatus: "verified",
     headline: "Some of the most refreshing riding of the journey.",
     motif: "canopy",
     stats: [{ value: 1500, unit: "km", label: "through reserve zones" }],
@@ -171,6 +184,7 @@ export const stories: Story[] = [
   },
   {
     slug: "singapore",
+    contentStatus: "verified",
     headline: "Where technology and respect met.",
     motif: "skyline",
     stats: [{ value: 200, unit: "km", label: "across the country" }],
@@ -194,6 +208,7 @@ export const stories: Story[] = [
   },
   {
     slug: "indonesia",
+    contentStatus: "verified",
     headline: "32 hours without a signal.",
     motif: "ferry",
     stats: [
@@ -217,16 +232,18 @@ export const stories: Story[] = [
         text: "Roads named after Lord Rama, and Ganesha shrines across Bali, revealed an unexpected thread of Hindu mythology.",
       },
       {
-        // A hazard the summary names (volcanic risk), not a narrated event —
-        // the page claims nothing beyond this line.
-        beat: "challenge",
-        label: "Fields and fire",
+        // The volcanic geography of the Ring of Fire, as the summary names it —
+        // a description of the region, not an event he met. The page claims
+        // nothing beyond this line.
+        beat: "environment",
+        label: "The Ring of Fire",
         text: "Terraced rice fields, alongside the volcanic risk of the Pacific Ring of Fire.",
       },
     ],
   },
   {
     slug: "china",
+    contentStatus: "verified",
     headline: "Not the skyline. The hospitality.",
     motif: "ink",
     stats: [{ value: 2000, unit: "km", label: "from Shanghai" }],
@@ -250,6 +267,7 @@ export const stories: Story[] = [
   },
   {
     slug: "japan",
+    contentStatus: "verified",
     headline: "A land of discipline and innovation.",
     motif: "petals",
     stats: [{ value: 1200, unit: "km", label: "from Tokyo" }],
@@ -278,14 +296,16 @@ export const stories: Story[] = [
   },
   {
     slug: "taiwan",
+    contentStatus: "verified",
     headline: "Engineered for earthquakes.",
     motif: "fireworks",
     stats: [{ value: 1000, unit: "km", label: "across Taiwan" }],
     moments: [
       {
-        // The summary states the hazard (an earthquake-prone country,
-        // engineered to withstand it), not an incident.
-        beat: "challenge",
+        // The summary describes the country (earthquake-prone, engineered to
+        // withstand it), not an incident: no earthquake is claimed to have
+        // been experienced.
+        beat: "environment",
         label: "The ground",
         text: "1,000 kilometres across one of the world's most earthquake-prone countries, engineered to withstand it.",
       },
@@ -303,6 +323,7 @@ export const stories: Story[] = [
   },
   {
     slug: "mongolia",
+    contentStatus: "verified",
     headline: "Over 2,000 kilometres of open steppe.",
     motif: "horizon",
     stats: [{ value: 2000, unit: "km", prefix: "Over ", label: "of steppe and unpaved road" }],

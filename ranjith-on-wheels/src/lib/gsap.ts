@@ -11,4 +11,16 @@ export function registerGsap() {
   return gsap;
 }
 
+// A read-only probe for tests and profiling: how many ScrollTriggers are alive
+// right now. Chapter pages must clean up after themselves on every navigation,
+// so this number returns to its baseline when a chapter unmounts.
+declare global {
+  interface Window {
+    __rowMotion?: { triggers: () => number };
+  }
+}
+if (typeof window !== "undefined") {
+  window.__rowMotion = { triggers: () => ScrollTrigger.getAll().length };
+}
+
 export { gsap, ScrollTrigger, MotionPathPlugin };

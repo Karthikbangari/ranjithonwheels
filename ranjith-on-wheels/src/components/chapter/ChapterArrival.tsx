@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { Chapter } from "@/content/chapters";
+import { arrivalRows, type Chapter } from "@/content/chapters";
 import { site } from "@/content/site";
 import { formatCoords } from "@/lib/coords";
 import { arc, landPaths, outline, project, regionProjection } from "@/lib/chapterGeo";
@@ -95,51 +95,70 @@ export function ChapterArrival({ chapter }: { chapter: Chapter }) {
             </text>
           ) : null}
         </svg>
+        <span className={styles.mapTag}>Indicative route</span>
       </div>
 
+      {/* Location · coordinates · date — and the date only exists once the
+          owner has supplied a verified one (`arrivalDate`). With none, the
+          row is simply location and coordinates: no empty slot, no separator. */}
       <dl className={styles.meta} data-reveal>
-        {previous && from ? (
-          <>
-            <div>
-              <dt>From</dt>
-              <dd>
-                {previous.name} <span>{formatCoords(from)}</span>
-              </dd>
-            </div>
-            <div>
-              <dt>Into</dt>
-              <dd>
-                {country.name}{" "}
-                <span data-coords data-from={from.join(",")} data-to={to.join(",")}>
-                  {formatCoords(to)}
-                </span>
-              </dd>
-            </div>
-          </>
-        ) : (
-          <div>
-            <dt>The start</dt>
-            <dd>
-              {country.name} <span>{formatCoords(to)}</span>
-            </dd>
-          </div>
-        )}
-        <div>
-          <dt>Chapter</dt>
-          <dd>
-            {country.order} of {site.countryCount}
-          </dd>
-        </div>
-        {crossing ? (
-          <div>
-            <dt>Sea crossing</dt>
-            <dd>{crossing}</dd>
-          </div>
-        ) : null}
+        {arrivalRows(chapter).map((row) => {
+          switch (row) {
+            case "location":
+              return (
+                <div key={row}>
+                  <dt>Location</dt>
+                  <dd>{country.name}</dd>
+                </div>
+              );
+            case "coordinates":
+              return (
+                <div key={row}>
+                  <dt>Coordinates</dt>
+                  <dd>
+                    {previous && from ? (
+                      <span data-coords data-from={from.join(",")} data-to={to.join(",")}>
+                        {formatCoords(to)}
+                      </span>
+                    ) : (
+                      <span>{formatCoords(to)}</span>
+                    )}
+                  </dd>
+                </div>
+              );
+            case "date":
+              return (
+                <div key={row}>
+                  <dt>Date</dt>
+                  <dd>{country.arrivalDate}</dd>
+                </div>
+              );
+            case "from":
+              return (
+                <div key={row}>
+                  <dt>From</dt>
+                  <dd>{previous?.name}</dd>
+                </div>
+              );
+            case "chapter":
+              return (
+                <div key={row}>
+                  <dt>Chapter</dt>
+                  <dd>
+                    {country.order} of {site.countryCount}
+                  </dd>
+                </div>
+              );
+            case "crossing":
+              return (
+                <div key={row}>
+                  <dt>Sea crossing</dt>
+                  <dd>{crossing}</dd>
+                </div>
+              );
+          }
+        })}
       </dl>
-      <p className={styles.caption} data-reveal>
-        Indicative route — drawn between display anchors, not the cycling track.
-      </p>
     </Scene>
   );
 }

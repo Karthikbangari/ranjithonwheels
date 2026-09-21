@@ -1,6 +1,7 @@
 import { journeyCountries, type JourneyCountry } from "./journey";
-import { getStory, momentsFor, type Story, type StoryMoment } from "./stories";
+import { getStory, momentsFor, type ContentStatus, type Story, type StoryMoment } from "./stories";
 import { getAtmosphere, type Atmosphere } from "./atmospheres";
+import { bhagiraFor, type BhagiraEntry } from "./bhagira";
 
 // Turns a country entry into the chapter the site renders (Pages 5–13). It
 // only ever *reads* content: a section exists exactly when the data for it
@@ -21,9 +22,28 @@ export const seaCrossings: Record<string, string> = {
 // a long summary is not, so it is left to the chapter notes instead.
 const OPENING_LINE_MAX = 80;
 
+// Only verified copy is public. A `draft` story exists in the data but is not
+// rendered (unless a preview build sets NEXT_PUBLIC_SHOW_DRAFTS=1), and a
+// country with no story at all is `pending`.
+export function isPublic(status: ContentStatus, showDrafts = false): boolean {
+  return status === "verified" || (showDrafts && status === "draft");
+}
+
+export function publicStory(slug: string): Story | null {
+  const story = getStory(slug);
+  if (!story) return null;
+  return isPublic(story.contentStatus, process.env.NEXT_PUBLIC_SHOW_DRAFTS === "1") ? story : null;
+}
+
 export type Chapter = {
   country: JourneyCountry;
+  contentStatus: ContentStatus;
   story: Story | null;
+  // A chapter with no public story shows a wordless, atmospheric interlude
+  // (the country's landscape and the road through it) between arrival and
+  // leaving, so it reads as designed rather than empty.
+  interlude: boolean;
+  bhagira: BhagiraEntry | null;
   atmosphere: Atmosphere;
   previous: JourneyCountry | null;
   next: JourneyCountry | null;
@@ -36,7 +56,7 @@ export type Chapter = {
   crossing: string | null;
   arrival: StoryMoment | null;
   road: StoryMoment[];
-  challenge: StoryMoment | null;
+  environment: StoryMoment | null;
   discovery: StoryMoment[];
   people: StoryMoment[];
   signature: StoryMoment | null;
@@ -48,7 +68,7 @@ export function buildChapter(slug: string): Chapter | null {
   const country = journeyCountries.find((entry) => entry.slug === slug);
   if (!country) return null;
 
-  const story = getStory(slug);
+  const story = publicStory(slug);
   const next = journeyCountries.find((entry) => entry.order === country.order + 1) ?? null;
   const summary = country.summary ?? null;
   const opening = story?.headline ?? (summary && summary.length <= OPENING_LINE_MAX ? summary : null);
@@ -56,7 +76,10 @@ export function buildChapter(slug: string): Chapter | null {
 
   return {
     country,
+    contentStatus: getStory(slug)?.contentStatus ?? "pending",
     story,
+    interlude: story === null,
+    bhagira: bhagiraFor(slug),
     atmosphere: getAtmosphere(slug),
     previous: journeyCountries.find((entry) => entry.order === country.order - 1) ?? null,
     next,
@@ -66,7 +89,7 @@ export function buildChapter(slug: string): Chapter | null {
     crossing: seaCrossings[slug] ?? null,
     arrival: momentsFor(story, "arrival")[0] ?? null,
     road: momentsFor(story, "road"),
-    challenge: momentsFor(story, "challenge")[0] ?? null,
+    environment: momentsFor(story, "environment")[0] ?? null,
     discovery: momentsFor(story, "discovery"),
     people: momentsFor(story, "people"),
     signature: momentsFor(story, "signature")[0] ?? null,
@@ -78,9 +101,24 @@ export function buildChapter(slug: string): Chapter | null {
 export function chapterPages(chapter: Chapter) {
   return {
     road: chapter.road.length > 0,
-    challenge: chapter.challenge !== null,
+    environment: chapter.environment !== null,
     discovery: chapter.discovery.length > 0,
     people: chapter.people.length > 0,
     signature: chapter.signature !== null,
   };
+}
+
+// The rows of the arrival page's metadata, in order. Location and coordinates
+// are always there; the date only when the owner has supplied a verified one
+// (`arrivalDate`) — with none the row is just location and coordinates, with no
+// empty slot and no separator; "From" only where there is a country behind us.
+export type ArrivalRow = "location" | "coordinates" | "date" | "from" | "chapter" | "crossing";
+
+export function arrivalRows(chapter: Pick<Chapter, "country" | "previous" | "crossing">): ArrivalRow[] {
+  const rows: ArrivalRow[] = ["location", "coordinates"];
+  if (chapter.country.arrivalDate?.trim()) rows.push("date");
+  if (chapter.previous) rows.push("from");
+  rows.push("chapter");
+  if (chapter.crossing) rows.push("crossing");
+  return rows;
 }

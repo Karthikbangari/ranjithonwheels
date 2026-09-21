@@ -79,6 +79,7 @@ export function ChapterDeparture({ chapter }: { chapter: Chapter }) {
             </text>
           ) : null}
         </svg>
+        <span className={styles.mapTag}>Indicative route</span>
       </div>
 
       <dl className={styles.meta} data-reveal>

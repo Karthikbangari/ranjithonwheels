@@ -4,10 +4,13 @@ import { atlasChapters } from "@/content/atlas";
 import { site } from "@/content/site";
 import type { Chapter } from "@/content/chapters";
 import { formatCoords } from "@/lib/coords";
-import { coverPhoto } from "@/lib/cover";
+import { resolveMedia } from "@/lib/media";
+import { seaCrossings } from "@/content/chapters";
 import { heroMap, type HeroMap } from "@/lib/chapterGeo";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { EffectLayer } from "./EffectLayer";
+import { Grain } from "./Grain";
+import { SceneLayer } from "./SceneLayer";
 import { Scene } from "./Scene";
 import { TerrainBackdrop } from "./TerrainBackdrop";
 import styles from "./Hero.module.css";
@@ -19,7 +22,10 @@ import styles from "./Hero.module.css";
 // photograph into /public later changes the background and nothing else.
 export function ChapterHero({ chapter }: { chapter: Chapter }) {
   const { country, atmosphere, opening, story } = chapter;
-  const photo = coverPhoto(country);
+  const photo = resolveMedia(country).hero;
+  const night = Boolean(atmosphere.hero.night);
+  // A sourced sea crossing arrives as a dashed navigation line, not a road.
+  const dashedRoute = Boolean(seaCrossings[country.slug]);
   const chapterLabel = atlasChapters.find((item) => item.id === country.chapter)?.label;
 
   // Two fits of the same country: a wide frame for desktop, a tall one for a
@@ -39,7 +45,7 @@ export function ChapterHero({ chapter }: { chapter: Chapter }) {
   } as CSSProperties;
 
   return (
-    <Scene name="hero" className={`${styles.hero} ${photo ? styles.withPhoto : ""}`} style={style} id="chapter-intro">
+    <Scene name="hero" className={`${styles.hero} ${photo ? styles.withPhoto : ""} ${night ? styles.night : ""}`} style={style} id="chapter-intro">
       <div className={styles.base} aria-hidden="true" />
       {photo ? (
         <div className={styles.photo} data-photo>
@@ -47,10 +53,13 @@ export function ChapterHero({ chapter }: { chapter: Chapter }) {
         </div>
       ) : null}
       <div className={styles.scrim} aria-hidden="true" />
+      <div className={styles.light} aria-hidden="true" />
       <TerrainBackdrop terrain={atmosphere.terrain} className={styles.terrain} />
-      <MapLayer map={desktop} className={styles.mapDesktop} />
-      <MapLayer map={mobile} className={styles.mapMobile} />
+      <SceneLayer kinds={atmosphere.scenes} seed={atmosphere.terrain.seed} night={night} subtle={Boolean(photo)} className={styles.scene} />
+      <MapLayer map={desktop} className={styles.mapDesktop} dashed={dashedRoute} />
+      <MapLayer map={mobile} className={styles.mapMobile} dashed={dashedRoute} />
       <EffectLayer effect={atmosphere.effect} seed={atmosphere.terrain.seed} className={styles.effect} />
+      <Grain strength={night ? 1.6 : 0.7} />
 
       <div className={styles.content}>
         <p className={styles.chapterLine} data-meta>
@@ -91,7 +100,7 @@ export function ChapterHero({ chapter }: { chapter: Chapter }) {
 // The country itself, drawn in the accent, with the road arriving in red
 // (ridden) and the road ahead leaving in blue. A city-state with no outline at
 // this resolution (Singapore) gets range rings and a crosshair instead.
-function MapLayer({ map, className }: { map: HeroMap; className: string }) {
+function MapLayer({ map, className, dashed }: { map: HeroMap; className: string; dashed: boolean }) {
   const [ax, ay] = map.anchor;
   return (
     <svg
@@ -121,12 +130,18 @@ function MapLayer({ map, className }: { map: HeroMap; className: string }) {
       )}
       <path
         data-route-in
+        {...(dashed ? { "data-dashed": "" } : {})}
         d={map.routeIn}
         fill="none"
         stroke="var(--route)"
         strokeWidth={4.5}
         strokeLinecap="round"
+        strokeDasharray={dashed ? "10 12" : undefined}
       />
+      {/* The road ahead is already on screen when the chapter opens — a wide,
+          faint underlay for the glow (cheaper than a blur filter) and the
+          dotted blue line itself — so the journey never starts from nothing. */}
+      <path d={map.routeOut} fill="none" stroke="var(--blue-lit)" strokeWidth={12} strokeLinecap="round" opacity={0.16} />
       <path
         data-route-out
         d={map.routeOut}

@@ -2,29 +2,51 @@
 
 import { useRouter } from "next/navigation";
 import type { MouseEvent, ReactNode } from "react";
+import { formatCoords, type LonLat } from "@/lib/coords";
 import { gsap } from "@/lib/gsap";
 import { ease } from "@/lib/motion";
 import { prefersReducedMotion } from "./useChapterMotion";
 
-// The hand-off into the next chapter (Page 13): instead of a hard page cut,
-// a veil in the next country's own colours comes up, the road line runs across
-// it and the country's name settles — then the route changes underneath, and
-// the next hero lifts the veil (see the `hero` choreography). A normal <a> to
-// everything else: modified clicks, reduced motion and no-JS all just navigate.
+// The hand-off into the next chapter (Page 13). There should be almost no
+// feeling of "page ends, new page starts", so the click plays the chapter
+// change as one continuous move, in the next country's own colours:
+//
+//   the red road exits the frame → the next blue road appears →
+//   the coordinates change → the terrain morphs in → the country's type
+//   enters → the next chapter begins (the hero lifts the veil).
+//
+// The veil is laid out exactly like the hero it becomes — same gradient, same
+// chapter line, name and coordinates in the same place — and the hero, seeing
+// the veil, does not replay its own type, so the name simply *stays*. For a
+// sourced sea crossing the road becomes a dashed navigation line across the
+// water. Everything else — modified clicks, reduced motion, no JS — is a plain
+// link.
 export function TransitionLink({
   href,
   name,
-  coords,
   from,
   to,
+  chapterLine,
+  region,
+  fromLonLat,
+  toLonLat,
+  contour,
+  glow,
+  sea,
   children,
   className,
 }: {
   href: string;
   name: string;
-  coords: string;
   from: string;
   to: string;
+  chapterLine: string;
+  region: string;
+  fromLonLat: LonLat;
+  toLonLat: LonLat;
+  contour: string;
+  glow: string;
+  sea: boolean;
   children: ReactNode;
   className?: string;
 }) {
@@ -44,29 +66,73 @@ export function TransitionLink({
       inset: "0",
       zIndex: "200",
       opacity: "0",
+      overflow: "hidden",
       pointerEvents: "none",
-      display: "grid",
-      placeItems: "center",
-      alignContent: "center",
-      gap: "14px",
-      background: `linear-gradient(160deg, ${from}, ${to})`,
+      background: `linear-gradient(155deg, ${from} 0%, ${to} 135%)`,
       color: "#fff9f0",
-      textAlign: "center",
     });
+
+    const road = sea
+      ? `repeating-linear-gradient(90deg, #5aa2ff 0 12px, transparent 12px 24px)`
+      : "linear-gradient(90deg, #5aa2ff, #5aa2ff)";
+    // Built with the same metrics as the hero (Hero.module.css) so the two line up.
     veil.innerHTML = `
-      <span data-veil-coords style="font-family:var(--font-data);font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:0">${coords}</span>
-      <span data-veil-name style="font-family:var(--font-display);font-size:clamp(44px,10vw,120px);line-height:1;letter-spacing:-0.02em;opacity:0">${name}</span>
-      <span data-veil-road style="display:block;width:min(70vw,720px);height:3px;background:linear-gradient(90deg,#e6242a,#5aa2ff);transform:scaleX(0);transform-origin:0 50%"></span>`;
+      <svg data-v-terrain viewBox="0 0 1200 675" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;opacity:0">
+        <path d="${contour}" fill="none" stroke="${glow}" stroke-width="1.3" stroke-linecap="round" opacity="0.5"/>
+      </svg>
+      <div style="position:absolute;left:0;right:0;top:34%;height:3px">
+        <span data-v-red style="position:absolute;inset:0;background:#e6242a;border-radius:2px"></span>
+        <span data-v-blue style="position:absolute;inset:0;background:${road};border-radius:2px;transform:scaleX(0);transform-origin:0 50%"></span>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:0;padding:0 var(--page-gutter) clamp(36px,7vh,80px);display:flex;flex-direction:column;gap:14px">
+        <p data-v-line style="margin:0;display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--font-data);font-size:var(--text-data);letter-spacing:.16em;text-transform:uppercase;color:rgba(255,249,240,.86);opacity:0">
+          <span></span>${region ? `<span style="color:rgba(255,249,240,.7)"></span>` : ""}
+        </p>
+        <div style="overflow:hidden;padding-bottom:.16em;margin-bottom:-.16em">
+          <div data-v-name style="font-family:var(--font-display);font-weight:420;letter-spacing:-.02em;font-size:clamp(64px,15.5vw,250px);line-height:.92"></div>
+        </div>
+        <p data-v-coords style="margin:0;font-family:var(--font-data);font-size:12px;letter-spacing:.14em;color:rgba(255,249,240,.82)"></p>
+      </div>`;
+    // Text goes in as text, never as markup.
+    const spans = veil.querySelectorAll<HTMLElement>("[data-v-line] span");
+    spans[0].textContent = chapterLine;
+    if (spans[1]) spans[1].textContent = region;
+    veil.querySelector<HTMLElement>("[data-v-name]")!.textContent = name;
+    const coordsEl = veil.querySelector<HTMLElement>("[data-v-coords]")!;
+    coordsEl.textContent = formatCoords(fromLonLat);
     document.body.appendChild(veil);
 
+    const q = <T extends Element>(selector: string) => veil.querySelector<T>(selector);
+    gsap.set(q("[data-v-name]"), { yPercent: 110 });
+    const trip = { p: 0 };
     gsap
-      .timeline({
-        onComplete: () => router.push(href),
-      })
-      .to(veil, { opacity: 1, duration: 0.4, ease: ease.ui }, 0)
-      .to(veil.querySelector("[data-veil-road]"), { scaleX: 1, duration: 0.8, ease: ease.travel }, 0.15)
-      .to(veil.querySelector("[data-veil-coords]"), { opacity: 0.8, duration: 0.5 }, 0.35)
-      .to(veil.querySelector("[data-veil-name]"), { opacity: 1, duration: 0.5 }, 0.45);
+      .timeline({ onComplete: () => router.push(href) })
+      .to(veil, { opacity: 1, duration: 0.35, ease: ease.ui }, 0)
+      // 1. the red road exits the frame…
+      .to(q("[data-v-red]"), { xPercent: 105, duration: 0.7, ease: ease.travel }, 0.1)
+      // 2. …the next blue road appears behind it…
+      .to(q("[data-v-blue]"), { scaleX: 1, duration: 0.8, ease: ease.travel }, 0.2)
+      // 3. …the coordinates change…
+      .to(
+        trip,
+        {
+          p: 1,
+          duration: 0.8,
+          ease: "power2.inOut",
+          onUpdate: () => {
+            coordsEl.textContent = formatCoords([
+              fromLonLat[0] + (toLonLat[0] - fromLonLat[0]) * trip.p,
+              fromLonLat[1] + (toLonLat[1] - fromLonLat[1]) * trip.p,
+            ]);
+          },
+        },
+        0.35,
+      )
+      .to(q("[data-v-line]"), { opacity: 1, duration: 0.4 }, 0.5)
+      // 4. …the terrain morphs in…
+      .to(q("[data-v-terrain]"), { opacity: 1, duration: 0.8, ease: ease.ui }, 0.35)
+      // 5. …and the country's type enters, where the hero's type will be.
+      .to(q("[data-v-name]"), { yPercent: 0, duration: 0.9, ease: ease.reveal }, 0.65);
 
     // Never strand a visitor behind the veil if the next page is slow or fails.
     window.setTimeout(() => veil.isConnected && veil.remove(), 6000);

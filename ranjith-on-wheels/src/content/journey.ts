@@ -16,6 +16,17 @@ export type CountrySource = {
   accessed?: string;
 };
 
+// One image, wherever it is used. The path is resolved against /public at
+// build time (lib/media.ts): a path that has no file behind it renders nothing
+// rather than a broken image, so listing a photograph here before the file
+// arrives is harmless — and replacing a terrain cover with a real photograph
+// is one data change, never a component change.
+export type MediaImage = {
+  src: string;
+  alt: string;
+  credit?: string;
+};
+
 export type JourneyCountry = {
   order: number;
   slug: string;
@@ -24,8 +35,22 @@ export type JourneyCountry = {
   displayAnchor: [longitude: number, latitude: number];
   chapter: JourneyChapter;
   featured: boolean;
+  // The country's media object (CLAUDE.md §0 decision #21). Everything but
+  // `coverImage`/`coverAlt` is optional; components read it only through
+  // lib/media.ts, never by path.
+  //   coverImage — the card / social-share image, and the hero's default
+  //   heroImage  — the full-screen chapter hero, when it differs from the cover
+  //   gallery    — documentary photographs; each becomes a Page 10 film frame
+  //   signatureImage — the real photograph for Page 11, replacing the illustration
+  //   videoUrl   — the original video or post, linked from the chapter
   coverImage: string;
   coverAlt: string;
+  heroImage?: MediaImage;
+  signatureImage?: MediaImage;
+  // Optional, and displayed exactly as supplied — never parsed, never guessed.
+  // OWNER: no verified crossing or departure dates yet; leave unset until then.
+  arrivalDate?: string;
+  departureDate?: string;
   // CLAUDE.md §14.6: the manuscript has no Europe-leg content (France
   // through Slovakia) — left unset rather than invented. Consumers must
   // handle its absence instead of rendering a placeholder string.
@@ -36,7 +61,7 @@ export type JourneyCountry = {
   challengeStory?: string;
   videoUrl?: string;
   source?: CountrySource;
-  gallery: Array<{ src: string; alt: string }>;
+  gallery: MediaImage[];
 };
 
 const THE_INDIAN_CYCLIST = "The Indian Cyclist — A Journey for Generations";

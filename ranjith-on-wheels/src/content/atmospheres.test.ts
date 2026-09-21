@@ -39,6 +39,26 @@ describe("country atmospheres", () => {
     }
   });
 
+  it("gives every country a scene, and the night countries their own night effects", () => {
+    for (const [slug, atmosphere] of Object.entries(atmospheres)) {
+      expect(atmosphere.scenes.length, slug).toBeGreaterThanOrEqual(1);
+      expect(atmosphere.scenes.length, slug).toBeLessThanOrEqual(2);
+    }
+    expect(atmospheres.singapore.effect).toBe("citylights");
+    expect(atmospheres["south-korea"].effect).toBe("highway");
+    expect(atmospheres.singapore.scenes).toEqual(["skyline"]);
+    expect(atmospheres["south-korea"].scenes).toEqual(["highway"]);
+  });
+
+  it("keeps the night heroes charcoal, never pure black", () => {
+    for (const slug of ["singapore", "south-korea"]) {
+      const from = atmospheres[slug].hero.from;
+      expect(from.toLowerCase(), slug).not.toBe("#000000");
+      // Some blue/green in it, and lifted off black: luminance clearly above zero.
+      expect(luminance(from), slug).toBeGreaterThan(0.004);
+    }
+  });
+
   it("uses the night treatment only for Singapore and South Korea", () => {
     const night = Object.entries(atmospheres)
       .filter(([, atmosphere]) => atmosphere.hero.night)
