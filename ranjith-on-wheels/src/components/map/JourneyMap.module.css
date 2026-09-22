@@ -78,6 +78,7 @@
   fill: var(--land);
   stroke: var(--white);
   stroke-width: 0.4;
+  transition: stroke 0.25s ease, stroke-width 0.25s ease;
 }
 
 /* Red means ridden: it is the only colour on the map. */

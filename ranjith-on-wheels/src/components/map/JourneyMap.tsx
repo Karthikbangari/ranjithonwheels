@@ -19,13 +19,12 @@ type Mode = "route" | "people" | "challenge";
 
 // CLAUDE.md §0 decision #18: the owner's reference images are a plain
 // whole-world view — every visited country filled solid red, no
-// connecting line, no camera movement — and asked for exactly that rather
-// than the camera-glide/route-line version decision #17 first built. This
-// keeps #17's real geographic base (every journey country is its own real
-// topojson polygon, the same 110m dataset CountryTerrainFallback uses) but
-// drops the camera pan/zoom and the route line entirely: the map always
-// shows the whole world, and countries fill blue-to-red as the visitor
-// steps through them.
+// connecting line, no camera movement. Decision #24 corrected a regression
+// from that: every visited country is always red, all at once, not gated
+// behind stepping through the Next/Previous browser — Next/Previous and the
+// country list only move which country's panel and marker are focused, they
+// never change which countries are coloured. The reached paths fade in
+// together, once, when the map first scrolls into view.
 export function JourneyMap() {
   const [world, setWorld] = useState<FeatureCollection | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -55,7 +54,6 @@ export function JourneyMap() {
   const lastIndex = journeyCountries.length - 1;
 
   const activeCountry = journeyCountries[activeIndex];
-  const reachedCount = activeIndex + 1;
 
   const goTo = useCallback(
     (index: number) => {
@@ -94,7 +92,7 @@ export function JourneyMap() {
           className={styles.svg}
           viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
           role="img"
-          aria-label={`World map with ${reachedCount} of ${journeyCountries.length} journey countries highlighted, currently on ${activeCountry.name}`}
+          aria-label={`World map with all ${journeyCountries.length} journey countries highlighted, currently on ${activeCountry.name}`}
         >
           <rect width={VIEW_WIDTH} height={VIEW_HEIGHT} className={styles.ocean} />
 
@@ -102,21 +100,25 @@ export function JourneyMap() {
             <path key={index} d={pathGenerator(featureItem) ?? undefined} className={styles.land} />
           ))}
 
-          {journeyFeatures &&
-            journeyCountries.map((country, index) => {
-              const reached = index < reachedCount;
-              const featureShape = journeyFeatures[index];
-              if (!featureShape) return null;
-              return (
-                <path
-                  key={country.slug}
-                  d={pathGenerator(featureShape) ?? undefined}
-                  className={`${styles.journeyCountry} ${reached ? styles.reached : ""} ${
-                    index === activeIndex ? styles.active : ""
-                  }`}
-                />
-              );
-            })}
+          {/* Every visited country is red, all at once (CLAUDE.md §0 decision
+              #18, corrected by #24) — this group only fades in together, once,
+              as the map scrolls into view; it never gates which countries are
+              coloured by how far the visitor has stepped through the browser
+              below. */}
+          <g className="fade">
+            {journeyFeatures &&
+              journeyCountries.map((country, index) => {
+                const featureShape = journeyFeatures[index];
+                if (!featureShape) return null;
+                return (
+                  <path
+                    key={country.slug}
+                    d={pathGenerator(featureShape) ?? undefined}
+                    className={`${styles.journeyCountry} ${styles.reached} ${index === activeIndex ? styles.active : ""}`}
+                  />
+                );
+              })}
+          </g>
 
           {/* index !== activeIndex: the active marker below already paints
               over anything at the same point, so a country that's both
@@ -124,8 +126,7 @@ export function JourneyMap() {
               mode dot underneath a bigger ivory circle. */}
           {mode === "people" &&
             journeyCountries.map((country, index) => {
-              if (index >= reachedCount || index === activeIndex || !kindnessCountrySlugs.includes(country.slug))
-                return null;
+              if (index === activeIndex || !kindnessCountrySlugs.includes(country.slug)) return null;
               const point = projection(country.displayAnchor);
               if (!point) return null;
               return <circle key={country.slug} cx={point[0]} cy={point[1]} r={4} className={styles.peopleDot} />;
@@ -133,8 +134,7 @@ export function JourneyMap() {
 
           {mode === "challenge" &&
             journeyCountries.map((country, index) => {
-              if (index >= reachedCount || index === activeIndex || !challengeCountrySlugs.includes(country.slug))
-                return null;
+              if (index === activeIndex || !challengeCountrySlugs.includes(country.slug)) return null;
               const point = projection(country.displayAnchor);
               if (!point) return null;
               return (

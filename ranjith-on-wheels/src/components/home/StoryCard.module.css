@@ -7,12 +7,6 @@
   overflow: hidden;
 }
 
-.media {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  background: var(--paper-deep);
-}
-
 .copy {
   display: flex;
   flex-direction: column;
