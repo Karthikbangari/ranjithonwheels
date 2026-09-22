@@ -1,17 +1,27 @@
 .hero {
-  padding: 140px var(--page-gutter) 48px;
-  background: var(--paper);
+  padding: 64px var(--page-gutter) 40px;
+  background: var(--white);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .headline {
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-size: var(--text-display-l);
   max-width: 20ch;
 }
 
 .lede {
-  max-width: 56ch;
+  max-width: 60ch;
   color: var(--ink-soft);
+  font-size: var(--text-lede);
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 24px;
+  padding: 0 var(--page-gutter) clamp(64px, 10vh, 120px);
+  background: var(--white);
 }

@@ -3,7 +3,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--land), var(--sky));
+  background: var(--paper-deep);
 }
 
 .image {

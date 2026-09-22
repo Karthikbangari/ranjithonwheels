@@ -1,23 +1,24 @@
 .footer {
-  background: var(--navy);
-  color: var(--ink-inverse);
-  padding: 64px var(--page-gutter) 32px;
+  background: var(--paper-deep);
+  color: var(--ink);
+  padding: 56px var(--page-gutter) 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
+  border-top: 1px solid var(--line);
 }
 
 .top {
   display: flex;
   flex-wrap: wrap;
-  gap: 48px;
+  gap: 40px;
   justify-content: space-between;
 }
 
 .message {
   max-width: 32ch;
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-style: italic;
 }
 
@@ -31,8 +32,8 @@
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.8rem;
-  color: rgba(255, 249, 240, 0.65);
-  border-top: 1px solid var(--line-inverse);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
   padding-top: 20px;
 }

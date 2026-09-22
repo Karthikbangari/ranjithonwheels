@@ -13,9 +13,7 @@
     "content:status": "vitest run src/lib/media.test.ts -t \"prints the tracker\" --reporter=verbose --silent=false"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
     "d3-geo": "^3.1.1",
-    "gsap": "^3.15.0",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",

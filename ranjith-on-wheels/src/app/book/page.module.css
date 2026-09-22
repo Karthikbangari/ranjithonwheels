@@ -1,5 +1,5 @@
 .hero {
-  padding: 140px var(--page-gutter) 64px;
+  padding: 64px var(--page-gutter) 48px;
   background: var(--paper);
   display: grid;
   grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);

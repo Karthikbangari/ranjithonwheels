@@ -1,20 +1,18 @@
-"use client";
-
 import type { ComponentPropsWithoutRef } from "react";
-import { choreographies, type SceneName } from "./choreography";
-import { useChapterMotion } from "./useChapterMotion";
 
-// The one client boundary for a chapter page's motion. The markup inside is
-// rendered on the server and complete; `name` picks the choreography that
-// animates it (see choreography.ts).
+// A plain section. `name` is accepted so call sites don't need to change, but
+// nothing reads it — there is no per-section choreography any more (CLAUDE.md
+// §0 decision #23). The only motion on the whole site is the shared CSS
+// `fade` class every section already carries.
 export function Scene({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- accepted so call sites don't change, never read
   name,
   children,
+  className,
   ...props
-}: { name: SceneName } & ComponentPropsWithoutRef<"section">) {
-  const ref = useChapterMotion<HTMLElement>(choreographies[name]);
+}: { name: string } & ComponentPropsWithoutRef<"section">) {
   return (
-    <section ref={ref} {...props}>
+    <section className={`${className ?? ""} fade`} {...props}>
       {children}
     </section>
   );

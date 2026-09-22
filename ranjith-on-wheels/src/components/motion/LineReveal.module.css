@@ -1,9 +1,0 @@
-.mask {
-  display: block;
-  overflow: hidden;
-}
-
-.inner {
-  display: block;
-  will-change: transform;
-}

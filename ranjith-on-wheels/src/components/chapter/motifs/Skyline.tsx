@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // Singapore — technology and respect for the environment. A skyline builds
@@ -35,32 +32,9 @@ const groups: Array<Array<{ x: number; w: number; h: number; fill: string; opaci
 const stations = [100, 260, 420, 580, 740, 860];
 
 export function Skyline() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const blocks = stage.querySelectorAll("[data-block]");
-    const falls = stage.querySelectorAll("[data-fall]");
-    const track = stage.querySelector("[data-track]");
-    const stops = stage.querySelectorAll("[data-station]");
-
-    gsap
-      .timeline({ scrollTrigger: playOnView(stage) })
-      .fromTo(
-        blocks,
-        { scaleY: 0, transformOrigin: "50% 100%" },
-        { scaleY: 1, duration: 0.9, ease: "expo.out", stagger: 0.06 },
-        0,
-      )
-      .fromTo(falls, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.04 }, 0.5)
-      .fromTo(
-        track,
-        { scaleX: 0, transformOrigin: "0% 50%" },
-        { scaleX: 1, duration: 1.1, ease: "power2.inOut" },
-        0.6,
-      )
-      .fromTo(stops, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 1);
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         <rect x={0} y={300} width={900} height={60} fill={c.ink} opacity={0.1} />
         {groups.map((group, index) => (

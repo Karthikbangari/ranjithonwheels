@@ -8,7 +8,6 @@ import { loadWorldFeatures } from "@/lib/map";
 import { findCountryFeature } from "@/lib/countryShape";
 import { journeyCountries } from "@/content/journey";
 import { kindnessCountrySlugs, challengeCountrySlugs } from "@/content/atlas";
-import { useReducedMotion } from "@/components/motion/ReducedMotionProvider";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import styles from "./JourneyMap.module.css";
@@ -28,7 +27,6 @@ type Mode = "route" | "people" | "challenge";
 // shows the whole world, and countries fill blue-to-red as the visitor
 // steps through them.
 export function JourneyMap() {
-  const reducedMotion = useReducedMotion();
   const [world, setWorld] = useState<FeatureCollection | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [mode, setMode] = useState<Mode>("route");
@@ -54,28 +52,17 @@ export function JourneyMap() {
     return journeyCountries.map((country) => findCountryFeature(world, country.slug));
   }, [world]);
 
-  const showComplete = reducedMotion;
   const lastIndex = journeyCountries.length - 1;
 
-  // useReducedMotion reads false during SSR/first paint and flips to the
-  // real value once hydration checks the media query, so activeIndex's
-  // initial 0 needs to jump to the end the moment showComplete becomes
-  // true. This is React's own recommended pattern for "adjust state when a
-  // prop changes" — setting state directly during render (not inside a
-  // useEffect) — since doing it in an effect runs one render late and
-  // trips the set-state-in-effect lint rule.
-  const [syncedForComplete, setSyncedForComplete] = useState(false);
-  if (showComplete && !syncedForComplete) {
-    setSyncedForComplete(true);
-    setActiveIndex(lastIndex);
-  }
-
   const activeCountry = journeyCountries[activeIndex];
-  const reachedCount = showComplete ? journeyCountries.length : activeIndex + 1;
+  const reachedCount = activeIndex + 1;
 
-  const goTo = useCallback((index: number) => {
-    setActiveIndex(Math.max(0, Math.min(journeyCountries.length - 1, index)));
-  }, []);
+  const goTo = useCallback(
+    (index: number) => {
+      setActiveIndex(Math.max(0, Math.min(lastIndex, index)));
+    },
+    [lastIndex],
+  );
 
   const activePoint = projection(activeCountry.displayAnchor);
 
@@ -117,7 +104,7 @@ export function JourneyMap() {
 
           {journeyFeatures &&
             journeyCountries.map((country, index) => {
-              const reached = showComplete || index < reachedCount;
+              const reached = index < reachedCount;
               const featureShape = journeyFeatures[index];
               if (!featureShape) return null;
               return (
@@ -156,7 +143,7 @@ export function JourneyMap() {
             })}
 
           {activePoint ? (
-            <g className={activeIndex === 0 ? styles.pulseMarker : ""}>
+            <g>
               <circle cx={activePoint[0]} cy={activePoint[1]} r={4} className={styles.activeMarker} />
               <text x={activePoint[0]} y={activePoint[1] - 8} className={styles.activeLabel}>
                 {activeCountry.name}
@@ -164,58 +151,59 @@ export function JourneyMap() {
             </g>
           ) : null}
         </svg>
+      </div>
 
-        <div className={styles.panel}>
-          <span className={styles.panelOrder}>
-            Country {activeCountry.order} of {journeyCountries.length}
-          </span>
-          <h3 className={styles.panelName}>{activeCountry.name}</h3>
-          {activeCountry.summary ? <p className={styles.panelSummary}>{activeCountry.summary}</p> : null}
-          <div className={styles.panelActions}>
-            <button
-              type="button"
-              className={styles.stepButton}
-              onClick={() => goTo(activeIndex - 1)}
-              disabled={activeIndex === 0}
-            >
-              Previous
-            </button>
-            <button
-              type="button"
-              className={styles.stepButton}
-              onClick={() => goTo(activeIndex + 1)}
-              disabled={activeIndex === journeyCountries.length - 1}
-            >
-              Next country
-            </button>
-            <ButtonLink href={`/journey/${activeCountry.slug}`} variant="route">
-              Open story
-            </ButtonLink>
-          </div>
-
-          {/* CLAUDE.md §10: a real, visually-ordered list of all 23
-              countries — keyboard and screen-reader navigation that never
-              depends on interacting with the map graphic at all. */}
-          <details className={styles.countryList}>
-            <summary className={styles.countryListSummary}>All {journeyCountries.length} countries</summary>
-            <ol className={styles.countryListItems}>
-              {journeyCountries.map((country, index) => (
-                <li key={country.slug}>
-                  <button
-                    type="button"
-                    className={index === activeIndex ? styles.countryListActive : ""}
-                    onClick={() => goTo(index)}
-                  >
-                    {country.order}. {country.name}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </details>
-          <Link href={`/journey/${activeCountry.slug}`} className={styles.fullChapterLink}>
-            Read the full chapter
-          </Link>
+      {/* Below the map, not on top of it — no glass overlay any more. */}
+      <div className={styles.panel}>
+        <span className={styles.panelOrder}>
+          Country {activeCountry.order} of {journeyCountries.length}
+        </span>
+        <h3 className={styles.panelName}>{activeCountry.name}</h3>
+        {activeCountry.summary ? <p className={styles.panelSummary}>{activeCountry.summary}</p> : null}
+        <div className={styles.panelActions}>
+          <button
+            type="button"
+            className={styles.stepButton}
+            onClick={() => goTo(activeIndex - 1)}
+            disabled={activeIndex === 0}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            className={styles.stepButton}
+            onClick={() => goTo(activeIndex + 1)}
+            disabled={activeIndex === journeyCountries.length - 1}
+          >
+            Next country
+          </button>
+          <ButtonLink href={`/journey/${activeCountry.slug}`} variant="route">
+            Open story
+          </ButtonLink>
         </div>
+
+        {/* CLAUDE.md §10: a real, visually-ordered list of all 23
+            countries — keyboard and screen-reader navigation that never
+            depends on interacting with the map graphic at all. */}
+        <details className={styles.countryList}>
+          <summary className={styles.countryListSummary}>All {journeyCountries.length} countries</summary>
+          <ol className={styles.countryListItems}>
+            {journeyCountries.map((country, index) => (
+              <li key={country.slug}>
+                <button
+                  type="button"
+                  className={index === activeIndex ? styles.countryListActive : ""}
+                  onClick={() => goTo(index)}
+                >
+                  {country.order}. {country.name}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </details>
+        <Link href={`/journey/${activeCountry.slug}`} className={styles.fullChapterLink}>
+          Read the full chapter
+        </Link>
       </div>
     </section>
   );

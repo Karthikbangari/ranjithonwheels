@@ -1,42 +1,42 @@
 .section {
-  padding: clamp(60px, 7vw, 120px) var(--page-gutter);
-  background: var(--paper);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  padding: clamp(64px, 10vh, 120px) var(--page-gutter);
+  background: var(--white);
 }
 
 .header {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-end;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
+  gap: 20px;
 }
 
 .headline {
-  font-size: clamp(2rem, 4vw, 3rem);
-  max-width: 20ch;
+  margin-top: 12px;
+  font-size: var(--text-display-l);
+  max-width: 16ch;
 }
 
 .modeSwitch {
-  display: flex;
-  gap: 4px;
+  display: inline-flex;
   padding: 4px;
-  background: var(--white);
-  border-radius: 999px;
   border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
 }
 
 .modeButton {
-  padding: 8px 18px;
-  border-radius: 999px;
+  padding: 9px 18px;
   border: none;
+  border-radius: 999px;
   background: none;
   color: var(--ink-soft);
   font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  min-height: 36px;
 }
 
 .modeButtonActive {
@@ -44,19 +44,16 @@
   color: var(--white);
 }
 
-/* A fixed aspect ratio, not a viewport-height frame: the map always shows
-   the whole flat world (no camera zoom), so it should read like the
-   reference images — one clean, evenly proportioned map — rather than
-   stretching to fill an arbitrary tall section. */
+/* A fixed aspect ratio, always the whole flat world. The frame is the ocean
+   colour, so the map's letterbox never shows as a stripe of page colour. */
 .frame {
   position: relative;
   width: 100%;
   aspect-ratio: 1672 / 941;
-  border-radius: 12px;
+  border-radius: var(--radius-media);
   overflow: hidden;
-  /* The ocean colour, so the map's letterbox is never a stripe of page cream. */
   background: var(--sky);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--line);
 }
 
 .svg {
@@ -73,24 +70,23 @@
 
 .land {
   fill: var(--land);
-  stroke: color-mix(in srgb, var(--support) 30%, transparent);
-  stroke-width: 0.5;
+  stroke: var(--white);
+  stroke-width: 0.4;
 }
 
 .journeyCountry {
   fill: var(--land);
-  stroke: transparent;
-  stroke-width: 1;
-  transition: fill 0.3s ease, stroke 0.3s ease;
+  stroke: var(--white);
+  stroke-width: 0.4;
 }
 
+/* Red means ridden: it is the only colour on the map. */
 .reached {
   fill: var(--route);
-  stroke: var(--route-dark);
 }
 
 .active {
-  stroke: var(--ivory);
+  stroke: var(--ink);
   stroke-width: 1.5;
 }
 
@@ -101,14 +97,14 @@
 }
 
 .challengeDot {
-  fill: var(--route-dark);
+  fill: var(--ink);
   stroke: var(--white);
   stroke-width: 1;
 }
 
 .activeMarker {
-  fill: var(--ivory);
-  stroke: var(--route);
+  fill: var(--white);
+  stroke: var(--ink);
   stroke-width: 2;
 }
 
@@ -118,85 +114,61 @@
   font-weight: 700;
   text-anchor: middle;
   paint-order: stroke;
-  stroke: var(--ivory);
+  stroke: var(--white);
   stroke-width: 3px;
 }
 
-/* Plays once on mount for India, per the brief's opening beat — not a
-   looping animation, so it stays inside CLAUDE.md §5.2's rules without
-   needing the decision #15 exception. */
-.pulseMarker {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: journey-pulse 0.9s ease-out 1;
-}
-
-@keyframes journey-pulse {
-  0% {
-    transform: scale(0.6);
-    opacity: 0.4;
-  }
-  60% {
-    transform: scale(1.6);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
+/* The country's details sit below the map, not on top of it. */
 .panel {
-  position: absolute;
-  left: 20px;
-  bottom: 20px;
-  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  width: min(90%, 26rem);
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-stroke);
-  border-radius: var(--radius-control);
-  padding: 20px;
-  box-shadow: var(--shadow-soft);
+  padding: 24px;
+  margin-top: 4px;
+  background: var(--paper-deep);
+  border-radius: var(--radius-media);
 }
 
 .panelOrder {
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
 
 .panelName {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
 }
 
 .panelSummary {
-  font-size: 0.9rem;
   color: var(--ink-soft);
-  max-width: 42ch;
+  line-height: 1.65;
+  max-width: 64ch;
 }
 
 .panelActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 
 .stepButton {
-  padding: 8px 14px;
-  min-height: 40px;
+  padding: 10px 18px;
+  min-height: 44px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--white);
   color: var(--ink);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
+}
+
+.stepButton:hover:not(:disabled) {
+  border-color: var(--ink);
 }
 
 .stepButton:disabled {
@@ -210,8 +182,9 @@
 
 .countryListSummary {
   cursor: pointer;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-soft);
   list-style: none;
@@ -225,17 +198,15 @@
   margin-top: 12px;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 6px 12px;
-  max-height: 180px;
-  overflow-y: auto;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px 16px;
 }
 
 .countryListItems button {
   border: none;
   background: none;
-  padding: 0;
-  font-size: 0.85rem;
+  padding: 4px 0;
+  font-size: 0.9rem;
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-color: var(--line);
@@ -246,7 +217,7 @@
 
 .countryListItems button:hover,
 .countryListItems button:focus-visible {
-  text-decoration-color: var(--route);
+  text-decoration-color: var(--ink);
 }
 
 .countryListActive {
@@ -255,26 +226,9 @@
 }
 
 .fullChapterLink {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--support);
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-@media (max-width: 767px) {
-  /* Keeps the same wide aspect ratio as desktop rather than cropping to a
-     taller box — the whole world, uncropped, is the point of this map. */
-
-  /* Stays absolute (not static) — .frame has overflow:hidden for the map
-     itself, so a static-flow panel here would either get clipped or force
-     the aspect-ratio box taller than intended (the same bug already found
-     and fixed once this session in TravelMap). A bottom sheet with its own
-     scroll avoids both. */
-  .panel {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    width: auto;
-    max-height: 55%;
-    overflow-y: auto;
-  }
 }

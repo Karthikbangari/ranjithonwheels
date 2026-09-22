@@ -6,22 +6,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   padding: 0 var(--page-gutter);
   background: var(--white);
   color: var(--ink);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.4s ease, color 0.4s ease;
-}
-
-/* CLAUDE.md §0 decision #16: "the header is white/ivory and light; it
-   becomes blue only after the hero is passed." Reuses the existing
-   scroll-past-70%-of-a-viewport threshold, which already approximates
-   "past the hero" on every page, not just the homepage. */
-.scrolled {
-  background: var(--support);
-  color: var(--ink-inverse);
-  border-bottom-color: transparent;
-  box-shadow: var(--shadow-soft);
+  border-bottom: 1px solid var(--line);
 }
 
 .brand {
@@ -29,60 +18,49 @@
   align-items: center;
   gap: 10px;
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .wheelMark {
-  width: 28px;
-  height: 28px;
+  position: relative;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 2px solid currentColor;
-  position: relative;
 }
 
 .wheelMark::after {
   content: "";
   position: absolute;
-  inset: 8px;
+  inset: 7px;
   border-radius: 50%;
   border: 1px solid currentColor;
 }
 
 .nav {
   display: flex;
-  gap: 32px;
+  gap: 30px;
   font-size: 0.95rem;
+  color: var(--ink-soft);
 }
 
-.nav a {
-  position: relative;
-  padding-bottom: 3px;
-}
-
-.nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s ease;
-}
-
-.nav a:hover::after,
-.nav a:focus-visible::after {
-  transform: scaleX(1);
+.nav a:hover,
+.nav a:focus-visible {
+  color: var(--ink);
 }
 
 .actions {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.follow a {
+  min-height: 40px;
+  padding: 11px 22px;
 }
 
 @media (max-width: 1023px) {

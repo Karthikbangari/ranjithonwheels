@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, scrubOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // Malaysia — reserve zones and fruit. A canopy of fronds sways with the
@@ -23,36 +20,9 @@ const durianPoints = Array.from({ length: 32 }, (_, i) => {
 }).join(" ");
 
 export function Canopy() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const fruit = stage.querySelectorAll("[data-fruit]");
-    const captions = stage.querySelectorAll("[data-caption]");
-    const leaves = stage.querySelectorAll("[data-frond]");
-
-    gsap
-      .timeline({ scrollTrigger: playOnView(stage) })
-      .fromTo(
-        fruit,
-        { y: 80, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "expo.out", stagger: 0.06 },
-        0,
-      )
-      .fromTo(captions, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out", stagger: 0.06 }, 0.5);
-
-    // Sway is a scrolled gesture, not a loop: each frond leans back to rest
-    // as the stage crosses the viewport, and leans out again on scroll-up.
-    gsap.fromTo(
-      leaves,
-      { rotation: (i: number) => (i % 2 === 0 ? -5 : 5), transformOrigin: "0% 50%" },
-      {
-        rotation: 0,
-        ease: "none",
-        scrollTrigger: scrubOnView(stage),
-      },
-    );
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         <rect x={0} y={292} width={900} height={68} fill={c.accent} opacity={0.16} />
         <g transform="translate(-10 -6) scale(1.5)">

@@ -61,8 +61,8 @@ describe("chapters", () => {
   it("only offers an environment page where the summary names the setting (Indonesia, Taiwan) — and never as an event", () => {
     const withEnvironment = stories.filter((story) => story.moments.some((m) => m.beat === "environment")).map((s) => s.slug);
     expect(withEnvironment.sort()).toEqual(["indonesia", "taiwan"]);
-    expect(buildChapter("indonesia")!.atmosphere.environment?.label).toBe("Regional terrain");
-    expect(buildChapter("taiwan")!.atmosphere.environment?.label).toBe("Natural environment");
+    expect(buildChapter("indonesia")!.atmosphere.environmentLabel).toBe("Regional terrain");
+    expect(buildChapter("taiwan")!.atmosphere.environmentLabel).toBe("Natural environment");
     // No wording that turns a hazard into something that happened to him.
     for (const slug of ["indonesia", "taiwan"]) {
       const moment = buildChapter(slug)!.environment!;
@@ -103,10 +103,9 @@ describe("chapters", () => {
     for (const country of journeyCountries) {
       const chapter = buildChapter(country.slug)!;
       if (chapter.contentStatus === "pending") {
-        expect(chapter.interlude, country.slug).toBe(true);
         expect(chapter.story, country.slug).toBeNull();
       } else {
-        expect(chapter.interlude, country.slug).toBe(false);
+        expect(chapter.story, country.slug).not.toBeNull();
       }
     }
   });

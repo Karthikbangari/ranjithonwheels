@@ -1,0 +1,51 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-media);
+  overflow: hidden;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  background: var(--paper-deep);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px;
+  flex: 1;
+}
+
+.label {
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.headline {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.summary {
+  color: var(--ink-soft);
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
+
+.link {
+  margin-top: auto;
+  padding-top: 8px;
+  font-weight: 600;
+  color: var(--support);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

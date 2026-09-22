@@ -43,7 +43,7 @@ const optional: Record<string, string[]> = {
 };
 const OPTIONAL_IDS = ["road", "environment", "discovery", "memory", "signature"];
 
-test.describe("the 23 cinematic chapters", () => {
+test.describe("the 23 chapters", () => {
   for (const { slug, name } of countries) {
     test(`${name}: complete chapter in order, with nothing placeholder`, async ({ page }) => {
       await page.goto(`/journey/${slug}`);
@@ -54,9 +54,8 @@ test.describe("the 23 cinematic chapters", () => {
       );
       const expected = ["intro", "arrival"];
       if (slug === "south-korea") expected.push("notes");
-      // No verified manuscript: a wordless atmospheric interlude stands in.
-      if (!(slug in optional)) expected.push("interlude");
-      // Order matches the owner's page sequence (Pages 5–13).
+      // Order matches the owner's page sequence (Pages 5–13). A country with
+      // no data for a page simply has no section for it — nothing invented.
       for (const id of OPTIONAL_IDS) if ((optional[slug] ?? []).includes(id)) expected.push(id);
       expected.push("departure", "transition");
       expect(ids).toEqual(expected);
@@ -66,55 +65,48 @@ test.describe("the 23 cinematic chapters", () => {
     });
   }
 
-  test("only countries with real photographs use one as the hero; the rest use their terrain map", async ({ page }) => {
+  test("a country with a real photograph shows it; one without shows its own terrain map instead", async ({ page }) => {
     await page.goto("/journey/india");
     await expect(page.locator("#chapter-intro img")).toHaveCount(1);
 
+    // Cambodia has no photograph on disk yet: the image 404s and the
+    // client-side fallback swaps to the country's own terrain outline.
     await page.goto("/journey/cambodia");
+    await expect(page.locator("#chapter-intro svg")).toBeVisible({ timeout: 8000 });
     await expect(page.locator("#chapter-intro img")).toHaveCount(0);
-    await expect(page.locator("#chapter-intro [data-outline]").first()).toBeAttached();
-    await expect(page.locator("#chapter-intro [data-layer]").first()).toBeAttached();
-  });
-
-  test("Singapore, which has no outline at map resolution, gets its precise night-city treatment", async ({ page }) => {
-    await page.goto("/journey/singapore");
-    // Range rings around the anchor instead of a country outline.
-    expect(await page.locator("#chapter-intro circle[data-outline]").count()).toBeGreaterThanOrEqual(5);
   });
 
   test("the road into Indonesia is the sourced sea crossing; the road into Vietnam is not", async ({ page }) => {
     await page.goto("/journey/indonesia");
-    // The dashed-line label on the map, and the sourced wording in the metadata.
     await expect(page.locator("#chapter-arrival svg text", { hasText: "SEA CROSSING" })).toBeVisible();
     await expect(page.locator("#chapter-arrival").getByText("The 32-hour ferry from Singapore")).toBeVisible();
     await page.goto("/journey/vietnam");
     await expect(page.locator("#chapter-arrival svg text", { hasText: "SEA CROSSING" })).toHaveCount(0);
-    await expect(page.locator("#chapter-arrival [data-dashed]")).toHaveCount(0);
   });
 
-  test("India begins the road; Slovakia's road leaves as a dashed, unfinished line", async ({ page }) => {
+  test("India begins the road; Slovakia's road leaves unfinished", async ({ page }) => {
     await page.goto("/journey/india");
     await expect(page.locator("#chapter-arrival").getByText("Where the road begins")).toBeVisible();
     await page.goto("/journey/slovakia");
     await expect(page.getByRole("heading", { name: /The road isn.t finished/ })).toBeVisible();
-    await expect(page.locator("#chapter-departure [data-out]")).toHaveAttribute("stroke-dasharray", /.+/);
+    const dash = await page.locator("#chapter-departure svg path").last().getAttribute("stroke-dasharray");
+    expect(dash).toBeTruthy();
   });
 
-  test("countries with no story manuscript keep their teaser as the opening line and invent nothing else", async ({ page }) => {
+  test("a country with no story manuscript keeps its teaser as the opening line, and invents nothing else", async ({ page }) => {
     await page.goto("/journey/sri-lanka");
     await expect(page.locator("#chapter-intro").getByText("The elephant escape.")).toBeVisible();
-    await expect(page.locator("[data-step], [data-frame], [data-word]")).toHaveCount(0);
+    await expect(page.locator("#chapter-road, #chapter-memory, #chapter-discovery")).toHaveCount(0);
   });
 
-  test("the hand-off into the next chapter lands on its hero and clears the veil", async ({ page }) => {
+  test("the hand-off into the next chapter is a plain link", async ({ page }) => {
     await page.goto("/journey/vietnam");
     await page.getByRole("link", { name: /Enter Cambodia/ }).click();
     await expect(page).toHaveURL(/\/journey\/cambodia$/);
     await expect(page.getByRole("heading", { name: "Cambodia", level: 1 })).toBeVisible();
-    await expect(page.locator("#chapter-veil")).toHaveCount(0, { timeout: 8000 });
   });
 
-  test("old /stories/[slug] links land on the chapter", async ({ page }) => {
+  test("old /stories/[slug] links redirect to the chapter", async ({ page }) => {
     await page.goto("/stories/taiwan");
     await expect(page).toHaveURL(/\/journey\/taiwan$/);
     await expect(page.getByRole("heading", { name: "Taiwan", level: 1 })).toBeVisible();
@@ -122,35 +114,25 @@ test.describe("the 23 cinematic chapters", () => {
 
   test("/stories links each of the ten stories to its chapter", async ({ page }) => {
     await page.goto("/stories");
-    await expect(page.getByRole("link", { name: "Read the story" })).toHaveCount(10);
-    await expect(page.locator('a[href="/journey/india"]', { hasText: "Read the story" })).toHaveCount(1);
+    await expect(page.getByRole("link", { name: "Open the chapter" })).toHaveCount(10);
+    await expect(page.locator('a[href="/journey/india"]', { hasText: "Open the chapter" })).toHaveCount(1);
   });
 
-  test("the road page climbs an odometer as the page scrolls", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
+  test("the road page shows the distance and the places along it", async ({ page }) => {
     await page.goto("/journey/india");
-    await page.evaluate(() => {
-      const road = document.getElementById("chapter-road")!;
-      window.scrollTo(0, road.getBoundingClientRect().top + window.scrollY + window.innerHeight * 3);
-    });
-    await expect(page.locator("#chapter-road [data-count]")).toHaveText("15,000", { timeout: 8000 });
+    await expect(page.locator("#chapter-road [class*=odometer]").getByText("15,000")).toBeVisible();
+    await expect(page.locator("#chapter-road [class*=step]").first()).toBeVisible();
   });
 });
 
 test.describe("the chapter gateway (Page 4)", () => {
-  test("is a full-screen dark map with a marker link for every chapter, and climbs to 48,000 km", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
+  test("is a plain white map with a marker link for every chapter, and the route already ridden", async ({ page }) => {
     await page.goto("/journey");
     const gateway = page.locator("#chapter-gateway");
     await expect(gateway.locator("a[data-dot]")).toHaveCount(23);
-    // The blue road turns red with the scroll, and the counter with it — so it
-    // only reaches its total once the visitor has ridden the whole map.
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await expect(gateway.locator("[data-count]")).toHaveText("48,000", { timeout: 12000 });
-    // Very dark charcoal — layered, not pure black and not flat navy.
-    const bg = await gateway.evaluate((el) => getComputedStyle(el).backgroundImage);
-    expect(bg).toMatch(/rgb\(14, 20, 29\)/);
-    expect(bg).not.toMatch(/rgb\(0, 0, 0\)/);
+    await expect(gateway.getByText("48,000")).toBeVisible();
+    const bg = await gateway.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(bg).toBe("rgb(255, 255, 255)");
   });
 
   test("on a phone the map opens centred on the journey, not the Atlantic", async ({ page }) => {
@@ -170,42 +152,7 @@ test.describe("the chapter gateway (Page 4)", () => {
   });
 });
 
-test.describe("chapters — prefers-reduced-motion", () => {
-  test.use({ reducedMotion: "reduce" });
-
-  test("every page shows complete: nothing hidden, counters final, route drawn", async ({ page }) => {
-    for (const slug of ["india", "indonesia", "taiwan", "vietnam", "singapore", "slovakia"]) {
-      await page.goto(`/journey/${slug}`);
-      const hidden = await page.evaluate(() =>
-        [...document.querySelectorAll<HTMLElement | SVGElement>("[data-chapter] *")].filter((el) => {
-          const style = el.getAttribute("style") ?? "";
-          return /opacity:\s*0[;\s]/.test(style) || style.includes("stroke-dashoffset") || /translateY?\(/.test(style);
-        }).length,
-      );
-      expect(hidden, slug).toBe(0);
-    }
-    await page.goto("/journey/india");
-    await expect(page.locator("#chapter-road [data-count]")).toHaveText("15,000");
-    await page.goto("/journey/indonesia");
-    await expect(page.locator("#chapter-signature [data-hours]")).toHaveText("32 of 32 hours");
-  });
-
-  test("the gateway shows the finished road: 48,000 km already, no pin, no wait", async ({ page }) => {
-    await page.goto("/journey");
-    await expect(page.locator("#chapter-gateway [data-count]")).toHaveText("48,000");
-    const dash = await page.locator("#chapter-gateway [data-ride]").first().evaluate((el) => (el as SVGElement).style.strokeDasharray);
-    expect(dash).toBe("");
-  });
-
-  test("the hand-off is a plain link", async ({ page }) => {
-    await page.goto("/journey/vietnam");
-    await page.getByRole("link", { name: /Enter Cambodia/ }).click();
-    await expect(page).toHaveURL(/\/journey\/cambodia$/);
-    await expect(page.locator("#chapter-veil")).toHaveCount(0);
-  });
-});
-
-test.describe("chapter details (decision #21)", () => {
+test.describe("chapter details", () => {
   test("the environment page describes the setting and never an event", async ({ page }) => {
     await page.goto("/journey/indonesia");
     const indonesia = page.locator("#chapter-environment");
@@ -217,13 +164,12 @@ test.describe("chapter details (decision #21)", () => {
       const text = await section.innerText().catch(() => "");
       expect(text).not.toMatch(/danger|encounter|erupt|survived|escaped|felt the|struck/i);
     }
-    // The tag is never the word "challenge".
     expect(await page.locator("#chapter-environment").innerText()).not.toMatch(/challenge/i);
   });
 
   test("a film frame with no photograph is a deliberate stand-in: outline, location, coordinates, memory number", async ({ page }) => {
     await page.goto("/journey/vietnam");
-    const frame = page.locator("#chapter-memory [data-frame]").first();
+    const frame = page.locator("#chapter-memory [class*=frame]").first();
     await expect(frame.locator("svg path").first()).toBeAttached();
     await expect(frame.getByText("Vietnam", { exact: true })).toBeVisible();
     await expect(frame.getByText("14.06° N · 108.28° E")).toBeVisible();
@@ -246,81 +192,7 @@ test.describe("chapter details (decision #21)", () => {
     expect(labels).toEqual(["Location", "Coordinates", "From", "Chapter"]);
     expect(labels).not.toContain("Date");
     await expect(arrival.getByText("Indicative route")).toHaveCount(1);
-    // No large disclaimer paragraph any more.
-    await expect(arrival.getByText(/not the cycling track/i)).toHaveCount(0);
     for (const dd of await arrival.locator("dl dd").allInnerTexts()) expect(dd.trim()).not.toBe("");
-  });
-
-  test("the journey rail always says where we came from, where we are, and where we go next", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/journey/cambodia");
-    const rail = page.getByRole("navigation", { name: "Journey progress" });
-    await expect(rail).toBeVisible();
-    await expect(rail.getByRole("link", { name: /Vietnam/ })).toHaveAttribute("href", "/journey/vietnam");
-    await expect(rail.getByRole("link", { name: /Thailand/ })).toHaveAttribute("href", "/journey/thailand");
-    await expect(rail.getByText(/04 \/ 23 · Cambodia/)).toBeVisible();
-    expect(await rail.locator("i").count()).toBe(23);
-    expect(await rail.locator('i[data-state="done"]').count()).toBe(3);
-    expect(await rail.locator('i[data-state="here"]').count()).toBe(1);
-    expect(await rail.locator('i[data-state="ahead"]').count()).toBe(19);
-    await page.goto("/journey/india");
-    await expect(page.getByRole("navigation", { name: "Journey progress" }).getByText("The road begins")).toBeVisible();
-    await page.goto("/journey/slovakia");
-    await expect(page.getByRole("navigation", { name: "Journey progress" }).getByText("The road goes on")).toBeVisible();
-  });
-
-  test("the hand-off plays as one continuous move: veil in the next country's colours, then its hero, with the veil gone", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/journey/cambodia");
-    await page.locator("#chapter-transition").scrollIntoViewIfNeeded();
-    await page.getByRole("link", { name: /Enter Thailand/ }).click();
-    const veil = page.locator("#chapter-veil");
-    await expect(veil).toBeAttached({ timeout: 3000 });
-    await expect(veil.locator("[data-v-name]")).toHaveText("Thailand");
-    await expect(veil.locator("[data-v-line] span").first()).toHaveText("Chapter 05 of 23");
-    await expect(page).toHaveURL(/\/journey\/thailand$/, { timeout: 8000 });
-    await expect(page.getByRole("heading", { name: "Thailand", level: 1 })).toBeVisible();
-    await expect(page.locator("#chapter-veil")).toHaveCount(0, { timeout: 8000 });
-  });
-
-  test("the veil's type lands exactly where the next hero's type is — no ghosting, no jump", async ({ page }) => {
-    for (const [from, to, name] of [
-      ["cambodia", "thailand", "Thailand"],
-      ["singapore", "indonesia", "Indonesia"], // an opening line and two stats
-    ]) {
-      await page.goto(`/journey/${from}`);
-      await page.locator("#chapter-transition").scrollIntoViewIfNeeded();
-      await page.waitForTimeout(1200);
-      await page.getByRole("link", { name: new RegExp(`Enter ${name}`) }).click();
-      // Both exist for a moment: the veil, and the new hero beneath it. Measure
-      // inside the wait itself, so the veil can't fade out between "both
-      // exist" and the measurement.
-      const handle = await page.waitForFunction(
-        (n) => {
-          const veil = document.querySelector("#chapter-veil");
-          const hero = document.querySelector("#chapter-intro");
-          if (!veil || !hero || hero.querySelector("h1")?.textContent !== n) return null;
-          const top = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().top) : null);
-          const left = (el: Element | null) => (el ? Math.round(el.getBoundingClientRect().left) : null);
-          const pairs: Record<string, [Element | null, Element | null]> = {
-            name: [veil.querySelector("[data-v-name]"), hero.querySelector("h1 .line-inner")],
-            coords: [veil.querySelector("[data-v-coords]"), hero.querySelector("p[class*=coords]")],
-            line: [veil.querySelector("[data-v-line]"), hero.querySelector("p[class*=chapterLine]")],
-            opening: [veil.querySelector("[data-v-opening]"), hero.querySelector("p[class*=opening]")],
-          };
-          return Object.fromEntries(
-            Object.entries(pairs).map(([key, [a, b]]) => [key, a && b ? [(top(a) ?? 0) - (top(b) ?? 0), (left(a) ?? 0) - (left(b) ?? 0)] : null]),
-          );
-        },
-        name,
-        { timeout: 8000 },
-      );
-      const offsets = (await handle.jsonValue()) as Record<string, [number, number] | null>;
-      for (const [key, delta] of Object.entries(offsets)) {
-        expect(delta, `${from}→${to}: ${key}`).toEqual([0, 0]);
-      }
-      await expect(page).toHaveURL(new RegExp(`/journey/${to}$`));
-    }
   });
 
   test("Instagram and YouTube stay hidden until real URLs are supplied — never a guessed profile", async ({ page }) => {
@@ -338,21 +210,24 @@ test.describe("chapter details (decision #21)", () => {
     }
   });
 
-  test("pending chapters show a wordless interlude, not developer text", async ({ page }) => {
-    await page.goto("/journey/thailand");
-    const interlude = page.locator("#chapter-interlude");
-    await expect(interlude).toBeAttached();
-    expect(await interlude.locator("p").allInnerTexts()).toHaveLength(1);
-    await expect(page.locator("[data-chapter]")).toHaveAttribute("data-content-status", "pending");
-    await page.goto("/journey/india");
-    await expect(page.locator("[data-chapter]")).toHaveAttribute("data-content-status", "verified");
-    await expect(page.locator("#chapter-interlude")).toHaveCount(0);
-  });
-
   test("no country invents a date", async ({ page }) => {
     for (const slug of ["india", "japan", "slovakia"]) {
       await page.goto(`/journey/${slug}`);
       expect(await page.locator("#chapter-arrival dt").allInnerTexts(), slug).not.toContain("Date");
+    }
+  });
+});
+
+test.describe("chapters — prefers-reduced-motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("every page shows complete, with nothing left invisible", async ({ page }) => {
+    for (const slug of ["india", "indonesia", "taiwan", "sri-lanka", "slovakia"]) {
+      await page.goto(`/journey/${slug}`);
+      const hidden = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>("[data-chapter] *")].filter((el) => getComputedStyle(el).opacity === "0").length,
+      );
+      expect(hidden, slug).toBe(0);
     }
   });
 });

@@ -1,74 +1,59 @@
 .section {
-  position: relative;
-  background: var(--paper);
-  padding: 120px var(--page-gutter);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 64px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: clamp(32px, 6vw, 96px);
   align-items: center;
-  overflow: hidden;
+  padding: clamp(64px, 10vh, 128px) var(--page-gutter);
+  background: var(--paper-deep);
 }
 
-.chapterNumber {
-  position: absolute;
-  top: 40px;
-  left: var(--page-gutter);
-  font-family: var(--font-display);
-  font-size: clamp(6rem, 14vw, 12rem);
-  color: rgba(16, 24, 40, 0.08);
-  line-height: 1;
-  pointer-events: none;
-}
-
-.copy {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  z-index: 1;
-}
-
-.headline {
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  line-height: 1.15;
-  max-width: 14ch;
-}
-
-.beats {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 42ch;
-  color: var(--ink-soft);
-  font-size: 1.05rem;
-  list-style: none;
-}
-
-.link {
-  font-size: 0.9rem;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  width: fit-content;
-}
-
-.portraitWrap {
+.media {
   position: relative;
   aspect-ratio: 4 / 5;
-  clip-path: inset(0 0 0 0);
-  overflow: hidden;
   border-radius: var(--radius-media);
+  overflow: hidden;
+  background: var(--white);
 }
 
-.portrait {
+.image {
   object-fit: cover;
 }
 
-@media (max-width: 1023px) {
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 54ch;
+}
+
+.headline {
+  font-size: var(--text-display-l);
+}
+
+.beats {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.link {
+  font-weight: 600;
+  color: var(--support);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 899px) {
   .section {
     grid-template-columns: 1fr;
   }
 
-  .portraitWrap {
-    order: -1;
+  .media {
+    aspect-ratio: 3 / 2;
   }
 }

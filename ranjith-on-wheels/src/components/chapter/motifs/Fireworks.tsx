@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // Taiwan — fireworks from Taipei 101 every New Year's Eve, in a country
@@ -20,38 +17,9 @@ const SEISMOGRAPH =
   "M0 334 L70 334 L86 312 L102 356 L118 308 L134 358 L150 316 L164 350 L178 322 L192 344 L206 328 L222 340 L240 331 L262 337 L300 334 L900 334";
 
 export function Fireworks() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const burstGroups = stage.querySelectorAll("[data-burst]");
-    const trace = stage.querySelector<SVGPathElement>("[data-trace]");
-
-    const tl = gsap.timeline({ scrollTrigger: playOnView(stage) });
-
-    burstGroups.forEach((burst, index) => {
-      tl.fromTo(
-        burst.querySelectorAll("[data-ray]"),
-        { scaleY: 0, opacity: 1, transformOrigin: "50% 100%" },
-        // Settles at the same half-glow the page renders without JS.
-        { scaleY: 1, opacity: 0.55, duration: 1.1, ease: "expo.out" },
-        0.3 + index * 0.22,
-      );
-    });
-
-    if (trace) {
-      const length = trace.getTotalLength();
-      trace.style.strokeDasharray = `${length}`;
-      // Drawn along its length via stroke-dashoffset: a path can't be traced
-      // with a transform.
-      tl.fromTo(
-        trace,
-        { strokeDashoffset: length },
-        { strokeDashoffset: 0, duration: 1.5, ease: "power2.inOut" },
-        0,
-      );
-    }
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         {bursts.map((burst) => (
           <g key={`${burst.x}-${burst.y}`} data-burst transform={`translate(${burst.x} ${burst.y})`}>

@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { scrubOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 import { BikeGlyph } from "./BikeGlyph";
 
@@ -9,19 +6,9 @@ import { BikeGlyph } from "./BikeGlyph";
 // rider crosses an enormous, nearly empty frame as the page scrolls; the
 // wheels turn with the distance and the clouds fall behind.
 export function Horizon() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const rider = stage.querySelector("[data-rider]");
-    const wheels = stage.querySelectorAll("[data-wheel]");
-    const clouds = stage.querySelectorAll("[data-cloud]");
-
-    const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: scrubOnView(stage) });
-    tl.fromTo(rider, { x: -700 }, { x: 0 }, 0);
-    tl.fromTo(wheels, { rotation: -900, transformOrigin: "50% 50%" }, { rotation: 0 }, 0);
-    tl.fromTo(clouds, { x: (i: number) => 90 + i * 40 }, { x: 0 }, 0);
-  });
 
   return (
-    <div ref={stageRef} className={styles.stage} aria-hidden="true">
+    <div className={styles.stage} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid meet">
         <circle cx={150} cy={84} r={46} fill={c.glow} opacity={0.8} />
         {[

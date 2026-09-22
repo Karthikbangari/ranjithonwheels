@@ -1,8 +1,7 @@
 /*
- * Shared frame for the ten story motifs. Every colour comes from the
- * --story-* custom properties StoryPage sets on its wrapper, so one
- * stylesheet serves all ten colour worlds. Every motif rests in its finished
- * state here — the GSAP setup only animates toward it (see useChapterMotion).
+ * Shared frame for the ten signature-moment illustrations. Every colour comes
+ * from the --story-* custom properties ChapterSignature sets on the box
+ * around it, so one stylesheet serves all ten. Static SVG — no motion.
  */
 .stage {
   position: relative;

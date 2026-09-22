@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // China — not the skyline, the hospitality. Ink ridgelines are brushed in
@@ -13,41 +10,9 @@ const RIDGE_B = "M0 232 C120 197 200 242 300 207 S470 162 560 197 S760 242 900 1
 const bowls = [250, 450, 650];
 
 export function Ink() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const ridges = stage.querySelectorAll<SVGPathElement>("[data-ridge]");
-    const sun = stage.querySelector("[data-sun]");
-    const bowlGroups = stage.querySelectorAll("[data-bowl]");
-    const steam = stage.querySelectorAll("[data-steam]");
-    const seal = stage.querySelector("[data-seal]");
-
-    const tl = gsap.timeline({ scrollTrigger: playOnView(stage) });
-
-    // Brush strokes are drawn by animating stroke-dashoffset — not a
-    // transform, but it is the only way to trace a path along its length.
-    ridges.forEach((ridge, index) => {
-      const length = ridge.getTotalLength();
-      ridge.style.strokeDasharray = `${length}`;
-      tl.fromTo(
-        ridge,
-        { strokeDashoffset: length },
-        { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut" },
-        index * 0.2,
-      );
-    });
-
-    tl.fromTo(sun, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: "power2.out" }, 0.7)
-      .fromTo(
-        bowlGroups,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "expo.out", stagger: 0.06 },
-        0.9,
-      )
-      .fromTo(steam, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out", stagger: 0.06 }, 1.1)
-      .fromTo(seal, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 1.5);
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         <circle data-sun cx={770} cy={72} r={44} fill={c.accent} opacity={0.92} />
         <path

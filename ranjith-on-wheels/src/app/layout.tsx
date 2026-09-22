@@ -3,7 +3,6 @@ import { Fraunces, Manrope, Geist_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SkipLink } from "@/components/layout/SkipLink";
-import { ReducedMotionProvider } from "@/components/motion/ReducedMotionProvider";
 import { site, siteUrl } from "@/content/site";
 import "./globals.css";
 
@@ -71,7 +70,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable}`}>
       <body>
-        <ReducedMotionProvider>
           <SkipLink />
           <SiteHeader />
           <main id="main-content" tabIndex={-1}>
@@ -82,7 +80,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
           />
-        </ReducedMotionProvider>
       </body>
     </html>
   );

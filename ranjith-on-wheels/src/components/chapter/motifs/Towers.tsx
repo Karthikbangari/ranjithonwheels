@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // Cambodia — a Hindu temple that became Buddhist, its towers rising out of a
@@ -16,24 +13,9 @@ const towers = [
 ];
 
 export function Towers() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const sun = stage.querySelector("[data-sun]");
-    const spires = stage.querySelectorAll("[data-tower]");
-    const pool = stage.querySelector("[data-reflection]");
-    const tl = gsap.timeline({ scrollTrigger: playOnView(stage) });
-
-    tl.fromTo(sun, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "power2.inOut" }, 0)
-      .fromTo(
-        spires,
-        { y: 90, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "expo.out", stagger: { each: 0.06, from: "center" } },
-        0.2,
-      )
-      .fromTo(pool, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.7);
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         <defs>
           <path id="tower-spire" d={TOWER} />

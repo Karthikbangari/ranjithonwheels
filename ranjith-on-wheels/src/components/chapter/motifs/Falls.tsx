@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // India — Nohkalikai Falls and the legend it carries. Rock walls either side,
@@ -11,20 +8,9 @@ import styles from "../Motifs.module.css";
 const streams = [0, 1, 2, 3, 4, 5, 6];
 
 export function Falls() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const water = stage.querySelectorAll("[data-stream]");
-    const mist = stage.querySelectorAll("[data-mist]");
-    const walls = stage.querySelectorAll("[data-wall]");
-
-    gsap
-      .timeline({ scrollTrigger: playOnView(stage) })
-      .fromTo(walls, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.9, ease: "expo.out", stagger: 0.06 }, 0)
-      .fromTo(water, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: "power2.out", stagger: 0.05 }, 0.3)
-      .fromTo(mist, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1.4, ease: "power2.out", stagger: 0.08 }, 0.7);
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         <g data-wall>
           <path d="M0 0 H300 L318 90 L296 170 L326 360 H0 Z" fill={c.ink} opacity={0.88} />

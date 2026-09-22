@@ -1,74 +1,40 @@
 .button {
-  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 14px 28px;
+  padding: 13px 26px;
+  min-height: 46px;
   border-radius: 999px;
   font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  overflow: hidden;
-  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, background 0.22s ease;
-  min-height: 44px;
+  line-height: 1;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.button:hover,
-.button:focus-visible {
-  transform: translateY(-2px);
-}
-
-/* A soft diagonal sheen that sweeps across on hover — the site's one
-   recurring "premium" micro-interaction, so it earns its keep by living
-   in one shared component instead of being reinvented per section. */
-.button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
-  transform: translateX(-120%);
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-}
-
-.button:hover::after,
-.button:focus-visible::after {
-  transform: translateX(120%);
-}
-
-.primary {
-  background: linear-gradient(135deg, var(--support), color-mix(in srgb, var(--support) 80%, var(--navy)));
+/* Blue is every main button. */
+.primary,
+.route {
+  background: var(--support);
   color: var(--white);
-  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--support) 55%, transparent);
+  border: 1px solid var(--support);
 }
 
 .primary:hover,
-.primary:focus-visible {
-  box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--support) 65%, transparent);
+.route:hover,
+.primary:focus-visible,
+.route:focus-visible {
+  background: #093f83;
+  border-color: #093f83;
 }
 
 .secondary {
-  background: transparent;
-  color: currentColor;
-  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 
 .secondary:hover,
 .secondary:focus-visible {
-  border-color: currentColor;
-}
-
-/* The one strong red call to action per screen (CLAUDE.md §0 decision
-   #16) — red is the journey itself, so this variant is deliberately used
-   sparingly (the hero's "Explore the route", not every button on the
-   site) rather than replacing .primary as the default action color. */
-.route {
-  background: linear-gradient(135deg, var(--route), var(--route-dark));
-  color: var(--white);
-  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--route) 55%, transparent);
-}
-
-.route:hover,
-.route:focus-visible {
-  box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--route) 65%, transparent);
+  border-color: var(--ink);
 }

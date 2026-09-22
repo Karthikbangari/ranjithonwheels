@@ -1,4 +1,5 @@
 import type { Chapter } from "@/content/chapters";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import styles from "./Sections.module.css";
 
 // A country with a long summary but no story pages yet (South Korea): the
@@ -7,8 +8,8 @@ import styles from "./Sections.module.css";
 export function ChapterNotes({ chapter }: { chapter: Chapter }) {
   if (!chapter.notes) return null;
   return (
-    <section className={styles.notes} id="chapter-notes">
-      <p className={styles.kicker}>The story so far</p>
+    <section className={`${styles.notes} fade`} id="chapter-notes">
+      <Eyebrow>The story so far</Eyebrow>
       <p className={styles.lede}>{chapter.notes}</p>
     </section>
   );

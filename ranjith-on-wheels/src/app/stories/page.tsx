@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { journeyCountries } from "@/content/journey";
-import { site } from "@/content/site";
 import { getStory } from "@/content/stories";
-import { StoryFeature } from "@/components/home/StoryFeature";
+import { site } from "@/content/site";
+import { StoryCard } from "@/components/home/StoryCard";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -12,9 +12,8 @@ export const metadata: Metadata = {
 
 // The only ten countries with both a complete narrative summary and a
 // page-verified manuscript citation (see the `source.pages` fields in
-// journey.ts) — every other entry is either an unverified one-line teaser
-// or (the nine Europe countries) has no sourced content yet. This keeps the
-// selection principled rather than an arbitrary top ten.
+// journey.ts) — every other entry is either an unverified one-line teaser or
+// (the nine Europe countries) has no sourced content yet.
 const topStories = journeyCountries.filter((country) => country.summary && country.source?.pages);
 
 export default function StoriesPage() {
@@ -23,20 +22,16 @@ export default function StoriesPage() {
       <section className={styles.hero}>
         <h1 className={styles.headline}>Ten stories, fully told.</h1>
         <p className={styles.lede}>
-          Of the {site.countryCount} countries on the map, these are the {topStories.length} whose
-          stories are complete and checked directly against the manuscript. The rest are still
-          being written — see the full journey for every country reached so far.
+          Of the {site.countryCount} countries on the map, these are the {topStories.length} whose stories are
+          complete and checked directly against the manuscript. The rest are still being written — see the
+          full journey for every country reached so far.
         </p>
       </section>
-      {topStories.map((country, index) => (
-        <StoryFeature
-          key={country.slug}
-          country={country}
-          reverse={index % 2 === 1}
-          storyHref={`/journey/${country.slug}`}
-          headline={getStory(country.slug)?.headline}
-        />
-      ))}
+      <section className={styles.grid}>
+        {topStories.map((country) => (
+          <StoryCard key={country.slug} country={country} headline={getStory(country.slug)?.headline} />
+        ))}
+      </section>
     </>
   );
 }

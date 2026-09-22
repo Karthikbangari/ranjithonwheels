@@ -1,5 +1,5 @@
 .hero {
-  padding: 140px var(--page-gutter) 48px;
+  padding: 64px var(--page-gutter) 40px;
   background: var(--paper);
   display: flex;
   flex-direction: column;

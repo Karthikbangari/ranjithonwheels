@@ -1,21 +1,15 @@
 /*
- * Pages 6–13 of a chapter. All colour is drawn from the --story-* properties
- * ChapterPage sets from the country's atmosphere, so one stylesheet serves
- * every chapter. Every animated element rests in its finished state here (see
- * choreography.ts), so no-JS and reduced motion show the complete page.
+ * CLAUDE.md §0 decision #23. Pages 6–13 of a chapter: plain white and soft
+ * grey bands, black type, one blue accent, thin grey lines. No per-country
+ * page colour, no dark sections, no decorative texture — everything here is
+ * either real content (a map, a photograph, a figure) or plain typography.
  */
-.chapter {
-  background: var(--paper);
-  color: var(--ink);
-  /* Room for the journey rail fixed to the bottom of the screen. */
-  padding-bottom: 46px;
-}
 
 .credits {
-  max-width: 1080px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--page-gutter) 48px;
-  background: var(--paper);
+  padding: 0 var(--page-gutter) 8px;
+  background: var(--white);
 }
 
 /* ── shared type ───────────────────────────────────────────────────────── */
@@ -26,22 +20,16 @@
   padding: 0 var(--page-gutter);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.kicker {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--story-accent);
+  gap: 12px;
 }
 
 .h2 {
   font-size: var(--text-display-l);
-  color: var(--story-ink);
   max-width: 18ch;
-  text-wrap: balance;
+}
+
+.h3 {
+  font-size: 1.15rem;
 }
 
 .lede {
@@ -51,29 +39,18 @@
   max-width: 60ch;
 }
 
-.caption {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 var(--page-gutter);
-  font-family: var(--font-data);
-  font-size: var(--text-data);
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-}
-
 /* ── Pages 6 & 12: regional route maps ─────────────────────────────────── */
 .arrival,
 .departure {
-  padding: clamp(64px, 10vh, 128px) 0;
+  padding: clamp(48px, 8vh, 96px) 0;
   display: flex;
   flex-direction: column;
-  gap: 36px;
-  background: var(--paper);
+  gap: 24px;
+  background: var(--white);
 }
 
 .departure {
-  background: linear-gradient(180deg, var(--paper) 0%, var(--story-tint) 100%);
+  background: var(--paper-deep);
 }
 
 .mapCard {
@@ -81,12 +58,11 @@
   width: calc(100% - 2 * var(--page-gutter));
   max-width: 1280px;
   margin: 0 auto;
-  aspect-ratio: 1200 / 560;
+  aspect-ratio: 1200 / 460;
   border-radius: var(--radius-media);
   overflow: hidden;
   background: var(--sky);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow-soft);
 }
 
 .mapSvg {
@@ -95,16 +71,21 @@
   height: 100%;
 }
 
-@media (max-width: 720px) {
-  .mapCard {
-    aspect-ratio: 4 / 3;
-  }
+.mapTag {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
 
 .seaLabel {
   font-family: var(--font-data);
-  font-size: 15px;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  letter-spacing: 0.14em;
   fill: var(--support);
 }
 
@@ -114,58 +95,38 @@
   margin: 0 auto;
   padding: 0 var(--page-gutter);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 20px 32px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px 28px;
 }
 
 .meta > div {
   display: flex;
   flex-direction: column-reverse;
-  gap: 6px;
-  padding-top: 14px;
-  border-top: 2px solid color-mix(in srgb, var(--story-accent) 35%, transparent);
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
 }
 
 .meta dt {
   font-family: var(--font-data);
   font-size: var(--text-data);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
 
 .meta dd {
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  color: var(--story-ink);
-}
-
-.meta dd span {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font-data);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
+  font-size: 1.15rem;
 }
 
 /* ── Page 7: the road ──────────────────────────────────────────────────── */
 .road {
-  padding: clamp(64px, 10vh, 128px) 0 clamp(40px, 6vh, 80px);
+  padding: clamp(48px, 8vh, 96px) 0;
   display: flex;
   flex-direction: column;
-  gap: 36px;
-  background: linear-gradient(180deg, var(--story-tint) 0%, var(--paper) 100%);
-}
-
-.roadPin {
-  width: 100%;
-  /* Absorbs a label that wraps after the pin was measured. */
-  padding-bottom: 28px;
-  min-height: min(78svh, 640px);
-  display: flex;
-  align-items: center;
+  gap: 28px;
+  background: var(--paper-deep);
 }
 
 .roadPanel {
@@ -173,57 +134,38 @@
   max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 20px 40px;
-  align-content: center;
-  align-items: center;
-}
-
-.roadScene {
-  position: relative;
-  aspect-ratio: 5 / 3;
-  border-radius: var(--radius-media);
-  overflow: hidden;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--story-tint) 30%, var(--white)) 0%, var(--story-tint) 100%);
-  border: 1px solid color-mix(in srgb, var(--story-accent) 22%, transparent);
-  box-shadow: var(--shadow-soft);
-}
-
-.roadSvg {
-  display: block;
-  width: 100%;
-  height: 100%;
+  grid-template-columns: minmax(0, 0.45fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
 }
 
 .odometer {
-  position: absolute;
-  top: 8%;
-  left: 4%;
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 8px 18px;
-  border-radius: var(--radius-control);
-  background: var(--glass);
-  border: 1px solid var(--glass-stroke);
-  color: var(--story-ink);
-  font-family: var(--font-data);
-  font-variant-numeric: tabular-nums;
+  flex-direction: column;
+  gap: 2px;
+  padding: 24px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-media);
 }
 
 .odometer span {
-  font-size: clamp(1.5rem, 4vw, 2.8rem);
-  letter-spacing: 0.04em;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
 }
 
 .odometer small {
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  color: var(--story-accent);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.odometer p {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
 }
 
 .steps {
-  list-style: none;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -239,213 +181,75 @@
 .stepIndex {
   font-family: var(--font-data);
   font-size: var(--text-data);
-  letter-spacing: 0.14em;
-  color: var(--story-accent);
+  letter-spacing: 0.1em;
+  color: var(--support);
 }
 
 .stepLabel {
-  font-size: var(--text-h3);
-  line-height: 1.15;
-  color: var(--story-ink);
+  font-size: 1.05rem;
 }
 
 .stepText {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--ink-soft);
   line-height: 1.6;
-}
-
-/* The ride's progress rail: blue is what lies ahead, and red fills in as the
-   ride is ridden. */
-.track {
-  grid-column: 1 / -1;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding-top: 24px;
-}
-
-.trackLine {
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--support) 35%, transparent);
-  overflow: hidden;
-}
-
-.trackFill {
-  display: block;
-  height: 100%;
-  background: var(--route);
-}
-
-.pin {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  color: var(--ink-soft);
-  text-align: center;
-  max-width: 14ch;
-}
-
-.pin i {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  margin-top: -32px;
-  background: var(--route);
-  border: 3px solid var(--paper);
 }
 
 @media (max-width: 899px) {
-  .roadPin {
-    min-height: 0;
-  }
-
   .roadPanel {
     grid-template-columns: 1fr;
   }
-
-  .pin {
-    font-size: 0.68rem;
-  }
 }
 
-/* ── Page 8: the natural environment ────────────────────────────────────── */
+/* ── Page 8: the natural environment ───────────────────────────────────── */
 .environment {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  /* Tall enough that the art (anchored to the bottom) sits clear below the copy. */
-  min-height: min(76svh, 660px);
-  padding: clamp(80px, 12vh, 150px) 0 clamp(200px, 30vh, 280px);
-  background: var(--story-ink);
-  color: var(--ink-inverse);
-}
-
-.environmentArt {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.environmentCopy {
-  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--page-gutter);
+  padding: clamp(48px, 8vh, 96px) var(--page-gutter);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
+  background: var(--white);
 }
 
-.kickerLight {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 249, 240, 0.8);
-}
-
-.h2Light {
-  font-size: var(--text-display-l);
-  color: var(--ink-inverse);
-  max-width: 16ch;
-  text-wrap: balance;
-}
-
-.ledeLight {
-  font-size: var(--text-lede);
-  line-height: 1.6;
-  color: rgba(255, 249, 240, 0.9);
-  max-width: 56ch;
-}
-
-/* ── Page 9: the discovery — the brightest page in the chapter ─────────── */
+/* ── Page 9: the discovery ──────────────────────────────────────────────── */
 .discovery {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(80px, 12vh, 160px) 0;
+  padding: clamp(48px, 8vh, 96px) 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(32px, 6vh, 64px);
-  background:
-    radial-gradient(60% 55% at 88% 12%, color-mix(in srgb, var(--story-glow) 38%, transparent), transparent 70%),
-    linear-gradient(180deg, var(--story-tint) 0%, var(--white) 100%);
+  gap: 32px;
+  background: var(--paper-deep);
 }
 
-.discoveryArt {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: min(72%, 900px);
-  height: 100%;
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-.discovery > .kicker {
-  position: relative;
-  width: 100%;
+.discoveryList {
+  width: calc(100% - 2 * var(--page-gutter));
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--page-gutter);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 24px;
 }
 
 .discoveryItem {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 var(--page-gutter);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/* The discovery's name, huge and outlined, slides sideways in its own band
-   above the copy — decoration, never underneath the text. */
-.bigWord {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(72px, 15vw, 240px);
-  line-height: 1.02;
-  white-space: nowrap;
-  color: transparent;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--story-accent) 42%, transparent);
-  pointer-events: none;
-  user-select: none;
-}
-
-.discoveryCopy {
-  position: relative;
-  max-width: 44ch;
+  padding: 24px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-media);
 }
 
 .discoveryText {
-  margin-top: 14px;
-  font-size: var(--text-lede);
-  line-height: 1.6;
+  margin-top: 10px;
   color: var(--ink-soft);
+  line-height: 1.6;
 }
 
 /* ── Page 10: the people / the memory ──────────────────────────────────── */
 .memory {
-  padding: clamp(80px, 12vh, 160px) 0;
+  padding: clamp(48px, 8vh, 96px) 0;
   display: flex;
   flex-direction: column;
-  gap: 48px;
-  background: var(--paper-deep);
+  gap: 28px;
+  background: var(--white);
 }
 
 .filmStrip {
@@ -453,36 +257,23 @@
   max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 540px));
-  gap: 44px 40px;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 24px 32px;
 }
 
-.frame:nth-child(even) {
-  margin-top: 36px;
-}
-
-/* The one ink-dark object on the page: the film stock itself. */
-.reel {
-  overflow: hidden;
-  border-radius: 6px;
-  background: #16120e;
-  box-shadow: var(--shadow-soft);
-}
-
-.rail {
-  height: 14px;
-  margin: 10px -30px;
-  background: repeating-linear-gradient(90deg, #ebe1cc 0 14px, transparent 14px 30px);
-  opacity: 0.85;
+.frame {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .window {
   position: relative;
   aspect-ratio: 3 / 2;
   overflow: hidden;
-  background: color-mix(in srgb, var(--story-tint) 70%, #e8dcc0);
-  filter: sepia(0.22) contrast(0.96);
+  border-radius: var(--radius-media);
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
 }
 
 .window svg {
@@ -495,232 +286,13 @@
   object-fit: cover;
 }
 
-.frameCaption {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-width: 46ch;
-}
-
-.frameNo {
-  font-family: var(--font-data);
-  font-size: var(--text-data);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--story-accent);
-}
-
-.frameCaption strong {
-  font-family: var(--font-display);
-  font-weight: 420;
-  font-size: 1.35rem;
-  color: var(--story-ink);
-}
-
-.frameCaption span:last-child {
-  color: var(--ink-soft);
-  line-height: 1.6;
-}
-
-/* ── Page 11: the signature moment ─────────────────────────────────────── */
-.signature {
-  padding: clamp(80px, 12vh, 160px) 0;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  background: linear-gradient(180deg, var(--paper) 0%, var(--story-tint) 100%);
-}
-
-.signatureStage {
-  width: calc(100% - 2 * var(--page-gutter));
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-/* ── Notes (a long summary, no story pages yet) ────────────────────────── */
-.notes {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 var(--page-gutter) clamp(48px, 8vh, 96px);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background: var(--paper);
-}
-
-/* ── Page 13: the chapter transition ───────────────────────────────────── */
-.transition {
-  position: relative;
-  overflow: hidden;
-  min-height: 82svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 96px var(--page-gutter);
-  background: var(--paper);
-}
-
-/* Already faded: the country is behind us. The scroll only carries it there. */
-.ghostName {
-  font-family: var(--font-display);
-  font-size: clamp(80px, 22vw, 360px);
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  color: var(--story-ink);
-  opacity: 0.12;
-}
-
-.roadLine {
-  position: relative;
-  display: flex;
-  height: 4px;
-  margin: 28px 0 44px;
-  border-radius: 2px;
-}
-
-.roadRed {
-  display: block;
-  width: 55%;
-  background: var(--route);
-  border-radius: 2px 0 0 2px;
-}
-
-.roadBlue {
-  display: block;
-  flex: 1;
-  background: var(--support);
-  border-radius: 0 2px 2px 0;
-}
-
-/* A sourced sea crossing is a dashed navigation line across water, never a road. */
-.roadBlueSea {
-  display: block;
-  flex: 1;
-  background: repeating-linear-gradient(90deg, var(--support) 0 12px, transparent 12px 24px);
-}
-
-.nextBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.nextCoords {
-  font-family: var(--font-data);
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.nextLink {
-  font-family: var(--font-display);
-  font-size: clamp(34px, 5.4vw, 76px);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  color: var(--story-ink);
-  border-bottom: 3px solid var(--support);
-  padding-bottom: 6px;
-  transition: color 0.25s ease;
-}
-
-.nextLink:hover,
-.nextLink:focus-visible {
-  color: var(--support);
-}
-
-.nextLink span {
-  display: inline-block;
-}
-
-.chapterNav {
-  display: flex;
-  gap: 32px;
-  margin-top: 12px;
-  font-size: 0.9rem;
-  color: var(--ink-soft);
-}
-
-.chapterNav a {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-/* ── Subtle metadata ───────────────────────────────────────────────────── */
-.mapTag {
-  position: absolute;
-  left: 16px;
-  bottom: 12px;
-  font-family: var(--font-data);
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
-}
-
-.provenanceRow {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 var(--page-gutter);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
-  align-items: baseline;
-}
-
-.provenance {
-  font-family: var(--font-data);
-  font-size: var(--text-data);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.videoLink {
-  font-size: 0.9rem;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  color: var(--story-accent);
-}
-
-/* ── Page 11 with a real photograph: same stage, same entrance ────────── */
-.photoStage {
-  position: relative;
-  aspect-ratio: 5 / 2;
-  border-radius: var(--radius-media);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--story-accent) 20%, transparent);
-  box-shadow: var(--shadow-soft);
-}
-
-.photoFill {
-  position: absolute;
-  inset: 0;
-}
-
-.photoImage {
-  object-fit: cover;
-}
-
-@media (max-width: 640px) {
-  .photoStage {
-    aspect-ratio: 3 / 2;
-  }
-}
-
-/* ── Page 10: the film-frame stand-in until a photograph arrives ───────── */
 .stamp {
   position: absolute;
   font-family: var(--font-data);
   font-size: 10.5px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--story-ink) 80%, transparent);
+  color: var(--ink-soft);
 }
 
 .stampName {
@@ -738,92 +310,146 @@
   bottom: 12px;
 }
 
-/* ── Wordless interlude (a chapter with no verified manuscript yet) ────── */
-.interlude {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  min-height: 62svh;
-  display: flex;
-  align-items: flex-end;
-  background: linear-gradient(170deg, var(--hero-from) 0%, var(--hero-to) 140%);
-  color: var(--ink-inverse);
-}
-
-.interludeScene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-
-@media (max-width: 899px) {
-  .interludeScene [data-heavy] {
-    display: none;
-  }
-
-  /* Less empty gradient above the landscape on a phone. */
-  .interlude {
-    min-height: 44svh;
-  }
-}
-
-/* The red road (ridden) runs through the landscape as the visitor scrolls;
-   the blue road (ahead) is already leaving it on the right. */
-.interludeRoad {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 96px;
-  display: flex;
-  height: 4px;
-}
-
-.interludeRed {
-  display: block;
-  width: 62%;
-  background: var(--route);
-  border-radius: 0 2px 2px 0;
-}
-
-.interludeBlue {
-  display: block;
-  flex: 1;
-  background: repeating-linear-gradient(90deg, var(--blue-lit) 0 4px, transparent 4px 18px);
-  opacity: 0.9;
-}
-
-.interludeMeta {
-  width: 100%;
-  padding: 0 var(--page-gutter) 40px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
-  font-family: var(--font-data);
-  font-size: var(--text-data);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 249, 240, 0.86);
-}
-
-/* ── Bhagira: layout hook (renders only once verified details exist) ───── */
-.bhagira {
-  padding: clamp(64px, 10vh, 120px) 0;
+.frameCaption {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 4px;
+  max-width: 46ch;
+}
+
+.frameNo {
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--support);
+}
+
+.frameCaption strong {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.frameCaption span:last-child {
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+/* ── Page 11: the signature moment ─────────────────────────────────────── */
+.signature {
+  padding: clamp(48px, 8vh, 96px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
   background: var(--paper-deep);
 }
 
-.bhagiraFrame {
+.signatureStage {
   width: calc(100% - 2 * var(--page-gutter));
-  max-width: 540px;
-  margin: 0 auto 0 max(var(--page-gutter), calc((100% - 1280px) / 2 + var(--page-gutter)));
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-@media (max-width: 899px) {
-  .environmentArt [data-heavy] {
-    display: none;
+.photoStage {
+  position: relative;
+  aspect-ratio: 5 / 2;
+  border-radius: var(--radius-media);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.photoImage {
+  object-fit: cover;
+}
+
+.provenanceRow {
+  width: calc(100% - 2 * var(--page-gutter));
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  align-items: baseline;
+}
+
+.provenance {
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.videoLink {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--support);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .photoStage {
+    aspect-ratio: 3 / 2;
   }
+}
+
+/* ── Notes (a long summary, no story pages yet) and Bhagira ─────────────── */
+.notes,
+.bhagira {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vh, 72px) var(--page-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--white);
+}
+
+.bhagiraFrame {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* ── Page 13: the chapter transition ───────────────────────────────────── */
+.transition {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: clamp(64px, 10vh, 120px) var(--page-gutter);
+  background: var(--white);
+}
+
+.nextLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-data);
+  font-size: var(--text-data);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.nextLink {
+  font-size: var(--text-display-l);
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.nextLink:hover,
+.nextLink:focus-visible {
+  color: var(--support);
+}
+
+.chapterNav {
+  display: flex;
+  gap: 28px;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.chapterNav a:hover,
+.chapterNav a:focus-visible {
+  color: var(--support);
 }

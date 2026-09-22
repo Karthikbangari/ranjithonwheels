@@ -3,9 +3,9 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 // On a phone the world map is wider than the screen, so it scrolls sideways in
-// its own frame. It should open on the journey — Europe to East Asia and
-// Australia — not on the Atlantic, so it starts scrolled to that part of the
-// map. (Nothing to do on a screen wide enough to show it all.)
+// its own frame. It opens centred on the journey (Europe to East Asia and
+// Australia) rather than the Atlantic. No animation — just an initial
+// scroll position, set once.
 export function MapScroll({ className, children }: { className?: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
 

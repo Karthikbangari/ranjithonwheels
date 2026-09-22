@@ -1,224 +1,84 @@
-/*
- * Page 5 — the chapter hero. Deep, cinematic, full-screen: the country's own
- * gradient (or photograph beneath a scrim), topographic terrain, the country's
- * outline with the road arriving in red and leaving in blue, an ambient effect,
- * and huge type. Everything is stacked in negative z-index layers inside an
- * isolated stacking context, so the type simply sits on top.
- */
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  min-height: calc(100svh - var(--header-height));
-  display: flex;
-  align-items: flex-end;
-  color: var(--ink-inverse);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+  padding: clamp(40px, 7vh, 88px) var(--page-gutter);
+  background: var(--white);
 }
 
-.base {
-  position: absolute;
-  inset: 0;
-  z-index: -6;
-  background: linear-gradient(155deg, var(--hero-from) 0%, var(--hero-to) 135%);
-}
-
-.photo {
-  position: absolute;
-  inset: 0;
-  z-index: -5;
-}
-
-.photoImage {
-  object-fit: cover;
-}
-
-/* Localised behind the type at the bottom of the screen — never a site-wide
-   dark overlay (CLAUDE.md §3.3). Stronger over a photograph, where it also
-   has to hold the type at 4.5:1. */
-.scrim {
-  position: absolute;
-  inset: 0;
-  z-index: -4;
-  background: linear-gradient(
-    0deg,
-    color-mix(in srgb, var(--hero-from) 85%, transparent) 0%,
-    color-mix(in srgb, var(--hero-from) 45%, transparent) 42%,
-    transparent 80%
-  );
-}
-
-.withPhoto .scrim {
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--hero-from) 70%, transparent) 0%, transparent 62%),
-    linear-gradient(
-      0deg,
-      color-mix(in srgb, var(--hero-from) 94%, transparent) 0%,
-      color-mix(in srgb, var(--hero-from) 62%, transparent) 40%,
-      transparent 82%
-    );
-}
-
-/* Atmospheric light: a soft pool of the country's glow colour, high on the
-   right, so the dark end of every gradient has a source of light in it. */
-.light {
-  position: absolute;
-  inset: 0;
-  z-index: -4;
-  pointer-events: none;
-  background: radial-gradient(58% 60% at 80% 26%, color-mix(in srgb, var(--story-glow) 24%, transparent), transparent 72%);
-}
-
-.night .light {
-  background:
-    radial-gradient(46% 50% at 78% 24%, color-mix(in srgb, var(--story-glow) 30%, transparent), transparent 70%),
-    radial-gradient(70% 40% at 20% 100%, color-mix(in srgb, var(--hero-to) 55%, transparent), transparent 75%);
-}
-
-.terrain,
-.map,
-.effect,
-.scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.terrain {
-  z-index: -3;
-}
-
-/* A night country whose photograph was taken by day: the same photograph,
-   taken down to dusk, so the lights and road above it still read. */
-.night.withPhoto .scrim {
-  background:
-    linear-gradient(0deg, color-mix(in srgb, var(--hero-from) 94%, transparent) 0%, color-mix(in srgb, var(--hero-from) 70%, transparent) 45%, color-mix(in srgb, var(--hero-from) 52%, transparent) 100%),
-    linear-gradient(90deg, color-mix(in srgb, var(--hero-from) 70%, transparent) 0%, transparent 62%);
-}
-
-/* Under the scrim, so the type at the bottom left always sits on a darkened
-   ground, however busy the landscape behind it. */
-.scene {
-  z-index: -5;
-}
-
-/* Lighter on a phone: half of every particle layer is dropped, and its
-   scroll tweens are skipped with it (see choreography.ts). */
-@media (max-width: 899px) {
-  .effect [data-heavy],
-  .scene [data-heavy] {
-    display: none;
-  }
-}
-
-.withPhoto .terrain {
-  opacity: 0.45;
-}
-
-.map {
-  z-index: -2;
-}
-
-.effect {
-  z-index: -1;
-}
-
-.mapMobile {
-  display: none;
-}
-
-@media (max-width: 899px) {
-  .mapDesktop {
-    display: none;
-  }
-
-  .mapMobile {
-    display: block;
-  }
-}
-
-.content {
-  position: relative;
-  width: 100%;
-  padding: 0 var(--page-gutter) clamp(36px, 7vh, 80px);
+.copy {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-
-.chapterLine {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  font-family: var(--font-data);
-  font-size: var(--text-data);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 249, 240, 0.86);
-}
-
-.region {
-  color: rgba(255, 249, 240, 0.7);
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .name {
-  font-size: clamp(64px, 15.5vw, 250px);
-  line-height: 0.92;
-  color: var(--ink-inverse);
-}
-
-/* LineReveal masks each line with overflow hidden; at this size the
-   descenders of a tight line-height would be clipped, so give them room. */
-.nameMask {
-  padding-bottom: 0.16em;
-  margin-bottom: -0.16em;
+  font-size: var(--text-display-xl);
+  max-width: 12ch;
 }
 
 .coords {
   font-family: var(--font-data);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  color: rgba(255, 249, 240, 0.82);
+  font-size: var(--text-data);
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
 }
 
 .opening {
-  max-width: 22ch;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(22px, 2.7vw, 40px);
-  line-height: 1.12;
-  color: var(--ink-inverse);
-  text-wrap: balance;
+  max-width: 40ch;
+  font-size: var(--text-lede);
+  line-height: 1.6;
+  color: var(--ink-soft);
 }
 
 .stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 36px;
-  margin-top: 6px;
+  gap: 16px 40px;
+  margin-top: 4px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  width: 100%;
 }
 
 .stat {
   display: flex;
   flex-direction: column-reverse;
-  gap: 2px;
+  gap: 4px;
 }
 
 .stat dt {
   font-size: 0.85rem;
-  color: rgba(255, 249, 240, 0.78);
+  color: var(--ink-soft);
 }
 
 .stat dd {
-  font-family: var(--font-data);
-  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
 }
 
 .stat dd span {
   font-size: 0.7em;
-  letter-spacing: 0.12em;
-  color: rgba(255, 249, 240, 0.8);
+  color: var(--ink-soft);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-media);
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+@media (max-width: 899px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .media {
+    order: -1;
+    aspect-ratio: 3 / 2;
+  }
 }

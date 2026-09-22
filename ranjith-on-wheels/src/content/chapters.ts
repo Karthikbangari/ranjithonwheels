@@ -39,16 +39,10 @@ export type Chapter = {
   country: JourneyCountry;
   contentStatus: ContentStatus;
   story: Story | null;
-  // A chapter with no public story shows a wordless, atmospheric interlude
-  // (the country's landscape and the road through it) between arrival and
-  // leaving, so it reads as designed rather than empty.
-  interlude: boolean;
   bhagira: BhagiraEntry | null;
   atmosphere: Atmosphere;
   previous: JourneyCountry | null;
   next: JourneyCountry | null;
-  // The next chapter's hero colours, so the hand-off veil is already in them.
-  nextHero: { from: string; to: string };
   opening: string | null;
   // A long summary for a country with no story pages yet, shown as plain
   // chapter notes so nothing already on the site is lost.
@@ -61,8 +55,6 @@ export type Chapter = {
   people: StoryMoment[];
   signature: StoryMoment | null;
 };
-
-const atmosphereFallback = { from: "#071c3b", to: "#0b4ea2" };
 
 export function buildChapter(slug: string): Chapter | null {
   const country = journeyCountries.find((entry) => entry.slug === slug);
@@ -78,12 +70,10 @@ export function buildChapter(slug: string): Chapter | null {
     country,
     contentStatus: getStory(slug)?.contentStatus ?? "pending",
     story,
-    interlude: story === null,
     bhagira: bhagiraFor(slug),
     atmosphere: getAtmosphere(slug),
     previous: journeyCountries.find((entry) => entry.order === country.order - 1) ?? null,
     next,
-    nextHero: next ? getAtmosphere(next.slug).hero : atmosphereFallback,
     opening,
     notes,
     crossing: seaCrossings[slug] ?? null,

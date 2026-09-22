@@ -1,7 +1,4 @@
-"use client";
-
 import { c } from "../colors";
-import { playOnView, scrubOnView, useChapterMotion } from "../useChapterMotion";
 import styles from "../Motifs.module.css";
 
 // Japan — discipline, punctuality, hanami. Petals settle as the page scrolls
@@ -22,31 +19,9 @@ const blossoms = [40, 110, 190, 270, 350, 420].map((x, i) => ({
 }));
 
 export function Petals() {
-  const stageRef = useChapterMotion((stage, gsap) => {
-    const drifting = stage.querySelectorAll("[data-petal]");
-    const flowers = stage.querySelectorAll("[data-blossom]");
-    const train = stage.querySelector("[data-train]");
-
-    gsap.fromTo(
-      drifting,
-      {
-        y: (i: number) => -110 - (i % 5) * 20,
-        x: (i: number) => (i % 2 === 0 ? 26 : -26),
-        rotation: -70,
-        transformOrigin: "50% 50%",
-      },
-      { y: 0, x: 0, rotation: 0, ease: "none", scrollTrigger: scrubOnView(stage, "bottom 60%") },
-    );
-
-    gsap
-      .timeline({ scrollTrigger: playOnView(stage) })
-      .fromTo(flowers, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.06 }, 0)
-      // Arrives from the left and decelerates to a precise halt.
-      .fromTo(train, { x: -640 }, { x: 0, duration: 1.6, ease: "expo.out" }, 0.3);
-  });
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
+    <div className={`${styles.stage} ${styles.scene}`} aria-hidden="true">
       <svg className={styles.svg} viewBox="0 0 900 360" preserveAspectRatio="xMidYMid slice">
         <circle cx={730} cy={84} r={42} fill={c.glow} opacity={0.5} />
         <path

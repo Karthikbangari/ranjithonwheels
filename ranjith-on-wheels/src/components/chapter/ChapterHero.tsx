@@ -1,84 +1,31 @@
-import Image from "next/image";
-import type { CSSProperties } from "react";
 import { atlasChapters } from "@/content/atlas";
 import { site } from "@/content/site";
 import type { Chapter } from "@/content/chapters";
 import { formatCoords } from "@/lib/coords";
-import { resolveMedia } from "@/lib/media";
-import { seaCrossings } from "@/content/chapters";
-import { heroMap, type HeroMap } from "@/lib/chapterGeo";
-import { LineReveal } from "@/components/motion/LineReveal";
-import { EffectLayer } from "./EffectLayer";
-import { SceneLayer } from "./SceneLayer";
-import { Scene } from "./Scene";
-import { TerrainBackdrop } from "./TerrainBackdrop";
+import { CountryCoverImage } from "@/components/journey/CountryCoverImage";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import styles from "./Hero.module.css";
 
-// Page 5 — Country introduction. One strong full-screen picture with huge
-// country type: the country's own photograph when there is one, and the
-// country's terrain map (real outline, topographic lines, the road arriving
-// and leaving) when there isn't. Both share this exact layout, so dropping a
-// photograph into /public later changes the background and nothing else.
+// Page 5 — the chapter introduction. The country's own photograph (or, until
+// one exists, its own terrain map — CLAUDE.md §8) beside its name, chapter
+// number, coordinates and opening line. The same layout the homepage hero
+// uses, so every page on the site reads as one family.
 export function ChapterHero({ chapter }: { chapter: Chapter }) {
-  const { country, atmosphere, opening, story } = chapter;
-  const photo = resolveMedia(country).hero;
-  const night = Boolean(atmosphere.hero.night);
-  // A sourced sea crossing arrives as a dashed navigation line, not a road.
-  const dashedRoute = Boolean(seaCrossings[country.slug]);
+  const { country, opening, story } = chapter;
   const chapterLabel = atlasChapters.find((item) => item.id === country.chapter)?.label;
 
-  // Two fits of the same country: a wide frame for desktop, a tall one for a
-  // phone. Only the small outline + route data is duplicated, never the terrain.
-  const desktop = heroMap(country.slug, country.displayAnchor, 1600, 900, [
-    [760, 130],
-    [1500, 770],
-  ]);
-  const mobile = heroMap(country.slug, country.displayAnchor, 800, 1000, [
-    [210, 120],
-    [590, 590],
-  ]);
-
-  const style = {
-    "--hero-from": atmosphere.hero.from,
-    "--hero-to": atmosphere.hero.to,
-  } as CSSProperties;
-
   return (
-    <Scene name="hero" className={`${styles.hero} ${photo ? styles.withPhoto : ""} ${night ? styles.night : ""}`} style={style} id="chapter-intro">
-      <div className={styles.base} aria-hidden="true" />
-      {photo ? (
-        <div className={styles.photo} data-photo>
-          <Image src={photo.src} alt={photo.alt} fill priority sizes="100vw" className={styles.photoImage} />
-        </div>
-      ) : null}
-      <div className={styles.scrim} aria-hidden="true" />
-      <div className={styles.light} aria-hidden="true" />
-      <TerrainBackdrop terrain={atmosphere.terrain} className={styles.terrain} />
-      <SceneLayer kinds={atmosphere.scenes} seed={atmosphere.terrain.seed} night={night} subtle={Boolean(photo)} className={styles.scene} />
-      <MapLayer map={desktop} className={styles.mapDesktop} dashed={dashedRoute} />
-      <MapLayer map={mobile} className={styles.mapMobile} dashed={dashedRoute} />
-      <EffectLayer effect={atmosphere.effect} seed={atmosphere.terrain.seed} className={styles.effect} />
-
-      <div className={styles.content}>
-        <p className={styles.chapterLine} data-meta>
-          <span>
-            Chapter {String(country.order).padStart(2, "0")} of {site.countryCount}
-          </span>
-          {chapterLabel ? <span className={styles.region}>{chapterLabel}</span> : null}
-        </p>
-        <h1 className={styles.name}>
-          <LineReveal lines={[country.name]} lineClassName={styles.nameMask} />
-        </h1>
-        <p className={styles.coords} data-meta>
-          {formatCoords(country.displayAnchor)}
-        </p>
-        {opening ? (
-          <p className={styles.opening} data-meta>
-            {opening}
-          </p>
-        ) : null}
+    <section className={styles.hero} id="chapter-intro">
+      <div className={styles.copy}>
+        <Eyebrow>
+          Chapter {String(country.order).padStart(2, "0")} of {site.countryCount}
+          {chapterLabel ? ` — ${chapterLabel}` : ""}
+        </Eyebrow>
+        <h1 className={styles.name}>{country.name}</h1>
+        <p className={styles.coords}>{formatCoords(country.displayAnchor)}</p>
+        {opening ? <p className={styles.opening}>{opening}</p> : null}
         {story && story.stats.length > 0 ? (
-          <dl className={styles.stats} data-meta>
+          <dl className={styles.stats}>
             {story.stats.map((stat) => (
               <div key={`${stat.value}-${stat.unit}`} className={styles.stat}>
                 <dt>{stat.label}</dt>
@@ -91,68 +38,16 @@ export function ChapterHero({ chapter }: { chapter: Chapter }) {
           </dl>
         ) : null}
       </div>
-    </Scene>
-  );
-}
-
-// The country itself, drawn in the accent, with the road arriving in red
-// (ridden) and the road ahead leaving in blue. A city-state with no outline at
-// this resolution (Singapore) gets range rings and a crosshair instead.
-function MapLayer({ map, className, dashed }: { map: HeroMap; className: string; dashed: boolean }) {
-  const [ax, ay] = map.anchor;
-  return (
-    <svg
-      className={`${styles.map} ${className}`}
-      viewBox={`0 0 ${map.width} ${map.height}`}
-      preserveAspectRatio="xMidYMid slice"
-      aria-hidden="true"
-      focusable="false"
-    >
-      {map.outline ? (
-        <path
-          data-outline
-          d={map.outline}
-          fill="var(--story-glow)"
-          fillOpacity={0.12}
-          stroke="var(--story-glow)"
-          strokeWidth={2.2}
-          strokeLinejoin="round"
+      <div className={styles.media}>
+        <CountryCoverImage
+          slug={country.slug}
+          anchor={country.displayAnchor}
+          src={country.heroImage?.src ?? country.coverImage}
+          alt={country.heroImage?.alt ?? country.coverAlt}
+          priority
+          sizes="(max-width: 899px) 100vw, 50vw"
         />
-      ) : (
-        <g fill="none" stroke="var(--story-glow)">
-          {[46, 104, 176, 262, 360].map((radius, index) => (
-            <circle key={radius} data-outline cx={ax} cy={ay} r={radius} strokeWidth={index === 0 ? 2 : 1} opacity={1 - index * 0.16} />
-          ))}
-          <path data-outline d={`M${ax - 400} ${ay}H${ax + 400}M${ax} ${ay - 400}V${ay + 400}`} strokeWidth={1} opacity={0.4} />
-        </g>
-      )}
-      <path
-        data-route-in
-        {...(dashed ? { "data-dashed": "" } : {})}
-        d={map.routeIn}
-        fill="none"
-        stroke="var(--route)"
-        strokeWidth={4.5}
-        strokeLinecap="round"
-        strokeDasharray={dashed ? "10 12" : undefined}
-      />
-      {/* The road ahead is already on screen when the chapter opens — a wide,
-          faint underlay for the glow (cheaper than a blur filter) and the
-          dotted blue line itself — so the journey never starts from nothing. */}
-      <path d={map.routeOut} fill="none" stroke="var(--blue-lit)" strokeWidth={12} strokeLinecap="round" opacity={0.16} />
-      <path
-        data-route-out
-        d={map.routeOut}
-        fill="none"
-        stroke="var(--blue-lit)"
-        strokeWidth={3.5}
-        strokeLinecap="round"
-        strokeDasharray="4 14"
-      />
-      <g data-marker>
-        <circle cx={ax} cy={ay} r={22} fill="none" stroke="var(--route)" strokeWidth={2} opacity={0.55} />
-        <circle cx={ax} cy={ay} r={8} fill="#fff9f0" stroke="var(--route)" strokeWidth={3} />
-      </g>
-    </svg>
+      </div>
+    </section>
   );
 }
