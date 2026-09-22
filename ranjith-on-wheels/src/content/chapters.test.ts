@@ -7,7 +7,7 @@ import { stories } from "./stories";
 const numberTokens = (text: string) => text.match(/\d[\d,]*/g) ?? [];
 
 describe("chapters", () => {
-  it("builds a chapter for every one of the 23 countries", () => {
+  it("builds a chapter for every country", () => {
     for (const country of journeyCountries) {
       const chapter = buildChapter(country.slug);
       expect(chapter, country.slug).not.toBeNull();
@@ -16,11 +16,13 @@ describe("chapters", () => {
     expect(buildChapter("atlantis")).toBeNull();
   });
 
-  it("links every chapter to its neighbours, with no previous for India and no next for Slovakia", () => {
+  it("links every chapter to its neighbours, with no previous for India and no next for the latest country", () => {
     expect(buildChapter("india")!.previous).toBeNull();
     expect(buildChapter("india")!.next?.slug).toBe("sri-lanka");
-    expect(buildChapter("slovakia")!.next).toBeNull();
+    expect(buildChapter("slovakia")!.next?.slug).toBe("czech-republic");
     expect(buildChapter("slovakia")!.previous?.slug).toBe("hungary");
+    expect(buildChapter("czech-republic")!.next).toBeNull();
+    expect(buildChapter("czech-republic")!.previous?.slug).toBe("slovakia");
   });
 
   it("gives countries with no story manuscript no story pages — nothing invented to fill the slots", () => {
@@ -38,6 +40,7 @@ describe("chapters", () => {
       "croatia",
       "hungary",
       "slovakia",
+      "czech-republic",
     ];
     for (const slug of pending) {
       const chapter = buildChapter(slug)!;

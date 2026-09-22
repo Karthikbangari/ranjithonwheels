@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("journey archive and country pages", () => {
-  test("archive lists all 23 countries and search narrows results", async ({ page }) => {
+  test("archive lists all 24 countries and search narrows results", async ({ page }) => {
     await page.goto("/journey");
-    // The archive's own cards — the gateway map above it has 23 marker links of its own.
+    // The archive's own cards — the gateway map above it has 24 marker links of its own.
     const archiveLinks = page.locator('a[href^="/journey/"]:not([data-dot])');
-    await expect(archiveLinks).toHaveCount(23);
+    await expect(archiveLinks).toHaveCount(24);
 
     await page.getByRole("searchbox").fill("korea");
     await expect(archiveLinks).toHaveCount(1);
@@ -31,7 +31,11 @@ test.describe("journey archive and country pages", () => {
     await expect(page.getByRole("link", { name: "All chapters" })).toBeVisible();
     await expect(page.getByRole("link", { name: /^← / })).toHaveCount(0);
 
+    // Slovakia now leads on to Czech Republic, the latest country.
     await page.goto("/journey/slovakia");
+    await expect(page.getByRole("link", { name: /Enter Czech Republic/ })).toBeVisible();
+
+    await page.goto("/journey/czech-republic");
     await expect(page.locator("#chapter-transition").getByRole("link", { name: "Follow the journey" })).toHaveAttribute(
       "href",
       "/#finale",

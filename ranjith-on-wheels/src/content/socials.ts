@@ -1,19 +1,22 @@
 export type SocialLink = {
-  id: "youtube" | "instagram";
+  id: "youtube" | "instagram" | "x";
   label: string;
   description: string;
   url: string;
 };
 
-// The two official profiles, configured in one place. Leave a URL as "" until
-// the owner supplies the real one (CLAUDE.md §1: never a guessed profile). An
+// The official profiles, configured in one place. Leave a URL as "" until the
+// owner supplies the real one (CLAUDE.md §1: never a guessed profile). An
 // empty URL hides that button everywhere — the footer, the mobile menu, the
 // finale and /contact all map over `socialLinks`, which only lists the
 // profiles that have a valid https address.
-// OWNER: official YouTube URL and official Instagram URL are still required.
+//
+// Owner-confirmed 2026-09-23: @Ranjithonwheels (YouTube), @ranjithonwheels
+// (Instagram) and @ranjith_on (X) are the real, correct handles.
 export const socialConfig = {
-  instagramUrl: "",
-  youtubeUrl: "",
+  instagramUrl: "https://www.instagram.com/ranjithonwheels/",
+  youtubeUrl: "https://www.youtube.com/@Ranjithonwheels",
+  xUrl: "https://x.com/ranjith_on",
 };
 
 const isProfileUrl = (value: string) => /^https:\/\/[^\s/]+\.[^\s/]+/.test(value.trim());
@@ -24,6 +27,7 @@ export function buildSocialLinks(config: typeof socialConfig): SocialLink[] {
   const candidates: SocialLink[] = [
     { id: "youtube", label: "YouTube", description: "Every ride, as it happened.", url: config.youtubeUrl.trim() },
     { id: "instagram", label: "Instagram", description: "The road, day by day.", url: config.instagramUrl.trim() },
+    { id: "x", label: "X", description: "Short updates from the road.", url: config.xUrl.trim() },
   ];
   return candidates.filter((link) => isProfileUrl(link.url));
 }

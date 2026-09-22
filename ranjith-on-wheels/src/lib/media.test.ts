@@ -46,11 +46,13 @@ describe("content status tracker", () => {
     const missing = missingContent();
     expect(missing.media).toEqual(expect.arrayContaining(["Singapore cover/hero"]));
     expect(missing.media).not.toEqual(expect.arrayContaining(["Cambodia cover/hero", "China cover/hero"]));
-    for (const name of ["Sri Lanka", "Thailand", "Australia", "South Korea", "France", "Slovakia"]) {
+    for (const name of ["Sri Lanka", "Thailand", "Australia", "South Korea", "France", "Slovakia", "Czech Republic"]) {
       expect(missing.content).toContain(`${name} manuscript`);
     }
     expect(missing.content).toContain("Bhagira details");
-    expect(missing.links).toEqual(["official YouTube URL", "official Instagram URL"]);
+    // The owner confirmed YouTube, Instagram and X on 2026-09-23 — nothing
+    // outstanding here until a fourth channel is asked for.
+    expect(missing.links).toEqual([]);
   });
 
   it("prints the tracker (npm run content:status)", () => {

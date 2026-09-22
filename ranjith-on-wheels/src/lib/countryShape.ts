@@ -30,6 +30,7 @@ const ISO_NUMERIC_BY_SLUG: Record<string, string> = {
   croatia: "191",
   hungary: "348",
   slovakia: "703",
+  "czech-republic": "203",
 };
 
 export function findCountryFeature(

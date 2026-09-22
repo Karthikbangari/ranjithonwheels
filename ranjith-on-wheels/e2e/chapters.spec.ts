@@ -24,6 +24,7 @@ const countries: Array<{ slug: string; name: string }> = [
   { slug: "croatia", name: "Croatia" },
   { slug: "hungary", name: "Hungary" },
   { slug: "slovakia", name: "Slovakia" },
+  { slug: "czech-republic", name: "Czech Republic" },
 ];
 
 // Which optional pages each chapter has data for — the same coverage
@@ -43,7 +44,7 @@ const optional: Record<string, string[]> = {
 };
 const OPTIONAL_IDS = ["road", "environment", "discovery", "memory", "signature"];
 
-test.describe("the 23 chapters", () => {
+test.describe("the 24 chapters", () => {
   for (const { slug, name } of countries) {
     test(`${name}: complete chapter in order, with nothing placeholder`, async ({ page }) => {
       await page.goto(`/journey/${slug}`);
@@ -86,10 +87,12 @@ test.describe("the 23 chapters", () => {
     await expect(page.locator("#chapter-arrival svg text", { hasText: "SEA CROSSING" })).toHaveCount(0);
   });
 
-  test("India begins the road; Slovakia's road leaves unfinished", async ({ page }) => {
+  test("India begins the road; the latest country's road leaves unfinished; Slovakia now leads on to it", async ({ page }) => {
     await page.goto("/journey/india");
     await expect(page.locator("#chapter-arrival").getByText("Where the road begins")).toBeVisible();
     await page.goto("/journey/slovakia");
+    await expect(page.getByRole("heading", { name: /Slovakia, behind us/ })).toBeVisible();
+    await page.goto("/journey/czech-republic");
     await expect(page.getByRole("heading", { name: /The road isn.t finished/ })).toBeVisible();
     const dash = await page.locator("#chapter-departure svg path").last().getAttribute("stroke-dasharray");
     expect(dash).toBeTruthy();
@@ -131,7 +134,7 @@ test.describe("the chapter gateway (Page 4)", () => {
   test("is a plain white map with a marker link for every chapter, and the route already ridden", async ({ page }) => {
     await page.goto("/journey");
     const gateway = page.locator("#chapter-gateway");
-    await expect(gateway.locator("a[data-dot]")).toHaveCount(23);
+    await expect(gateway.locator("a[data-dot]")).toHaveCount(24);
     await expect(gateway.getByText("48,000")).toBeVisible();
     const bg = await gateway.evaluate((el) => getComputedStyle(el).backgroundColor);
     expect(bg).toBe("rgb(255, 255, 255)");
@@ -197,10 +200,12 @@ test.describe("chapter details", () => {
     for (const dd of await arrival.locator("dl dd").allInnerTexts()) expect(dd.trim()).not.toBe("");
   });
 
-  test("Instagram and YouTube stay hidden until real URLs are supplied — never a guessed profile", async ({ page }) => {
-    for (const path of ["/", "/contact", "/journey/india", "/about"]) {
+  test("the owner-confirmed social links appear on the footer, the finale and /contact", async ({ page }) => {
+    for (const path of ["/", "/contact"]) {
       await page.goto(path);
-      expect(await page.locator('a[href*="instagram" i], a[href*="youtube" i], a[href*="youtu.be" i]').count(), path).toBe(0);
+      expect(await page.locator('a[href="https://www.youtube.com/@Ranjithonwheels"]').count(), path).toBeGreaterThan(0);
+      expect(await page.locator('a[href="https://www.instagram.com/ranjithonwheels/"]').count(), path).toBeGreaterThan(0);
+      expect(await page.locator('a[href="https://x.com/ranjith_on"]').count(), path).toBeGreaterThan(0);
     }
   });
 

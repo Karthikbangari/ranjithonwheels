@@ -31,12 +31,12 @@ export function ChapterDeparture({ chapter }: { chapter: Chapter }) {
   return (
     <section className={`${styles.departure} fade`} id="chapter-departure">
       <div className={styles.head}>
-        <Eyebrow>{next ? `Leaving ${country.name}` : `${site.latestCity}, and beyond`}</Eyebrow>
+        <Eyebrow>{next ? `Leaving ${country.name}` : `${site.latestCity ?? site.latestCountry}, and beyond`}</Eyebrow>
         <h2 className={styles.h2}>{next ? `${country.name}, behind us.` : "The road isn't finished."}</h2>
         <p className={styles.lede}>
           {next
             ? `Chapter ${country.order} is ridden. The road ahead turns toward ${next.name}.`
-            : `${site.latestCountry} is where the ride stands today. It leaves ${site.latestCity} as a dashed line, running off the edge of the map.`}
+            : `${site.latestCountry} is where the ride stands today. It leaves${site.latestCity ? ` ${site.latestCity}` : ""} as a dashed line, running off the edge of the map.`}
         </p>
       </div>
 

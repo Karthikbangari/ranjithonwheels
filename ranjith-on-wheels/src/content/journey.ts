@@ -400,4 +400,20 @@ export const journeyCountries: JourneyCountry[] = [
     coverAlt: "A cartographic view of Slovakia, standing in until a journey photograph is sourced",
     gallery: [],
   },
+  {
+    order: 24,
+    slug: "czech-republic",
+    name: "Czech Republic",
+    iso3: "CZE",
+    displayAnchor: [15.473, 49.8175],
+    chapter: "europe",
+    featured: false,
+    coverImage: "/media/journey/czech-republic/cover.jpg",
+    coverAlt: "A cartographic view of the Czech Republic, standing in until a journey photograph is sourced",
+    // OWNER: confirmed only from a public vlog announcing country #24 — no
+    // manuscript content, no city, no arrival date. Owner confirmed on
+    // 2026-09-23 that 24 countries (Czech Republic being the 24th) is
+    // correct; everything else here is left unset rather than guessed.
+    gallery: [],
+  },
 ];

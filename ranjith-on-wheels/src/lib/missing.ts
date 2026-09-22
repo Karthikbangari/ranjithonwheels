@@ -27,6 +27,7 @@ export function missingContent(): MissingContent {
   const links: string[] = [];
   if (!socialConfig.youtubeUrl.trim()) links.push("official YouTube URL");
   if (!socialConfig.instagramUrl.trim()) links.push("official Instagram URL");
+  if (!socialConfig.xUrl.trim()) links.push("official X URL");
 
   return { media, content, links };
 }

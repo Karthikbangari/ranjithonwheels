@@ -95,6 +95,9 @@ export const atmospheres: Record<string, Atmosphere> = {
   slovakia: {
     theme: { tint: "#E6EEF7", accent: "#0B4EA2", ink: "#071C3B", glow: "#E6242A" },
   },
+  "czech-republic": {
+    theme: { tint: "#EAF2EE", accent: "#1F6B4A", ink: "#0B2A1C", glow: "#8FD9B6" },
+  },
 };
 
 export function getAtmosphere(slug: string): Atmosphere {

@@ -7,9 +7,12 @@ export const site = {
   traveller: "Ranjith Kumar Dagara",
   message: "Solution to Pollution",
   distanceKm: 48000,
-  countryCount: 23,
-  latestCountry: "Slovakia",
-  latestCity: "Bratislava",
+  countryCount: 24,
+  latestCountry: "Czech Republic",
+  // OWNER: no specific city confirmed yet for the Czech Republic arrival —
+  // left unset rather than guessed (the public vlog announcing country #24
+  // names the country, not a city). Every consumer must handle its absence.
+  latestCity: undefined as string | undefined,
   years: 4,
   book: "The Indian Cyclist — A Journey for Generations",
   bookCoverImage: "/media/book/cover-placeholder.jpg",
