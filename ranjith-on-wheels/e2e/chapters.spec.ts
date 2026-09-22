@@ -68,10 +68,12 @@ test.describe("the 23 chapters", () => {
   test("a country with a real photograph shows it; one without shows its own terrain map instead", async ({ page }) => {
     await page.goto("/journey/india");
     await expect(page.locator("#chapter-intro img")).toHaveCount(1);
-
-    // Cambodia has no photograph on disk yet: the image 404s and the
-    // client-side fallback swaps to the country's own terrain outline.
     await page.goto("/journey/cambodia");
+    await expect(page.locator("#chapter-intro img")).toHaveCount(1);
+
+    // Singapore has no photograph on disk yet: the image 404s and the
+    // client-side fallback swaps to the country's own terrain outline.
+    await page.goto("/journey/singapore");
     await expect(page.locator("#chapter-intro svg")).toBeVisible({ timeout: 8000 });
     await expect(page.locator("#chapter-intro img")).toHaveCount(0);
   });

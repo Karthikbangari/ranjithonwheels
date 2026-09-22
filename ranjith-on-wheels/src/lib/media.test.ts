@@ -8,16 +8,18 @@ const country = (slug: string) => journeyCountries.find((c) => c.slug === slug)!
 describe("country media", () => {
   it("uses a photograph that exists as the hero, and nothing where there is none", () => {
     expect(resolveMedia(country("india")).hero?.src).toBe("/media/journey/india/cover.jpg");
-    for (const slug of ["cambodia", "singapore", "china"]) expect(resolveMedia(country(slug)).hero, slug).toBeNull();
+    expect(resolveMedia(country("cambodia")).hero?.src).toBe("/media/journey/cambodia/cover.jpg");
+    expect(resolveMedia(country("china")).hero?.src).toBe("/media/journey/china/cover.jpg");
+    expect(resolveMedia(country("singapore")).hero, "singapore").toBeNull();
   });
 
   it("swaps a terrain cover for a photograph with one data change (heroImage), and ignores a path with no file", () => {
-    const cambodia = country("cambodia");
+    const singapore = country("singapore");
     // A real file on disk, supplied as the hero: picked up with no component change.
-    const withHero: JourneyCountry = { ...cambodia, heroImage: { src: "/media/journey/india/cover.jpg", alt: "supplied" } };
+    const withHero: JourneyCountry = { ...singapore, heroImage: { src: "/media/journey/india/cover.jpg", alt: "supplied" } };
     expect(resolveMedia(withHero).hero?.alt).toBe("supplied");
     // A path with no file behind it renders nothing rather than a broken image.
-    const missing: JourneyCountry = { ...cambodia, heroImage: { src: "/media/journey/cambodia/not-yet.jpg", alt: "x" } };
+    const missing: JourneyCountry = { ...singapore, heroImage: { src: "/media/journey/singapore/not-yet.jpg", alt: "x" } };
     expect(resolveMedia(missing).hero).toBeNull();
   });
 
@@ -42,7 +44,8 @@ describe("country media", () => {
 describe("content status tracker", () => {
   it("lists exactly what is still missing, derived from the data", () => {
     const missing = missingContent();
-    expect(missing.media).toEqual(expect.arrayContaining(["Cambodia cover/hero", "Singapore cover/hero", "China cover/hero"]));
+    expect(missing.media).toEqual(expect.arrayContaining(["Singapore cover/hero"]));
+    expect(missing.media).not.toEqual(expect.arrayContaining(["Cambodia cover/hero", "China cover/hero"]));
     for (const name of ["Sri Lanka", "Thailand", "Australia", "South Korea", "France", "Slovakia"]) {
       expect(missing.content).toContain(`${name} manuscript`);
     }

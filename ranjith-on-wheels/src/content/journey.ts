@@ -124,9 +124,14 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "southeast-asia",
     featured: false,
     coverImage: "/media/journey/cambodia/cover.jpg",
-    coverAlt: "A cartographic view of Cambodia, standing in until a journey photograph is sourced",
+    coverAlt:
+      "Ranjith and a fellow cyclist with their loaded touring bicycles, surrounded by local children, outside a temple in Cambodia",
     summary:
       "Buddhism shaped daily life at every turn — temple chants echoing through small villages, children sent to monasteries to learn discipline and meditation. Angkor Wat, a Hindu temple to Vishnu that later became Buddhist with a hidden shrine to Shiva inside, was the chapter's centrepiece.",
+    // OWNER: this photograph was pulled from the manuscript PDF (p. 97) at
+    // your request — please confirm the rider beside Ranjith and the temple
+    // location, and that this image is cleared to publish on the website
+    // (the manuscript's licensing may only cover the book itself).
     source: { label: THE_INDIAN_CYCLIST, pages: "pp. 93–96" },
     gallery: [],
   },
@@ -199,9 +204,14 @@ export const journeyCountries: JourneyCountry[] = [
     chapter: "east-asia",
     featured: false,
     coverImage: "/media/journey/china/cover.jpg",
-    coverAlt: "A cartographic view of China, standing in until a journey photograph is sourced",
+    coverAlt: "Ranjith and two fellow cyclists in cycling gear and helmets, giving a thumbs up on a tree-lined road in China",
     summary:
       "2,000 kilometres beginning in Shanghai, China's most advanced metropolis. What struck Ranjith most wasn't the hyper-modern skyline or the precision mapping technology, but the local hospitality — strangers repeatedly offering food to travellers as a simple gesture of kindness.",
+    // OWNER: this photograph was pulled from the manuscript PDF (p. 116) at
+    // your request — please confirm the two riders beside Ranjith and where
+    // on the route this was taken, and that this image is cleared to
+    // publish on the website (the manuscript's licensing may only cover
+    // the book itself).
     source: { label: THE_INDIAN_CYCLIST, pages: "pp. 113–116" },
     gallery: [],
   },
