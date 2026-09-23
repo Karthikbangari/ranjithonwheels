@@ -16,12 +16,59 @@
 }
 
 .media img {
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
 .card:hover .media img,
 .card:focus-visible .media img {
-  transform: scale(1.025);
+  transform: scale(1.05);
+}
+
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(7, 12, 20, 0.75), rgba(7, 12, 20, 0) 55%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .media::after,
+.card:focus-visible .media::after {
+  opacity: 1;
+}
+
+.zoomHint {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.card:hover .zoomHint,
+.card:focus-visible .zoomHint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.caption {
+  padding: 10px 24px 0;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .copy {
@@ -29,7 +76,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  padding: 24px;
+  padding: 14px 24px 24px;
   flex: 1;
 }
 

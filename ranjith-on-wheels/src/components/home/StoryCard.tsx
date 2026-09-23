@@ -30,7 +30,15 @@ export function StoryCard({ country, headline }: { country: JourneyCountry; head
           alt={country.coverAlt}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
+        <span className={styles.zoomHint} aria-hidden="true">
+          Open the chapter →
+        </span>
       </div>
+      {/* The caption restates the photograph's own alt text (coverAlt) —
+          nothing new is written here, so a country still waiting on a
+          photograph gets an honest caption too ("standing in until a
+          journey photograph is sourced") rather than a blank line. */}
+      <p className={styles.caption}>{country.coverAlt}</p>
       <div className={styles.copy}>
         <span className={styles.label}>
           Country {country.order} — {country.name}
