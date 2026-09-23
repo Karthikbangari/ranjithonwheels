@@ -37,6 +37,23 @@ export const upiConfig = {
   manualUpiId: "7020346416@ybl",
 } as const;
 
+// Builds a standard `upi://pay` deep link for the site's own, owner-confirmed
+// UPI ID above — never a value passed in from outside. `amount` is optional
+// (omitting it is what "pay whatever feels right" means: the visitor's own
+// UPI app asks for the amount); when given, it is clamped to a positive
+// whole rupee amount so the link can never carry a negative or zero value.
+export function buildUpiUri(amount?: number): string {
+  const params = new URLSearchParams({
+    pa: upiConfig.manualUpiId,
+    pn: upiConfig.recipientDisplayName,
+    cu: "INR",
+  });
+  if (amount && Number.isFinite(amount) && amount > 0) {
+    params.set("am", String(Math.floor(amount)));
+  }
+  return `upi://pay?${params.toString()}`;
+}
+
 export function isSupportConfigured(): boolean {
   const config = supportConfig as {
     recipientDisplayName: string;

@@ -1,10 +1,9 @@
-import { journeyCountries } from "@/content/journey";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { HeroJourney } from "@/components/home/HeroJourney";
 import { OriginStory } from "@/components/home/OriginStory";
 import { JourneyMap } from "@/components/map/JourneyMap";
-import { StoryCard } from "@/components/home/StoryCard";
+import { ChapterJourney } from "@/components/home/ChapterJourney";
 import { HumanGallery } from "@/components/home/HumanGallery";
 import { BookFeature } from "@/components/home/BookFeature";
 import { FinaleSection } from "@/components/home/FinaleSection";
@@ -19,17 +18,7 @@ export default function Home() {
 
       <JourneyMap />
 
-      <section className={`${styles.section} fade`} id="real-journey">
-        <div className={styles.sectionHead}>
-          <Eyebrow>From the road</Eyebrow>
-          <h2 className={styles.headline}>Every country, every chapter.</h2>
-        </div>
-        <div className={styles.cards}>
-          {journeyCountries.map((country) => (
-            <StoryCard key={country.slug} country={country} />
-          ))}
-        </div>
-      </section>
+      <ChapterJourney />
 
       <HumanGallery />
 

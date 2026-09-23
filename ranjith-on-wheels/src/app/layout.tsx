@@ -70,6 +70,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable}`}>
       <body>
+          {/* Progressive-enhancement flag: only a browser that actually runs
+              this script ever gets scroll reveals hidden before they play.
+              Without it (JS disabled, or JS fails), .reveal content has no
+              ".js" ancestor to hide behind and simply renders visible — the
+              same lesson CLAUDE.md's decision log already learned once for
+              reduced motion: never let a script be the only reason content
+              is visible. */}
+          <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.classList.add("js")' }} />
           <SkipLink />
           <SiteHeader />
           <main id="main-content" tabIndex={-1}>

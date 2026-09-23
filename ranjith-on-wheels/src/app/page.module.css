@@ -7,12 +7,6 @@
   background: var(--white);
 }
 
-.sectionHead {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .headline {
   font-size: var(--text-display-l);
   max-width: 16ch;
@@ -23,13 +17,6 @@
   color: var(--ink-soft);
   font-size: var(--text-lede);
   line-height: 1.6;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
-  gap: 24px;
-  width: 100%;
 }
 
 .actions {
