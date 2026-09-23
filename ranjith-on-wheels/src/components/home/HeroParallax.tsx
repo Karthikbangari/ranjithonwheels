@@ -16,9 +16,20 @@ export function HeroParallax({ children }: { children: ReactNode }) {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // The node fills `.hero` exactly (`inset: 0`) and only its own transform
+    // ever changes, never its layout position or size — so its rect only
+    // needs recomputing on resize, not on every mousemove. Reading
+    // getBoundingClientRect() inside the mousemove handler itself forces a
+    // synchronous layout on every event, which is the kind of jank a cursor
+    // effect should never cause.
+    let rect = node.getBoundingClientRect();
+    const updateRect = () => {
+      rect = node.getBoundingClientRect();
+    };
+    window.addEventListener("resize", updateRect);
+
     let raf = 0;
     const onMove = (event: MouseEvent) => {
-      const rect = node.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width - 0.5;
       const y = (event.clientY - rect.top) / rect.height - 0.5;
       cancelAnimationFrame(raf);
@@ -35,6 +46,7 @@ export function HeroParallax({ children }: { children: ReactNode }) {
     window.addEventListener("mouseleave", onLeave);
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener("resize", updateRect);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
     };

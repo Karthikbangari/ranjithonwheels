@@ -18,7 +18,16 @@
 .image {
   object-fit: cover;
   object-position: 22% 42%;
-  animation: hero-kenburns 22s ease-in-out infinite alternate;
+}
+
+/* The slow background zoom is a desktop-only flourish: on a phone it's an
+   endless repaint the visitor is mostly scrolling past anyway, not looking
+   at, so it costs battery and smoothness for very little. */
+@media (min-width: 641px) {
+  .image {
+    animation: hero-kenburns 22s ease-in-out infinite alternate;
+    will-change: transform;
+  }
 }
 
 @keyframes hero-kenburns {

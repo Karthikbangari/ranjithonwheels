@@ -20,6 +20,7 @@ export function HeroJourney() {
             alt="Ranjith cycling a loaded touring bicycle down an open mountain road, Indian flag mounted on the handlebars"
             fill
             priority
+            quality={68}
             sizes="100vw"
             className={styles.image}
           />

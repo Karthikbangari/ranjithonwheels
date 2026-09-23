@@ -172,6 +172,17 @@
 }
 
 @media (max-width: 900px) {
+  .chapter {
+    /* Desktop's clamp reserves up to 120px above and below every chapter —
+       generous on a large screen, but ten of those in a row on a phone adds
+       up to a lot of empty scrolling with nothing to read. */
+    padding: 40px 0;
+  }
+
+  .kicker {
+    margin-bottom: 18px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }
