@@ -26,7 +26,7 @@ test.describe("journey archive and country pages", () => {
     await expect(page.getByRole("heading", { name: "Sri Lanka", level: 1 })).toBeVisible();
   });
 
-  test("first chapter has no previous country, last chapter hands off to Follow", async ({ page }) => {
+  test("first chapter has no previous country, last chapter hands off to Support then Follow", async ({ page }) => {
     await page.goto("/journey/india");
     await expect(page.getByRole("link", { name: "All chapters" })).toBeVisible();
     await expect(page.getByRole("link", { name: /^← / })).toHaveCount(0);
@@ -35,12 +35,22 @@ test.describe("journey archive and country pages", () => {
     await page.goto("/journey/slovakia");
     await expect(page.getByRole("link", { name: /Enter Czech Republic/ })).toBeVisible();
 
+    // Czech Republic is the last chapter reached so far — its "Next" leads to
+    // Support (QR + UPI shown directly there) rather than straight to Follow.
     await page.goto("/journey/czech-republic");
-    await expect(page.locator("#chapter-transition").getByRole("link", { name: "Follow the journey" })).toHaveAttribute(
-      "href",
-      "/#finale",
-    );
+    const nextLink = page.locator("#chapter-transition").getByRole("link", { name: /Support the next kilometre/ });
+    await expect(nextLink).toHaveAttribute("href", "/support");
     await expect(page.getByRole("link", { name: /Enter / })).toHaveCount(0);
+
+    // Support is the second-to-last stop; it hands off to the Follow finale.
+    await nextLink.click();
+    await expect(page).toHaveURL(/\/support$/);
+    const finalCta = page.locator("#support-final-cta");
+    await expect(finalCta.getByRole("link", { name: "Follow the journey" })).toHaveAttribute("href", "/#finale");
+    await expect(finalCta.getByRole("link", { name: /Back to Czech Republic/ })).toHaveAttribute(
+      "href",
+      "/journey/czech-republic",
+    );
   });
 
   test("unknown country slug returns a 404", async ({ page }) => {

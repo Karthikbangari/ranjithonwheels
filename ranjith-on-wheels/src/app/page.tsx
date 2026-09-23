@@ -32,6 +32,7 @@ export default function Home() {
           ))}
         </div>
         <div className={styles.actions}>
+          <ButtonLink href="/journey">Open every country&apos;s chapter</ButtonLink>
           <ButtonLink href="/stories" variant="secondary">
             Read the ten fully documented stories
           </ButtonLink>
