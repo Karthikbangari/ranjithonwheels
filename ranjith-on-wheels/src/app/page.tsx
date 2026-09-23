@@ -10,8 +10,6 @@ import { BookFeature } from "@/components/home/BookFeature";
 import { FinaleSection } from "@/components/home/FinaleSection";
 import styles from "./page.module.css";
 
-const featuredStories = journeyCountries.filter((country) => country.featured);
-
 export default function Home() {
   return (
     <>
@@ -24,18 +22,12 @@ export default function Home() {
       <section className={`${styles.section} fade`} id="real-journey">
         <div className={styles.sectionHead}>
           <Eyebrow>From the road</Eyebrow>
-          <h2 className={styles.headline}>Stories still being written.</h2>
+          <h2 className={styles.headline}>Every country, every chapter.</h2>
         </div>
         <div className={styles.cards}>
-          {featuredStories.map((country) => (
+          {journeyCountries.map((country) => (
             <StoryCard key={country.slug} country={country} />
           ))}
-        </div>
-        <div className={styles.actions}>
-          <ButtonLink href="/journey">Open every country&apos;s chapter</ButtonLink>
-          <ButtonLink href="/stories" variant="secondary">
-            Read the ten fully documented stories
-          </ButtonLink>
         </div>
       </section>
 
