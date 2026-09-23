@@ -1,6 +1,15 @@
-// Set NEXT_PUBLIC_SITE_URL in the deployment environment once a real domain
-// is chosen. Falls back to localhost so metadata still resolves in dev.
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// Resolution order: an explicit NEXT_PUBLIC_SITE_URL (set this once a real
+// custom domain is chosen — decision #26, still unconfirmed) beats Vercel's
+// own stable production URL, which beats the current deployment's own URL
+// (both auto-supplied by Vercel, no configuration needed), which beats
+// localhost for local dev. Only NEXT_PUBLIC_SITE_URL and VERCEL_PROJECT_
+// PRODUCTION_URL are read here, never the plain VERCEL_URL, so a preview
+// deployment's metadata still points at production rather than its own
+// throwaway URL.
+const vercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+export const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (vercelProductionUrl ? `https://${vercelProductionUrl}` : "http://localhost:3000");
 
 export const site = {
   name: "Ranjith on Wheels",
