@@ -1,13 +1,11 @@
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { HeroJourney } from "@/components/home/HeroJourney";
 import { OriginStory } from "@/components/home/OriginStory";
 import { JourneyMap } from "@/components/map/JourneyMap";
 import { ChapterJourney } from "@/components/home/ChapterJourney";
 import { HumanGallery } from "@/components/home/HumanGallery";
 import { BookFeature } from "@/components/home/BookFeature";
+import { SupportUPI } from "@/components/support/SupportUPI";
 import { FinaleSection } from "@/components/home/FinaleSection";
-import styles from "./page.module.css";
 
 export default function Home() {
   return (
@@ -24,13 +22,13 @@ export default function Home() {
 
       <BookFeature />
 
-      <section className={`${styles.section} ${styles.support} fade`} id="support-invite">
-        <Eyebrow>The journey is self-powered, but never solo.</Eyebrow>
-        <h2 className={styles.headline}>Help the next kilometre happen.</h2>
-        <div className={styles.actions}>
-          <ButtonLink href="/support">Support the journey</ButtonLink>
-        </div>
-      </section>
+      {/* The real payment panel, directly on the homepage — not a button
+          that sends the visitor to another page to find it. The same
+          component /support renders, so there is exactly one place this
+          UI is built and both are always in sync. */}
+      <div className="fade" id="support-invite">
+        <SupportUPI />
+      </div>
 
       <FinaleSection />
     </>
