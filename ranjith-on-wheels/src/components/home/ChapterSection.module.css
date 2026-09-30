@@ -66,6 +66,10 @@
   background: var(--paper-deep);
 }
 
+.photo {
+  object-fit: cover;
+}
+
 .photoFrame img {
   transition: transform 0.6s ease;
 }

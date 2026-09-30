@@ -27,15 +27,8 @@ export default function Home() {
       <section className={`${styles.section} ${styles.support} fade`} id="support-invite">
         <Eyebrow>The journey is self-powered, but never solo.</Eyebrow>
         <h2 className={styles.headline}>Help the next kilometre happen.</h2>
-        <p className={styles.lede}>
-          Support can become a meal, a safe night, a bicycle repair, a border crossing or the next story
-          shared from the road.
-        </p>
         <div className={styles.actions}>
           <ButtonLink href="/support">Support the journey</ButtonLink>
-          <ButtonLink href="/support#where-support-goes" variant="secondary">
-            See how support is used
-          </ButtonLink>
         </div>
       </section>
 

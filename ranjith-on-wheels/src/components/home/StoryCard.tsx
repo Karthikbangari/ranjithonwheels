@@ -1,20 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import type { JourneyCountry } from "@/content/journey";
 import { getAtmosphere } from "@/content/atmospheres";
-import { CountryCoverImage } from "@/components/journey/CountryCoverImage";
+import { resolveMedia } from "@/lib/media";
+import { fallbackPhotoFor } from "@/content/fallbackPhotos";
 import styles from "./StoryCard.module.css";
 
 // One country as a full photographic card — the real photograph, or (until
-// one exists) the country's own terrain map, same fallback rule as
-// JourneyArchive and the chapter hero (CLAUDE.md §8: never an empty frame).
-// The whole card is the link into its chapter, and the small country label is
+// one exists) a real, already-published photo of Ranjith reused from
+// elsewhere on the site (owner's direction — no map illustration here). The
+// whole card is the link into its chapter, and the small country label is
 // tinted with that country's own accent (atmospheres.ts) so each card carries
 // a hint of its own place without a page-level colour mood (decision #23).
 // `headline` is set for a full story (the summary then reads as body text); a
 // country with only a one-line teaser uses that line as the headline.
 export function StoryCard({ country, headline }: { country: JourneyCountry; headline?: string }) {
   const { theme } = getAtmosphere(country.slug);
+  const media = resolveMedia(country);
+  const photo = media.hero ?? fallbackPhotoFor(country.order);
 
   return (
     <Link
@@ -23,22 +27,21 @@ export function StoryCard({ country, headline }: { country: JourneyCountry; head
       style={{ "--card-accent": theme.accent } as CSSProperties}
     >
       <div className={styles.media}>
-        <CountryCoverImage
-          slug={country.slug}
-          anchor={country.displayAnchor}
-          src={country.coverImage}
-          alt={country.coverAlt}
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className={styles.photo}
         />
         <span className={styles.zoomHint} aria-hidden="true">
           Open the chapter →
         </span>
       </div>
-      {/* The caption restates the photograph's own alt text (coverAlt) —
-          nothing new is written here, so a country still waiting on a
-          photograph gets an honest caption too ("standing in until a
-          journey photograph is sourced") rather than a blank line. */}
-      <p className={styles.caption}>{country.coverAlt}</p>
+      {/* The caption restates the photograph's own real alt text — never
+          new copy, so a country still waiting on its own photograph gets an
+          honest caption from the reused photo instead of a blank line. */}
+      <p className={styles.caption}>{photo.alt}</p>
       <div className={styles.copy}>
         <span className={styles.label}>
           Country {country.order} — {country.name}

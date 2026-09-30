@@ -1,9 +1,11 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { JourneyCountry } from "@/content/journey";
 import type { Story } from "@/content/stories";
 import { getAtmosphere } from "@/content/atmospheres";
-import { CountryCoverImage } from "@/components/journey/CountryCoverImage";
+import { resolveMedia } from "@/lib/media";
+import { fallbackPhotoFor } from "@/content/fallbackPhotos";
 import { Reveal } from "./Reveal";
 import styles from "./ChapterSection.module.css";
 
@@ -28,6 +30,13 @@ export function ChapterSection({ country, story, index, total, previous, next }:
   const pullQuote = story.moments.find((moment) => moment.beat === "signature") ?? story.moments[0] ?? null;
   const bodyMoments = story.moments.filter((moment) => moment !== pullQuote);
 
+  // No map illustration here (owner's direction): a country with no
+  // dedicated photograph on disk yet shows a real, already-published photo
+  // of Ranjith instead, picked deterministically from a small pool so it's
+  // stable across renders — never a fabricated or stock image.
+  const media = resolveMedia(country);
+  const photo = media.hero ?? fallbackPhotoFor(country.order);
+
   return (
     <section
       id={`chapter-${country.slug}`}
@@ -46,15 +55,15 @@ export function ChapterSection({ country, story, index, total, previous, next }:
       <div className={styles.grid}>
         <Reveal className={styles.photoCol}>
           <div className={styles.photoFrame}>
-            <CountryCoverImage
-              slug={country.slug}
-              anchor={country.displayAnchor}
-              src={country.coverImage}
-              alt={country.coverAlt}
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
               sizes="(max-width: 900px) 100vw, 58vw"
+              className={styles.photo}
             />
           </div>
-          <p className={styles.caption}>{country.coverAlt}</p>
+          <p className={styles.caption}>{photo.alt}</p>
         </Reveal>
 
         <Reveal className={styles.textCol} delayMs={120}>
